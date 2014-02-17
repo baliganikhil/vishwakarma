@@ -1,20 +1,26 @@
-<html ng-app>
+<html ng-app="VishwakarmaModule">
 <head>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700' rel='stylesheet' type='text/css'>
-    <script type="text/javascript" src="angular.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="stylesheets/vishwakarma.css">
+    <script type="text/javascript" src="javascripts/lib/angular.min.js"></script>
     <title>Vishwakarma Build System</title>
 </head>
 <body ng-controller="VKController">
 
 <div class="page_header">
-    <h2>Vishwakarma</h2>
+    <h2 class="brand">Vishwakarma</h2>
+
+    <ul class="menu">
+        <li ng-class="{active: active_screen == 'view_projects'}" ng-click="active_screen = 'view_projects'">All Projects</li>
+        <li>Running Projects</li>
+    </ul>
 </div>
 
-<div class="big_dialog proj_container hide">
+<div class="big_dialog proj_container" ng-show="active_screen == 'view_projects'">
     <div class="header">
         Projects
 
-        <button class="green">Add</button>
+        <button class="green" ng-click="init_new_project()">Add</button>
     </div>
 
     <div class="body">
@@ -35,16 +41,16 @@
     </div>
 </div>
 
-<div class="big_dialog new_project">
+<div class="big_dialog new_project" ng-show="active_screen == 'edit_project'">
     <div class="header">
-        New Project
+        {{cur_project.name}} <i class="fa fa-pencil edit_title"></i>
 
-        <button class="green">Save</button>
-        <button>Cancel</button>
+        <button class="green" ng-click="save_project()">Save</button>
+        <button ng-click="active_screen = 'view_projects'">Cancel</button>
     </div>
 
     <div class="body">
-        <textarea class="code_area"></textarea>
+        <textarea class="code_area" ng-model="cur_project.code"></textarea>
     </div>
 
 </div>
@@ -57,95 +63,38 @@
 </div>
 
 
-<style type="text/css">
-body {
-    font-family: "Open Sans";
-    color: #333;
-}
+<div class="modal_backdrop hide"></div>
 
-.big_dialog {
-    border: solid 1px #aaa;
-    border-radius: 3px;
-    position: absolute;
-    top: 80px;
-    left: 20px;
-    right: 20px;
-    bottom: 20px;
-}
+<div class="modal small hide" id="modal_new_project" style="">
+    <div class="header">
+        <label class="large">Create New Project</label>
+    </div>
 
-.big_dialog .header {
-    overflow: hidden;
-    padding: 10px 10px 10px 20px;
-    background: #222;
-    color: #fff;
-    border-radius: 3px 3px 0 0;
-    font-size: 18px;
-}
+    <div class="body">
 
-.big_dialog .body {
-    padding: 15px;
-    position: relative;
-    height: 85%;
-    background: #f6f6f6;
-}
+        <div>
+            <input type="text" ng-model="new_project.name" placeholder="Name of the project">
+        </div>
 
-.proj_container .body .no_projects {
-    text-align: center;
-    font-size: 13px;
-}
+        <div class="desc_container">
+            <textarea type="text" ng-model="new_project.desc" placeholder="Description"></textarea>
+        </div>
 
-.proj_container table {
-    width: 100%;
-}
 
-button {
-    background: #f6f6f6;
-    border: solid 1px #ccc;
-    border-radius: 3px;
-    padding: 5px 10px;
-    float: right;
-}
+    </div>
+    <div class="footer">
+        <div style="position: absolute; right: 20px">
+            <button data-dismiss="modal">Close</button>
+            <button class="green">OK</button>
+        </div>
+    </div>
+</div>
 
-button:hover {
-    opacity: 0.9;
-    cursor: pointer;
-}
 
-button.green {
-    background: rgb(5, 143, 5);
-    border: solid 2px green;
-    color: #fff;
-}
+<script type="text/javascript" src="javascripts/vishwakarma.js"></script>
 
-.cmd {
-    font-size: 13px;
-    font-style: italic;
-    background: #f6f6f6;
-    display: block;
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 3px;
-    margin-left: 30px;
-    text-align: center;
-}
-
-.code_area {
-    height: 100%;
-    width: 100%;
-    border: solid 1px #ccc;
-    border-radius: 3px;
-    font-family: "Open Sans";
-    outline: none;
-}
-
-.hide {
-    display: none;
-}
-</style>
-
-<script type="text/javascript" src="hudson.js"></script>
-
-<script src="/node_modules/socket.io/node_modules/socket.io-client/dist/socket.io.js"></script>
+<!-- <script src="/node_modules/socket.io/node_modules/socket.io-client/dist/socket.io.js"></script> -->
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.css" rel="stylesheet">
 
 </body>
 </html>

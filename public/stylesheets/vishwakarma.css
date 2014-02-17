@@ -1,0 +1,248 @@
+body {
+    font-family: "Open Sans";
+    color: #333;
+}
+
+.page_header {
+    padding-left: 20px;
+}
+
+.page_header .brand {
+    display: inline-block;
+}
+
+.page_header .menu {
+    list-style-type: none;
+    display: inline-block;
+}
+
+.page_header .menu li {
+    display: inline-block;
+    margin: 10px;
+    font-size: 13px;
+    padding: 5px 10px;
+}
+
+.page_header .menu li.active {
+    background: #f6f6f6;
+    border: solid 1px #ccc;
+    border-radius: 3px;
+}
+
+.page_header .menu li:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.big_dialog {
+    border: solid 1px #aaa;
+    border-radius: 3px;
+    position: absolute;
+    top: 80px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+}
+
+.big_dialog .header {
+    overflow: hidden;
+    padding: 10px 10px 10px 20px;
+    background: #222;
+    color: #fff;
+    border-radius: 3px 3px 0 0;
+    font-size: 18px;
+}
+
+.edit_title {
+    font-size: 13px;
+    color: #ddd;
+    cursor: pointer;
+}
+
+.big_dialog .body {
+    padding: 15px;
+    position: relative;
+    height: 85%;
+    background: #f6f6f6;
+}
+
+.proj_container .body .no_projects {
+    text-align: center;
+    font-size: 13px;
+}
+
+.proj_container table {
+    width: 100%;
+}
+
+button {
+    background: #f6f6f6;
+    border: solid 1px #ccc;
+    border-radius: 3px;
+    padding: 5px 10px;
+    float: right;
+}
+
+button:hover {
+    opacity: 0.9;
+    cursor: pointer;
+}
+
+button.green {
+    background: rgb(5, 143, 5);
+    border: solid 2px green;
+    color: #fff;
+}
+
+input[type='text'], textarea {
+    border: solid 1px #ccc;
+    border-radius: 3px;
+    height: 25px;
+    padding-left: 3px;
+    font-family: "Open Sans";
+}
+
+.cmd {
+    font-size: 13px;
+    font-style: italic;
+    background: #f6f6f6;
+    display: block;
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 3px;
+    margin-left: 30px;
+    text-align: center;
+}
+
+.code_area {
+    height: 100%;
+    width: 100%;
+    border: solid 1px #ccc;
+    border-radius: 3px;
+    font-family: "Open Sans";
+    outline: none;
+}
+
+
+/********/
+.modal_backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #000;
+    margin: 0 auto;
+    min-height: 100%;
+    height: 100%;
+    width: 100%;
+    opacity: 0.65;
+}
+
+.modal {
+    display: inline-block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 5px;
+    margin: auto;
+    background: #fff;
+    box-shadow: 0 0 30px #444;
+    z-index: 10000;
+}
+
+.modal.small {
+    width: 400px;
+    height: 300px;
+}
+
+.modal.medium {
+    width: 600px;
+    height: 300px;
+}
+
+.modal.large {
+    width: 800px;
+    height: 500px;
+}
+
+.modal.xlarge {
+    width: 980px;
+    height: 500px;
+}
+
+.modal.xxlarge {
+    width: 90%;
+    height: 90%;
+}
+
+.modal .header {
+    height: 30px;
+    width: 100%;
+    padding: 10px;
+    border-bottom: solid 1px silver;
+    line-height: 30px;
+
+    border-radius: 5px 5px 0 0;
+
+    background: rgb(222,222,222); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(222,222,222,1) 0%, rgba(203,203,203,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(222,222,222,1)), color-stop(100%,rgba(203,203,203,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, rgba(222,222,222,1) 0%,rgba(203,203,203,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, rgba(222,222,222,1) 0%,rgba(203,203,203,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, rgba(222,222,222,1) 0%,rgba(203,203,203,1) 100%); /* IE10+ */
+    background: linear-gradient(to bottom, rgba(222,222,222,1) 0%,rgba(203,203,203,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dedede', endColorstr='#cbcbcb',GradientType=0 ); /* IE6-9 */
+}
+
+.modal .body {
+    background: #fff;
+    padding: 10px;
+    position: absolute;
+    top: 51px;
+    bottom: 51px;
+    width: 100%;
+    overflow: auto;
+}
+
+.modal .footer {
+    height: 30px;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    padding: 10px;
+    border-top: solid 1px silver;
+    border-radius: 0 0 5px 5px;
+
+    background: rgb(222,222,222); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(222,222,222,1) 0%, rgba(203,203,203,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(222,222,222,1)), color-stop(100%,rgba(203,203,203,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, rgba(222,222,222,1) 0%,rgba(203,203,203,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, rgba(222,222,222,1) 0%,rgba(203,203,203,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, rgba(222,222,222,1) 0%,rgba(203,203,203,1) 100%); /* IE10+ */
+    background: linear-gradient(to bottom, rgba(222,222,222,1) 0%,rgba(203,203,203,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dedede', endColorstr='#cbcbcb',GradientType=0 ); /* IE6-9 */
+}
+
+
+/*******/
+#modal_new_project .desc_container {
+    height: 75%;
+    margin-top: 10px;
+}
+
+#modal_new_project input[type='text'] {
+    width: 100%;
+    outline: none;
+}
+
+#modal_new_project .desc_container textarea {
+    width: 100%;
+    height: 100%;
+    outline: none;
+}
+
+
+.hide {
+    display: none;
+}

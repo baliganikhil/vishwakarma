@@ -9,7 +9,11 @@ var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
 
+var mongoose = require('mongoose');
+var projects = require('./routes/projects');
+
 var app = express();
+mongoose.connect('mongodb://localhost/vishwakarma');
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -30,6 +34,10 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 app.get('/users', user.list);
+
+
+app.get('/projects', projects.get);
+app.post('/projects/save', projects.save);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
