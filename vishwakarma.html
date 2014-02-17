@@ -10,25 +10,43 @@
     <h2>Vishwakarma</h2>
 </div>
 
-<div class="proj_container">
+<div class="big_dialog proj_container hide">
     <div class="header">
         Projects
 
-        <button>New</button>
+        <button class="green">Add</button>
     </div>
 
-    <div>
+    <div class="body">
 
-    <table>
-        <tr ng-repeat="(key, project) in projects">
-            <td>{{project.name}}</td>
-            <td class="cmd">{{project.cmd}}</td>
-            <td><button ng-click="run_cmd(key)">Run</button></td>
-            <td><button ng-click="kill(key)">kill</button></td>
-        </tr>
-    </table>
+        <div class="no_projects" ng-show="projects.length == 0">
+            You have no projects
+        </div>
+
+        <table>
+            <tr ng-repeat="(key, project) in projects">
+                <td>{{project.name}}</td>
+                <td class="cmd">{{project.cmd}}</td>
+                <td><button ng-click="run_cmd(key)">Run</button></td>
+                <td><button ng-click="kill(key)">kill</button></td>
+            </tr>
+        </table>
 
     </div>
+</div>
+
+<div class="big_dialog new_project">
+    <div class="header">
+        New Project
+
+        <button class="green">Save</button>
+        <button>Cancel</button>
+    </div>
+
+    <div class="body">
+        <textarea class="code_area"></textarea>
+    </div>
+
 </div>
 
 <div>
@@ -45,15 +63,35 @@ body {
     color: #333;
 }
 
-.proj_container {
-    padding: 10px;
+.big_dialog {
     border: solid 1px #aaa;
     border-radius: 3px;
+    position: absolute;
+    top: 80px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
 }
 
-.proj_container .header {
+.big_dialog .header {
     overflow: hidden;
-    margin-bottom: 30px;
+    padding: 10px 10px 10px 20px;
+    background: #222;
+    color: #fff;
+    border-radius: 3px 3px 0 0;
+    font-size: 18px;
+}
+
+.big_dialog .body {
+    padding: 15px;
+    position: relative;
+    height: 85%;
+    background: #f6f6f6;
+}
+
+.proj_container .body .no_projects {
+    text-align: center;
+    font-size: 13px;
 }
 
 .proj_container table {
@@ -68,6 +106,17 @@ button {
     float: right;
 }
 
+button:hover {
+    opacity: 0.9;
+    cursor: pointer;
+}
+
+button.green {
+    background: rgb(5, 143, 5);
+    border: solid 2px green;
+    color: #fff;
+}
+
 .cmd {
     font-size: 13px;
     font-style: italic;
@@ -78,6 +127,19 @@ button {
     border-radius: 3px;
     margin-left: 30px;
     text-align: center;
+}
+
+.code_area {
+    height: 100%;
+    width: 100%;
+    border: solid 1px #ccc;
+    border-radius: 3px;
+    font-family: "Open Sans";
+    outline: none;
+}
+
+.hide {
+    display: none;
 }
 </style>
 
