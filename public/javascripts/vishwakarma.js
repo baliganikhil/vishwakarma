@@ -6,10 +6,17 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
 
     return {
 
-        get_projects: function(search_params) {
+        get_projects: function() {
             return $http({
                 method: 'GET',
                 url: base_url + '/projects'
+            });
+        },
+
+        get_project: function(id) {
+            return $http({
+                method: 'GET',
+                url: base_url + '/projects/' + id
             });
         },
 
@@ -55,6 +62,22 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
         };
 
         $scope.active_screen = 'edit_project';
+    };
+
+    $scope.get_project = function(id) {
+        VishwakarmaServices.get_project(id).success(function(data) {
+            if (data.status == 'error') {
+                alert('An error occurred while trying to get project');
+                return;
+            }
+
+            $scope.cur_project = data.data;
+
+            $scope.active_screen = 'edit_project';
+
+        }).error(function(data) {
+
+        });
     };
 
     $scope.get_projects = function() {

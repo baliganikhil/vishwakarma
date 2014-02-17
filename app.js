@@ -37,6 +37,7 @@ app.get('/users', user.list);
 
 
 app.get('/projects', projects.get);
+app.get('/projects/:id', projects.get_project);
 app.post('/projects/save', projects.save);
 
 http.createServer(app).listen(app.get('port'), function(){

@@ -31,7 +31,7 @@
 
         <table>
             <tr ng-repeat="(key, project) in projects">
-                <td>{{project.name}}</td>
+                <td class="project_name"><a href="javascript: void(0);" ng-click="get_project(project._id)">{{project.name}}</a></td>
                 <td class="cmd">{{project.cmd}}</td>
                 <td><button ng-click="run_cmd(key)">Run</button></td>
                 <td><button ng-click="kill(key)">kill</button></td>

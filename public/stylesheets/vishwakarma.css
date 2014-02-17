@@ -73,6 +73,15 @@ body {
 
 .proj_container table {
     width: 100%;
+    font-size: 13px;
+}
+
+.proj_container .project_name a {
+    text-decoration: none;
+}
+
+.proj_container .project_name a:hover {
+    text-decoration: underline;
 }
 
 button {
