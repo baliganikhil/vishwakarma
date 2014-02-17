@@ -1,0 +1,89 @@
+<html ng-app>
+<head>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700' rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="angular.min.js"></script>
+    <title>Vishwakarma Build System</title>
+</head>
+<body ng-controller="VKController">
+
+<div class="page_header">
+    <h2>Vishwakarma</h2>
+</div>
+
+<div class="proj_container">
+    <div class="header">
+        Projects
+
+        <button>New</button>
+    </div>
+
+    <div>
+
+    <table>
+        <tr ng-repeat="(key, project) in projects">
+            <td>{{project.name}}</td>
+            <td class="cmd">{{project.cmd}}</td>
+            <td><button ng-click="run_cmd(key)">Run</button></td>
+            <td><button ng-click="kill(key)">kill</button></td>
+        </tr>
+    </table>
+
+    </div>
+</div>
+
+<div>
+    <ul>
+        <li ng-repeat="(key, each_line) in stdout">{{each_line}}</li>
+    </ul>
+
+</div>
+
+
+<style type="text/css">
+body {
+    font-family: "Open Sans";
+    color: #333;
+}
+
+.proj_container {
+    padding: 10px;
+    border: solid 1px #aaa;
+    border-radius: 3px;
+}
+
+.proj_container .header {
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.proj_container table {
+    width: 100%;
+}
+
+button {
+    background: #f6f6f6;
+    border: solid 1px #ccc;
+    border-radius: 3px;
+    padding: 5px 10px;
+    float: right;
+}
+
+.cmd {
+    font-size: 13px;
+    font-style: italic;
+    background: #f6f6f6;
+    display: block;
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 3px;
+    margin-left: 30px;
+    text-align: center;
+}
+</style>
+
+<script type="text/javascript" src="hudson.js"></script>
+
+<script src="/node_modules/socket.io/node_modules/socket.io-client/dist/socket.io.js"></script>
+
+</body>
+</html>
