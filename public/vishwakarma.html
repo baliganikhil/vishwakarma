@@ -32,9 +32,9 @@
         <table>
             <tr ng-repeat="(key, project) in projects">
                 <td class="project_name"><a href="javascript: void(0);" ng-click="get_project(project._id)">{{project.name}}</a></td>
-                <td class="cmd">{{project.cmd}}</td>
-                <td><button ng-click="run_cmd(key)">Run</button></td>
-                <td><button ng-click="kill(key)">kill</button></td>
+                <td class="cmd">{{project.desc}}</td>
+                <td><button ng-click="run_cmd(project._id)">Run</button></td>
+                <td><button ng-click="kill(project._id)">kill</button></td>
             </tr>
         </table>
 
@@ -63,29 +63,29 @@
 </div>
 
 
-<div class="modal_backdrop hide"></div>
+<div class="modal_backdrop" ng-show="active_modal != ''"></div>
 
-<div class="modal small hide" id="modal_new_project" style="">
+<div class="modal small" id="modal_new_project" ng-show="active_modal == 'modal_new_project'">
     <div class="header">
         <label class="large">Create New Project</label>
     </div>
 
     <div class="body">
+        <form name="FormNewProject">
+            <div>
+                <input type="text" ng-model="cur_project.name" placeholder="Name of the project" required>
+            </div>
 
-        <div>
-            <input type="text" ng-model="new_project.name" placeholder="Name of the project">
-        </div>
-
-        <div class="desc_container">
-            <textarea type="text" ng-model="new_project.desc" placeholder="Description"></textarea>
-        </div>
-
+            <div class="desc_container">
+                <textarea type="text" ng-model="cur_project.desc" placeholder="Description"></textarea>
+            </div>
+        </form>
 
     </div>
     <div class="footer">
         <div style="position: absolute; right: 20px">
-            <button data-dismiss="modal">Close</button>
-            <button class="green">OK</button>
+            <button ng-click="cancel_new_project()">Cancel</button>
+            <button class="green" ng-disabled="FormNewProject.$invalid" ng-click="hide_modal()">OK</button>
         </div>
     </div>
 </div>
@@ -93,7 +93,7 @@
 
 <script type="text/javascript" src="javascripts/vishwakarma.js"></script>
 
-<!-- <script src="/node_modules/socket.io/node_modules/socket.io-client/dist/socket.io.js"></script> -->
+<script src="javascripts/socket.io.min.js"></script>
 <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.css" rel="stylesheet">
 
 </body>

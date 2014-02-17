@@ -1,7 +1,7 @@
 var Project = require('../models/projects.js');
 
 exports.get = function(req, res) {
-    Project.find(function(err, docs) {
+    Project.find({}, {code: 0}, function(err, docs) {
         if (err) {
             res.send({status: 'error'});
         }
@@ -26,17 +26,33 @@ exports.get_project = function(req, res) {
 
 exports.save = function(req, res) {
     var project = req.body;
-    var _id = project._id;
 
-    delete project._id;
+    if (project._id == undefined) {
+        project = new Project(project);
 
-    Project.update({_id: _id}, project, {upsert: true}, function(err, doc) {
-        if (err) {
-            console.log(err);
-            res.send({status: 'error'});
-        }
+        project.save(function(err, doc) {
+            if (err) {
+                console.log(err);
+                res.send({status: 'error'});
+            }
 
-        res.send({status: 'success', data: doc});
+            res.send({status: 'success', data: doc});
 
-    });
+        });
+    } else {
+        var _id = project._id;
+        delete project._id;
+
+        Project.update({_id: _id}, project, {upsert: true}, function(err, doc) {
+            if (err) {
+                console.log(err);
+                res.send({status: 'error'});
+            }
+
+            res.send({status: 'success', data: doc});
+
+        });
+    }
+
+
 };

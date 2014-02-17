@@ -33,25 +33,26 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
 
 VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServices) {
     $scope.active_screen = 'view_projects';
+    $scope.active_modal = '';
 
     $scope.stdout = [];
 
-    // socket = io.connect('http://localhost:8888');
+    socket = io.connect('http://localhost:8888');
 
-    // socket.on('connect', function() {
-    //     socket.on('stdout', function(data) {
-    //         console.log(data);
-    //         $scope.stdout.push(data);
-    //         $scope.$apply();
-    //     });
-    // });
+    socket.on('connect', function() {
+        socket.on('stdout', function(data) {
+            console.log(data);
+            $scope.stdout.push(data);
+            $scope.$apply();
+        });
+    });
 
-    $scope.run_cmd = function(key) {
-        socket.emit('exec', {cmd: $scope.projects[key].cmd, id: $scope.projects[key].id});
+    $scope.run_cmd = function(_id) {
+        socket.emit('exec', {_id: _id});
     };
 
-    $scope.kill = function(key) {
-        socket.emit('kill', {id: $scope.projects[key].id});
+    $scope.kill = function(_id) {
+        socket.emit('kill', {_id: _id});
     };
 
     $scope.init_new_project = function() {
@@ -62,6 +63,16 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
         };
 
         $scope.active_screen = 'edit_project';
+        $scope.active_modal = 'modal_new_project';
+    };
+
+    $scope.cancel_new_project = function() {
+        $scope.active_screen = 'view_projects';
+        $scope.hide_modal();
+    };
+
+    $scope.hide_modal = function() {
+        $scope.active_modal = '';
     };
 
     $scope.get_project = function(id) {

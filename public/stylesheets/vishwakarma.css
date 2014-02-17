@@ -97,6 +97,10 @@ button:hover {
     cursor: pointer;
 }
 
+button:disabled {
+    opacity: 0.5;
+}
+
 button.green {
     background: rgb(5, 143, 5);
     border: solid 2px green;
