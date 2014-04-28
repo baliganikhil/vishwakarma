@@ -8,6 +8,21 @@ mongoose.connect('mongodb://localhost/vishwakarma');
 
 var running_processes = {};
 
+Object.deepExtend = function(destination, source) {
+  for (var property in source) {
+    if (typeof source[property] === "object" &&
+     source[property] !== null ) {
+      destination[property] = destination[property] || {};
+      arguments.callee(destination[property], source[property]);
+    } else {
+      destination[property] = source[property];
+    }
+  }
+  return destination;
+};
+
+// Object.extend(destination, source);
+
 io.sockets.on('connection', function(socket) {
 
     socket.on('exec', function(data) {
@@ -32,24 +47,28 @@ io.sockets.on('connection', function(socket) {
         function execute(filename, doc) {
             var prog = spawn('bash', [filename]);
 
-            running_processes[filename] = prog;
+            running_processes[filename] = {prog: prog, name: doc.name, id: filename};
 
             socket.emit('proj_start', {name: doc.name, id: filename});
 
             prog.stdout.setEncoding('utf8');
             prog.stdout.on('data', function (data) {
-              socket.emit('stdout', {name: doc.name, id: filename, stdout: data});
-              // socket.emit('stdout', data);
+                var payload = {name: doc.name, id: filename, stdout: data};
+                socket.emit('stdout', payload);
+                socket.broadcast.emit('stdout', payload);
             });
 
             prog.stderr.setEncoding('utf8');
             prog.stderr.on('data', function (data) {
-              socket.emit('stdout', {name: doc.name, id: filename, stdout: data});
+                var payload = {name: doc.name, id: filename, stdout: data};
+                socket.emit('stdout', payload);
+                socket.broadcast.emit('stdout', payload);
             });
 
             prog.on('close', function (code) {
-              socket.emit('stdout', 'DONE');
-              socket.emit('proj_done', {name: doc.name, id: filename});
+              var payload = {name: doc.name, id: filename};
+              socket.emit('proj_done', payload);
+              socket.broadcast.emit('proj_done', payload);
             });
         }
     });
@@ -57,8 +76,17 @@ io.sockets.on('connection', function(socket) {
     socket.on('kill', function(data) {
         var id = data.id;
 
-        running_processes[id].kill();
+        running_processes[id].prog.kill();
+    });
 
+    socket.on('get_running_projects', function() {
+        Object.extend(running_processes_copy, running_processes);
+
+        for (process in running_processes_copy) {
+            delete running_processes_copy[process].prog;
+        }
+
+        socket.emit('get_running_projects', running_processes_copy);
     });
 
 });

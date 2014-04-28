@@ -18,23 +18,15 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a href="../" class="navbar-brand">Vishwakarma</a>
+      <a href="javascript:void(0);" class="navbar-brand">Vishwakarma</a>
     </div>
     <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
       <ul class="nav navbar-nav">
-        <li ng-class="{active: active_screen == 'view_projects'}" ng-click="active_screen = 'view_projects'"><a href="javascript:void(0);">All Projects</a></li>
+        <!-- <li ng-class="{active: active_screen == 'view_projects'}" ng-click="active_screen = 'view_projects'"><a href="javascript:void(0);">All Projects</a></li> -->
       </ul>
     </nav>
   </div>
 </header>
-
-<!-- <div class="page_header">
-    <h2 class="brand">Vishwakarma</h2>
-
-    <ul class="menu">
-        <li ng-class="{active: active_screen == 'view_projects'}" ng-click="active_screen = 'view_projects'">All Projects</li>
-    </ul>
-</div> -->
 
 <div class="row big_dialog proj_container" ng-show="active_screen == 'view_projects'">
     <div class="col-xs-3 sidebar">
@@ -43,11 +35,17 @@
         </div>
 
         <div>
+            <div style="font-size: 12px; padding-left: 10px;" ng-show="has_running_projects()">
+                You have no running projects
+            </div>
             <ul class="running_projects">
-                <li ng-repeat="(key, active_proj) in running_projects" ng-click="stdout = active_proj.stdout">
+                <li ng-repeat="(key, active_proj) in running_projects" ng-click="show_stdout(active_proj)">
                     <img src="/images/loader_circle.gif" ng-show="active_proj.status == 'running'">
                     <i class="fa fa-check" ng-show="active_proj.status == 'completed'"></i>
-                    <span class="project_name">{{active_proj.name}}</span> <span><i class="fa fa-times pull-right"></i></span>
+                    <span class="project_name">{{active_proj.name}}</span> <span>
+
+                    <span class="label label-danger pull-right" ng-show="active_proj.status == 'running'">abort</span>
+                    <span class="label label-default pull-right" ng-show="active_proj.status == 'completed'">remove</span>
                 </li>
             </ul>
         </div>
@@ -57,7 +55,7 @@
         <div class="header row">
             Projects
 
-            <button class="btn btn-success" ng-click="init_new_project()">Add</button>
+            <button class="btn btn-success pull-right" ng-click="init_new_project()">New Project</button>
         </div>
 
         <div class="body row">
@@ -66,11 +64,11 @@
                 You have no projects
             </div>
 
-            <table class="projects">
+            <table class="projects table">
                 <tr ng-repeat="(key, project) in projects">
                     <td class="project_name"><a href="javascript: void(0);" ng-click="get_project(project._id)">{{project.name}}</a></td>
-                    <td class="cmd">{{project.desc}}</td>
-                    <td><button ng-click="run_cmd(project._id)">Run</button></td>
+                    <td>{{project.desc}}</td>
+                    <td><button ng-click="run_cmd(project._id)" class="btn btn-default pull-right">Run</button></td>
                 </tr>
             </table>
 
@@ -78,24 +76,51 @@
     </div>
 </div>
 
-<div class="big_dialog new_project" ng-show="active_screen == 'edit_project'">
-    <div class="header">
-        {{cur_project.name}} <i class="fa fa-pencil edit_title"></i>
+<div class="big_dialog new_project row" ng-show="active_screen == 'edit_project'">
+    <div class="col-xs-12">
+        <div class="header">
+            <span ng-show="cur_project._id != null && !edit_proj_title">{{cur_project.name}} <i class="fa fa-pencil edit_title" ng-click="edit_proj_title = true"></i></span>
+            <span ng-show="cur_project._id == null || edit_proj_title"><input type="text" ng-model="cur_project.name"></span>
 
-        <button class="btn btn-primary" ng-click="save_project()">Save</button>
-        <button class="btn btn-default" ng-click="active_screen = 'view_projects'">Cancel</button>
+            <div class="pull-right">
+                <button class="btn btn-default" ng-click="active_screen = 'view_projects'">Cancel</button>
+                <button class="btn btn-primary" ng-click="save_project()">Save</button>
+            </div>
+        </div>
+
+        <div class="body row">
+            <div class="col-xs-9">
+                <textarea class="code_area" ng-model="cur_project.code"></textarea>
+            </div>
+
+            <div class="col-xs-3 sidebar_right">
+                <div>
+                    <div class="header row">Chain projects</div>
+                    <div>
+                        <div style="font-size: 12px;">On success, execute this project</div>
+                        <div><select ng-options="project.name as project.name for (key, project) in projects" ng-model="cur_project.chained" class="chain_dropdown"></select></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="body">
-        <textarea class="code_area" ng-model="cur_project.code"></textarea>
-    </div>
-
 </div>
 
-<div>
-    <ul>
-        <li ng-repeat="(key, each_line) in stdout track by $index">{{each_line}}</li>
-    </ul>
+<div class="big_dialog stdout row" ng-show="active_screen == 'stdout'">
+    <div class="col-xs-12">
+        <div class="header row">
+            Output for Project: {{stdout_proj.name}}
+            <span class="label label_completed" ng-show="stdout_proj.status == 'completed'">completed</span>
+            <span class="label label_running" ng-show="stdout_proj.status == 'running'">running <img src="/images/loader_circle.gif"></span>
+
+            <button class="btn btn-danger pull-right" ng-click="active_screen = 'view_projects'">Close</button>
+        </div>
+        <div>
+            <ul>
+                <li ng-repeat="(key, each_line) in stdout_proj.stdout track by $index">{{each_line}}</li>
+            </ul>
+        </div>
+    </div>
 </div>
 
 

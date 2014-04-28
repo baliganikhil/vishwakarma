@@ -76,12 +76,17 @@ body {
     font-size: 13px;
 }
 
+.projects tr:hover {
+    background: #f6f6f6;
+}
+
 .projects td {
-    padding: 5px 0 5px 0;
+    /*padding: 10px;*/
 }
 
 .proj_container .project_name a {
     text-decoration: none;
+    font-size: 14px;
 }
 
 .proj_container .project_name a:hover {
@@ -93,7 +98,7 @@ button {
     border: solid 1px #ccc;
     border-radius: 3px;
     padding: 5px 10px;
-    float: right;
+    /*float: right;*/
 }
 
 button:hover {
@@ -112,6 +117,8 @@ button:disabled {
 
 .running_projects li {
     position: relative;
+    margin-bottom: 8px;
+    cursor: pointer;
 }
 
 .running_projects .project_name {
@@ -138,7 +145,6 @@ button:disabled {
 
 input[type='text'], textarea {
     border: solid 1px #ccc;
-    border-radius: 3px;
     height: 25px;
     padding-left: 3px;
     font-family: "Open Sans";
@@ -290,7 +296,35 @@ input[type='text'], textarea {
     background: #fafafa;
 }
 
+.sidebar_right {
+    height: 100%;
+    border: solid 1px #ccc;
+    background: #fafafa;
+}
+
+.stdout .label {
+    font-size: 13px;
+    font-weight: bold;
+    margin-left: 12px;
+}
+
+.stdout .label_completed {
+    color: rgb(74, 146, 74);
+}
+
+.stdout .label_running {
+    color: rgb(214, 140, 3);
+}
+
 .hide {
     display: none;
 }
 
+.chain_dropdown {
+    border: solid 1px #ccc;
+    background: #fff;
+    width: 100%;
+    height: 27px;
+    color: #444;
+    font-size: 13px;
+}
