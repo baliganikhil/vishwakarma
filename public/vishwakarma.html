@@ -2,42 +2,79 @@
 <head>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/vishwakarma.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/bootstrap.min.css">
     <script type="text/javascript" src="javascripts/lib/angular.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.css" rel="stylesheet">
     <title>Vishwakarma Build System</title>
 </head>
-<body ng-controller="VKController">
+<body ng-controller="VKController" class="container">
 
-<div class="page_header">
+<header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="../" class="navbar-brand">Vishwakarma</a>
+    </div>
+    <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+      <ul class="nav navbar-nav">
+        <li ng-class="{active: active_screen == 'view_projects'}" ng-click="active_screen = 'view_projects'"><a href="javascript:void(0);">All Projects</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- <div class="page_header">
     <h2 class="brand">Vishwakarma</h2>
 
     <ul class="menu">
         <li ng-class="{active: active_screen == 'view_projects'}" ng-click="active_screen = 'view_projects'">All Projects</li>
-        <li>Running Projects</li>
     </ul>
-</div>
+</div> -->
 
-<div class="big_dialog proj_container" ng-show="active_screen == 'view_projects'">
-    <div class="header">
-        Projects
-
-        <button class="green" ng-click="init_new_project()">Add</button>
-    </div>
-
-    <div class="body">
-
-        <div class="no_projects" ng-show="projects.length == 0">
-            You have no projects
+<div class="row big_dialog proj_container" ng-show="active_screen == 'view_projects'">
+    <div class="col-xs-3 sidebar">
+        <div style="font-size: 18px; padding: 10px;">
+            Running Projects
         </div>
 
-        <table>
-            <tr ng-repeat="(key, project) in projects">
-                <td class="project_name"><a href="javascript: void(0);" ng-click="get_project(project._id)">{{project.name}}</a></td>
-                <td class="cmd">{{project.desc}}</td>
-                <td><button ng-click="run_cmd(project._id)">Run</button></td>
-                <td><button ng-click="kill(project._id)">kill</button></td>
-            </tr>
-        </table>
+        <div>
+            <ul class="running_projects">
+                <li ng-repeat="(key, active_proj) in running_projects" ng-click="stdout = active_proj.stdout">
+                    <img src="/images/loader_circle.gif" ng-show="active_proj.status == 'running'">
+                    <i class="fa fa-check" ng-show="active_proj.status == 'completed'"></i>
+                    <span class="project_name">{{active_proj.name}}</span> <span><i class="fa fa-times pull-right"></i></span>
+                </li>
+            </ul>
+        </div>
+    </div>
 
+    <div class="col-xs-9">
+        <div class="header row">
+            Projects
+
+            <button class="btn btn-success" ng-click="init_new_project()">Add</button>
+        </div>
+
+        <div class="body row">
+
+            <div class="no_projects" ng-show="projects.length == 0">
+                You have no projects
+            </div>
+
+            <table class="projects">
+                <tr ng-repeat="(key, project) in projects">
+                    <td class="project_name"><a href="javascript: void(0);" ng-click="get_project(project._id)">{{project.name}}</a></td>
+                    <td class="cmd">{{project.desc}}</td>
+                    <td><button ng-click="run_cmd(project._id)">Run</button></td>
+                </tr>
+            </table>
+
+        </div>
     </div>
 </div>
 
@@ -45,8 +82,8 @@
     <div class="header">
         {{cur_project.name}} <i class="fa fa-pencil edit_title"></i>
 
-        <button class="green" ng-click="save_project()">Save</button>
-        <button ng-click="active_screen = 'view_projects'">Cancel</button>
+        <button class="btn btn-primary" ng-click="save_project()">Save</button>
+        <button class="btn btn-default" ng-click="active_screen = 'view_projects'">Cancel</button>
     </div>
 
     <div class="body">
@@ -57,9 +94,8 @@
 
 <div>
     <ul>
-        <li ng-repeat="(key, each_line) in stdout">{{each_line}}</li>
+        <li ng-repeat="(key, each_line) in stdout track by $index">{{each_line}}</li>
     </ul>
-
 </div>
 
 

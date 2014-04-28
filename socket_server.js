@@ -24,28 +24,32 @@ io.sockets.on('connection', function(socket) {
             var temp_file_name = Math.random().toString().slice(4) + '.sh';
 
             fs.writeFile(temp_file_name, code, function(err) {
-                execute(temp_file_name);
+                execute(temp_file_name, doc);
             });
 
         });
 
-        function execute(filename) {
+        function execute(filename, doc) {
             var prog = spawn('bash', [filename]);
 
             running_processes[filename] = prog;
 
+            socket.emit('proj_start', {name: doc.name, id: filename});
+
             prog.stdout.setEncoding('utf8');
             prog.stdout.on('data', function (data) {
-              socket.emit('stdout', data);
+              socket.emit('stdout', {name: doc.name, id: filename, stdout: data});
+              // socket.emit('stdout', data);
             });
 
             prog.stderr.setEncoding('utf8');
             prog.stderr.on('data', function (data) {
-              socket.emit('stdout', data);
+              socket.emit('stdout', {name: doc.name, id: filename, stdout: data});
             });
 
             prog.on('close', function (code) {
               socket.emit('stdout', 'DONE');
+              socket.emit('proj_done', {name: doc.name, id: filename});
             });
         }
     });

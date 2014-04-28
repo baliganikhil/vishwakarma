@@ -36,19 +36,19 @@ body {
 
 .big_dialog {
     border: solid 1px #aaa;
-    border-radius: 3px;
-    position: absolute;
-    top: 80px;
-    left: 20px;
-    right: 20px;
-    bottom: 20px;
+    border-radius: 0 3px 3px 0;
+    /*position: absolute;*/
+    /*top: 80px;*/
+    /*left: 20px;*/
+    /*right: 20px;*/
+    /*bottom: 20px;*/
 }
 
 .big_dialog .header {
     overflow: hidden;
     padding: 10px 10px 10px 20px;
-    background: #222;
-    color: #fff;
+    background: #fff;
+    color: #333;
     border-radius: 3px 3px 0 0;
     font-size: 18px;
 }
@@ -63,7 +63,7 @@ body {
     padding: 15px;
     position: relative;
     height: 85%;
-    background: #f6f6f6;
+    background: #fff;
 }
 
 .proj_container .body .no_projects {
@@ -74,6 +74,10 @@ body {
 .proj_container table {
     width: 100%;
     font-size: 13px;
+}
+
+.projects td {
+    padding: 5px 0 5px 0;
 }
 
 .proj_container .project_name a {
@@ -101,10 +105,35 @@ button:disabled {
     opacity: 0.5;
 }
 
-button.green {
-    background: rgb(5, 143, 5);
-    border: solid 2px green;
-    color: #fff;
+.running_projects {
+    list-style-type: none;
+    padding: 0;
+}
+
+.running_projects li {
+    position: relative;
+}
+
+.running_projects .project_name {
+    position: absolute;
+    top: 2px;
+    left: 30px;
+}
+
+.green.orb {
+    background: #bfd255; /* Old browsers */
+    background: -moz-radial-gradient(center, ellipse cover, #bfd255 0%, #8eb92a 50%, #72aa00 51%, #9ecb2d 100%); /* FF3.6+ */
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#bfd255), color-stop(50%,#8eb92a), color-stop(51%,#72aa00), color-stop(100%,#9ecb2d)); /* Chrome,Safari4+ */
+    background: -webkit-radial-gradient(center, ellipse cover, #bfd255 0%,#8eb92a 50%,#72aa00 51%,#9ecb2d 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-radial-gradient(center, ellipse cover, #bfd255 0%,#8eb92a 50%,#72aa00 51%,#9ecb2d 100%); /* Opera 12+ */
+    background: -ms-radial-gradient(center, ellipse cover, #bfd255 0%,#8eb92a 50%,#72aa00 51%,#9ecb2d 100%); /* IE10+ */
+    background: radial-gradient(ellipse at center, #bfd255 0%,#8eb92a 50%,#72aa00 51%,#9ecb2d 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bfd255', endColorstr='#9ecb2d',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
+    height: 22px;
+    width: 22px;
+    border-radius: 50%;
+    display: inline-block;
 }
 
 input[type='text'], textarea {
@@ -255,7 +284,13 @@ input[type='text'], textarea {
     outline: none;
 }
 
+.sidebar {
+    height: 100%;
+    border-right: solid 1px #aaa;
+    background: #fafafa;
+}
 
 .hide {
     display: none;
 }
+

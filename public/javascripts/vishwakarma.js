@@ -34,6 +34,7 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
 VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServices) {
     $scope.active_screen = 'view_projects';
     $scope.active_modal = '';
+    $scope.running_projects = {};
 
     $scope.stdout = [];
 
@@ -42,7 +43,21 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
     socket.on('connect', function() {
         socket.on('stdout', function(data) {
             console.log(data);
-            $scope.stdout.push(data);
+            $scope.running_projects[data.id].stdout = data.stdout;
+            // $scope.stdout.push(data);
+            $scope.$apply();
+        });
+
+        socket.on('proj_start', function(data) {
+            data.status = 'running';
+            data.stdout = '';
+
+            $scope.running_projects[data.id] = data;
+            $scope.$apply();
+        });
+
+        socket.on('proj_done', function(data) {
+            $scope.running_projects[data.id].status = 'completed';
             $scope.$apply();
         });
     });
