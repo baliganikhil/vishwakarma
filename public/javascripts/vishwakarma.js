@@ -38,47 +38,59 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
 
     $scope.stdout = [];
 
+    $scope.STATUS = {
+        completed: 'completed',
+        running: 'running',
+        error: 'error'
+    };
+
     socket = io.connect('http://localhost:8888');
 
+    socket.on('disconnect', function() {
+        show_error();
+        $scope.$apply();
+    });
+
     socket.on('connect', function() {
+        $scope.show_error = false;
+
         socket.on('stdout', function(data) {
-            console.log(data);
-            if ($scope.running_projects[data.id] == undefined) {
-                $scope.running_projects[data.id] = data;
-                $scope.running_projects[data.id].stdout = [data.stdout];
+            if ($scope.running_projects[data.name] == undefined) {
+                $scope.running_projects[data.name] = data;
+                $scope.running_projects[data.name].stdout = [data.stdout];
             }
 
-            if ($scope.running_projects[data.id].stdout == undefined) {
-                $scope.running_projects[data.id].stdout = [];
+            if ($scope.running_projects[data.name].stdout == undefined) {
+                $scope.running_projects[data.name].stdout = [];
             }
 
-            $scope.running_projects[data.id].stdout.push(data.stdout);
+            $scope.running_projects[data.name].stdout.push(data.stdout);
             $scope.$apply();
         });
 
         socket.on('proj_start', function(data) {
-            if ($scope.running_projects[data.id] == undefined) {
-                $scope.running_projects[data.id] = data;
-                $scope.running_projects[data.id].stdout = [data.stdout];
+            if ($scope.running_projects[data.name] == undefined) {
+                $scope.running_projects[data.name] = data;
+                $scope.running_projects[data.name].stdout = [data.stdout];
             }
 
-            if ($scope.running_projects[data.id].stdout == undefined) {
-                $scope.running_projects[data.id].stdout = [];
+            if ($scope.running_projects[data.name].stdout == undefined) {
+                $scope.running_projects[data.name].stdout = [];
             }
 
-            $scope.running_projects[data.id].stdout.push(data.stdout);
+            $scope.running_projects[data.name].stdout.push(data.stdout);
             $scope.$apply();
         });
 
         socket.on('proj_done', function(data) {
-            $scope.running_projects[data.id].status = data.status;
+            $scope.running_projects[data.name].status = data.status;
             $scope.$apply();
         });
 
-        // socket.emit('get_running_projects');
+        socket.emit('get_running_projects');
         socket.on('get_running_projects', function(data) {
-            console.log(data);
-            // $scope.$apply();
+            $scope.running_projects = data;
+            $scope.$apply();
         });
     });
 
@@ -113,6 +125,22 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
 
     $scope.hide_modal = function() {
         $scope.active_modal = '';
+    };
+
+    $scope.has_proj_run = function(proj_name) {
+        return $scope.running_projects.hasOwnProperty(proj_name);
+    };
+
+    $scope.get_proj_status = function(proj_name) {
+        if (!$scope.has_proj_run(proj_name)) {
+            return null;
+        }
+
+        return $scope.running_projects[proj_name].status;
+    };
+
+    $scope.remove_project = function(proj_name) {
+        socket.emit('remove_project', {name: proj_name});
     };
 
     $scope.get_project = function(id) {
@@ -164,6 +192,11 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
 
     $scope.has_running_projects = function() {
         return Object.keys($scope.running_projects).length === 0;
+    };
+
+    var show_error = function() {
+        $scope.error_msg = 'Lost connection with server...';
+        $scope.show_error = true;
     };
 
 });

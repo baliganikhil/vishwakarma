@@ -37,11 +37,7 @@ body {
 .big_dialog {
     border: solid 1px #aaa;
     border-radius: 0 3px 3px 0;
-    /*position: absolute;*/
-    /*top: 80px;*/
-    /*left: 20px;*/
-    /*right: 20px;*/
-    /*bottom: 20px;*/
+    height: calc(100% - 100px);
 }
 
 .big_dialog .header {
@@ -116,13 +112,13 @@ button:disabled {
 }
 
 .running_projects li {
-    position: relative;
+    /*position: relative;*/
     margin-bottom: 8px;
     cursor: pointer;
 }
 
 .running_projects .project_name {
-    position: absolute;
+    /*position: absolute;*/
     top: 2px;
     left: 30px;
 }
@@ -327,4 +323,39 @@ input[type='text'], textarea {
     height: 27px;
     color: #444;
     font-size: 13px;
+}
+
+.error_msg {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgb(252, 252, 169);
+    width: 50%;
+    margin: 0 auto;
+    height: 30px;
+    color: #666;
+    padding: 5px;
+    text-align: center;
+    border-radius: 0 0 10px 10px;
+    border: solid 1px yellow;
+    box-shadow: 0 2px 6px #ccc;
+    opacity: 0.9;
+}
+
+.output_console {
+    border: solid 1px #ccc;
+    height: 85%;
+    margin-top: 5px;
+    background: #fcfcfc;
+}
+
+.output_console ul {
+    list-style-type: none;
+    padding: 0;
+    font-family: courier;
+    font-size: 11px;
+    padding: 10px;
+    overflow: auto;
 }

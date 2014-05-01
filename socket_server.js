@@ -8,6 +8,12 @@ mongoose.connect('mongodb://localhost/vishwakarma');
 
 running_processes = {};
 
+var STATUS = {
+    completed: 'completed',
+    running: 'running',
+    error: 'error'
+};
+
 Object.deepExtend = function(destination, source) {
   for (var property in source) {
     if (typeof source[property] === "object" &&
@@ -21,8 +27,6 @@ Object.deepExtend = function(destination, source) {
   return destination;
 };
 
-// Object.extend(destination, source);
-
 io.sockets.on('connection', function(socket) {
 
     socket.on('exec', function(data) {
@@ -33,7 +37,6 @@ io.sockets.on('connection', function(socket) {
                 console.log('ERROR' + err);
                 return;
             }
-
 
             var code = doc.code;
             var temp_file_name = Math.random().toString().slice(4) + '.sh';
@@ -47,13 +50,15 @@ io.sockets.on('connection', function(socket) {
         function execute(filename, doc) {
             var prog = spawn('bash', [filename]);
 
-            running_processes[doc.name] = {prog: prog, name: doc.name, id: filename, status: 'running'};
+            running_processes[doc.name] = {prog: prog, name: doc.name, id: filename, status: STATUS.running, stdout: []};
 
-            socket.emit('proj_start', {name: doc.name, id: filename, status: 'running'});
+            socket.emit('proj_start', {name: doc.name, id: filename, status: STATUS.running});
 
             prog.stdout.setEncoding('utf8');
             prog.stdout.on('data', function (data) {
-                var payload = {name: doc.name, id: filename, stdout: data, status: 'running'};
+                running_processes[doc.name].stdout.push(data);
+
+                var payload = {name: doc.name, id: filename, stdout: data, status: STATUS.running};
                 socket.emit('stdout', payload);
                 socket.broadcast.emit('stdout', payload);
             });
@@ -66,36 +71,44 @@ io.sockets.on('connection', function(socket) {
             });
 
             prog.on('close', function (code) {
-              var payload = {name: doc.name, id: filename, status: 'completed'};
-              socket.emit('proj_done', payload);
-              socket.broadcast.emit('proj_done', payload);
+                running_processes[doc.name].status = STATUS.completed;
+
+                var payload = {name: doc.name, id: filename, status: STATUS.completed};
+                socket.emit('proj_done', payload);
+                socket.broadcast.emit('proj_done', payload);
             });
         }
     });
 
     socket.on('kill', function(data) {
-        var id = data.id;
+        var name = data.name;
+        running_processes[name].id.prog.kill();
+    });
 
-        // running_processes[id].prog.kill();
+    socket.on('remove_project', function(data) {
+        var proj_name = data.name;
+
+        if (!running_processes.hasOwnProperty(proj_name)) {
+            return false;
+        }
+
+        if (running_processes[proj_name].status != STATUS.completed && running_processes[proj_name].status != STATUS.error) {
+            return false;
+        }
+
+        delete running_processes[proj_name];
     });
 
     socket.on('get_running_projects', function() {
         var running_processes_copy = {};
+        // Object.deepExtend(running_processes_copy, running_processes);
 
         for (prc in running_processes) {
-            running_processes_copy[prc] = {};
             running_processes_copy[prc] = running_processes[prc]
             delete running_processes_copy[prc].prog;
         }
 
-        // console.log('***********************************8');
-        // console.log(JSON.stringify(running_processes))
-        // console.log('***********************************8');
-        // console.log(JSON.stringify(running_processes_copy))
-        // console.log('***********************************8');
-
         socket.emit('get_running_projects', running_processes_copy);
-        // socket.emit('get_running_projects', JSON.stringify(running_processes_copy));
     });
 
 });

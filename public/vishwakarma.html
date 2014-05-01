@@ -28,6 +28,10 @@
   </div>
 </header>
 
+<div class="error_msg" ng-show="show_error">
+    {{error_msg}} <a href="javascript:void(0);">Reload</a>
+</div>
+
 <div class="row big_dialog proj_container" ng-show="active_screen == 'view_projects'">
     <div class="col-xs-3 sidebar">
         <div style="font-size: 18px; padding: 10px;">
@@ -40,12 +44,12 @@
             </div>
             <ul class="running_projects">
                 <li ng-repeat="(key, active_proj) in running_projects" ng-click="show_stdout(active_proj)">
-                    <img src="/images/loader_circle.gif" ng-show="active_proj.status == 'running'">
-                    <i class="fa fa-check" ng-show="active_proj.status == 'completed'"></i>
+                    <img src="/images/loader_circle.gif" ng-show="active_proj.status == STATUS.running">
+                    <i class="fa fa-check" ng-show="active_proj.status == STATUS.completed"></i>
                     <span class="project_name">{{active_proj.name}}</span> <span>
 
-                    <span class="label label-danger pull-right" ng-show="active_proj.status == 'running'">abort</span>
-                    <span class="label label-default pull-right" ng-show="active_proj.status == 'completed'">remove</span>
+                    <span class="label label-danger pull-right" ng-show="active_proj.status == STATUS.running">abort</span>
+                    <span class="label label-default pull-right" ng-show="active_proj.status == STATUS.completed">remove</span>
                 </li>
             </ul>
         </div>
@@ -68,7 +72,11 @@
                 <tr ng-repeat="(key, project) in projects">
                     <td class="project_name"><a href="javascript: void(0);" ng-click="get_project(project._id)">{{project.name}}</a></td>
                     <td>{{project.desc}}</td>
-                    <td><button ng-click="run_cmd(project._id)" class="btn btn-default pull-right">Run</button></td>
+                    <td>
+                        <button ng-click="run_cmd(project._id)" class="btn btn-default pull-right" ng-hide="has_proj_run(project.name)">Run</button>
+
+                        <button class="btn btn-danger pull-right" ng-show="get_proj_status(project.name) == STATUS.running">Abort</button>
+                    </td>
                 </tr>
             </table>
 
@@ -115,7 +123,8 @@
 
             <button class="btn btn-danger pull-right" ng-click="active_screen = 'view_projects'">Close</button>
         </div>
-        <div>
+
+        <div class="output_console">
             <ul>
                 <li ng-repeat="(key, each_line) in stdout_proj.stdout track by $index">{{each_line}}</li>
             </ul>
