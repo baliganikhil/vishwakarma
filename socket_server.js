@@ -1,12 +1,12 @@
-var io = require('socket.io').listen(8888);
-var spawn = require('child_process').spawn;
-var Project = require('./models/projects.js');
-var fs = require('fs');
+io = require('socket.io').listen(8888);
+spawn = require('child_process').spawn;
+Project = require('./models/projects.js');
+fs = require('fs');
 
-var mongoose = require('mongoose');
+mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/vishwakarma');
 
-var running_processes = {};
+running_processes = {};
 
 Object.deepExtend = function(destination, source) {
   for (var property in source) {
@@ -47,13 +47,13 @@ io.sockets.on('connection', function(socket) {
         function execute(filename, doc) {
             var prog = spawn('bash', [filename]);
 
-            running_processes[filename] = {prog: prog, name: doc.name, id: filename};
+            running_processes[doc.name] = {prog: prog, name: doc.name, id: filename, status: 'running'};
 
-            socket.emit('proj_start', {name: doc.name, id: filename});
+            socket.emit('proj_start', {name: doc.name, id: filename, status: 'running'});
 
             prog.stdout.setEncoding('utf8');
             prog.stdout.on('data', function (data) {
-                var payload = {name: doc.name, id: filename, stdout: data};
+                var payload = {name: doc.name, id: filename, stdout: data, status: 'running'};
                 socket.emit('stdout', payload);
                 socket.broadcast.emit('stdout', payload);
             });
@@ -66,7 +66,7 @@ io.sockets.on('connection', function(socket) {
             });
 
             prog.on('close', function (code) {
-              var payload = {name: doc.name, id: filename};
+              var payload = {name: doc.name, id: filename, status: 'completed'};
               socket.emit('proj_done', payload);
               socket.broadcast.emit('proj_done', payload);
             });
@@ -76,17 +76,26 @@ io.sockets.on('connection', function(socket) {
     socket.on('kill', function(data) {
         var id = data.id;
 
-        running_processes[id].prog.kill();
+        // running_processes[id].prog.kill();
     });
 
     socket.on('get_running_projects', function() {
-        Object.extend(running_processes_copy, running_processes);
+        var running_processes_copy = {};
 
-        for (process in running_processes_copy) {
-            delete running_processes_copy[process].prog;
+        for (prc in running_processes) {
+            running_processes_copy[prc] = {};
+            running_processes_copy[prc] = running_processes[prc]
+            delete running_processes_copy[prc].prog;
         }
 
+        // console.log('***********************************8');
+        // console.log(JSON.stringify(running_processes))
+        // console.log('***********************************8');
+        // console.log(JSON.stringify(running_processes_copy))
+        // console.log('***********************************8');
+
         socket.emit('get_running_projects', running_processes_copy);
+        // socket.emit('get_running_projects', JSON.stringify(running_processes_copy));
     });
 
 });
