@@ -34,6 +34,7 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
 VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServices) {
     $scope.active_screen = 'view_projects';
     $scope.active_modal = '';
+    show_error('Unable to connect to server...');
     $scope.running_projects = {};
 
     $scope.stdout = [];
@@ -45,9 +46,10 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
     };
 
     socket = io.connect('http://localhost:8888');
+    console.log(socket)
 
     socket.on('disconnect', function() {
-        show_error();
+        show_error('Lost connection with server...');
         $scope.$apply();
     });
 
@@ -194,8 +196,16 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
         return Object.keys($scope.running_projects).length === 0;
     };
 
-    var show_error = function() {
-        $scope.error_msg = 'Lost connection with server...';
+    function nullOrEmpty(input) {
+        return [null, undefined, ''].indexOf(input) > -1;
+    }
+
+    function show_error(error_msg) {
+        if (nullOrEmpty(error_msg)) {
+            error_msg = 'Something bad happened...';
+        }
+
+        $scope.error_msg = error_msg;
         $scope.show_error = true;
     };
 
