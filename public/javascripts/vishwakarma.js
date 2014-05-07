@@ -36,6 +36,15 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
                 url: base_url + '/accounts/register'
             });
 
+        },
+
+        login: function(params) {
+            return $http({
+                method: 'POST',
+                data: JSON.stringify(params),
+                url: base_url + '/login'
+            });
+
         }
     }
 });
@@ -211,8 +220,6 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
         });
     };
 
-    $scope.get_projects();
-
     $scope.save_project = function() {
         VishwakarmaServices.save_project($scope.cur_project).success(function(data) {
             if (data.status == 'error') {
@@ -234,12 +241,32 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
         };
         VishwakarmaServices.register(params).success(function(data) {
             if (data.status == 'error') {
-                alert('An error occurred while trying to save');
+                alert('An error occurred while trying to register you');
                 return;
             }
 
-            alert('Saved successfully');
+            alert('Registered successfully');
             console.log(data);
+
+        }).error(function(data) {
+
+        });
+    };
+
+    $scope.login = function() {
+        var params = {
+            username: $scope.username,
+            password: $scope.password
+        };
+
+        VishwakarmaServices.login(params).success(function(data) {
+            if (data.status == 'error') {
+                alert('Could not log you in');
+                return;
+            }
+
+            $scope.get_projects();
+            $scope.active_screen = 'view_projects';
 
         }).error(function(data) {
 
