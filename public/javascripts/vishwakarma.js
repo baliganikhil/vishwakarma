@@ -13,10 +13,10 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
             });
         },
 
-        get_project: function(id) {
+        get_project: function(_id) {
             return $http({
                 method: 'GET',
-                url: base_url + '/projects/' + id
+                url: base_url + '/projects/' + _id
             });
         },
 
@@ -116,6 +116,10 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
     });
 
     $scope.run_cmd = function(_id) {
+        if ($scope.has_proj_run(_id)) {
+            delete $scope.running_projects[_id];
+        }
+
         var payload = {_id: _id, created_by: $scope.username, created_at: new Date()};
         socket.emit('exec', payload);
     };
@@ -165,8 +169,8 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
         socket.emit('remove_project', {name: proj_id});
     };
 
-    $scope.get_project = function(id) {
-        VishwakarmaServices.get_project(id).success(function(data) {
+    $scope.get_project = function(_id) {
+        VishwakarmaServices.get_project(_id).success(function(data) {
             if (data.status == 'error') {
                 alert('An error occurred while trying to get project');
                 return;

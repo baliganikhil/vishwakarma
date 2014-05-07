@@ -59,15 +59,24 @@ io.sockets.on('connection', function(socket) {
         function execute(filename, doc, extra_data) {
             var prog = spawn('bash', [filename]);
 
-            running_processes[doc._id] = {prog: prog, name: doc.name, id: filename, status: STATUS.running, stdout: [], created_at: extra_data.created_at, created_by: extra_data.created_by};
+            running_processes[doc._id] = {
+                                            project_id: doc._id,
+                                            prog: prog,
+                                            name: doc.name,
+                                            filename: filename,
+                                            status: STATUS.running,
+                                            stdout: [],
+                                            created_at: extra_data.created_at,
+                                            created_by: extra_data.created_by
+                                        };
 
-            socket.emit('proj_start', {name: doc.name, id: filename, status: STATUS.running, _id: doc._id});
+            socket.emit('proj_start', {name: doc.name, filename: filename, status: STATUS.running, _id: doc._id});
 
             prog.stdout.setEncoding('utf8');
             prog.stdout.on('data', function (data) {
                 running_processes[doc._id].stdout.push(data);
 
-                var payload = {name: doc.name, id: filename, stdout: data, status: STATUS.running, _id: doc._id};
+                var payload = {name: doc.name, filename: filename, stdout: data, status: STATUS.running, _id: doc._id};
                 socket.emit('stdout', payload);
                 socket.broadcast.emit('stdout', payload);
 
@@ -75,7 +84,7 @@ io.sockets.on('connection', function(socket) {
 
             prog.stderr.setEncoding('utf8');
             prog.stderr.on('data', function (data) {
-                var payload = {name: doc.name, id: filename, stdout: data, _id: doc._id};
+                var payload = {name: doc.name, filename: filename, stdout: data, _id: doc._id};
                 socket.emit('stdout', payload);
                 socket.broadcast.emit('stdout', payload);
 
@@ -85,11 +94,17 @@ io.sockets.on('connection', function(socket) {
             prog.on('close', function (code) {
                 running_processes[doc._id].status = STATUS.completed;
 
-                var payload = {name: doc.name, id: filename, status: STATUS.completed, _id: doc._id};
+                var payload = {name: doc.name, filename: filename, status: STATUS.completed, _id: doc._id};
                 socket.emit('proj_done', payload);
                 socket.broadcast.emit('proj_done', payload);
 
-                fs.unlink(filename);
+                fs.unlink(filename, function (err) {
+                    if (err) {
+                        return false;
+                    }
+                });
+
+                write_proj_to_log(doc._id);
 
                 if (!nullOrEmpty(doc.next)) {
                     execute_project({_id: doc.next});
@@ -101,12 +116,19 @@ io.sockets.on('connection', function(socket) {
     socket.on('kill', function(data) {
         var _id = data._id;
 
+        console.log(running_processes[_id].filename);
         running_processes[_id].prog.kill();
         running_processes[_id].stdout.push('=== ABORTED ===');
         running_processes[_id].status = STATUS.aborted;
         running_processes[_id].aborted_by = data.aborted_by;
         running_processes[_id].aborted_at = new Date();
-        fs.unlink(running_processes[_id].filename);
+
+
+        fs.unlink(running_processes[_id].filename, function (err) {
+            if (err) {
+                return false;
+            }
+        });
     });
 
     socket.on('remove_project', function(data) {
@@ -138,7 +160,7 @@ io.sockets.on('connection', function(socket) {
     });
 
     function write_proj_to_log(_id) {
-        var ProjectLog = require('models/project_log')
+        var ProjectLog = require('./models/project_log')
 
         var project_log = new ProjectLog(running_processes[_id]);
         project_log.save(function(err) {

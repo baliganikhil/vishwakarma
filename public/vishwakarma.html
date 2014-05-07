@@ -46,6 +46,7 @@
                 <li ng-repeat="(key, active_proj) in running_projects" ng-click="show_stdout(active_proj)">
                     <img src="/images/loader_circle.gif" ng-show="active_proj.status == STATUS.running">
                     <i class="fa fa-check" ng-show="active_proj.status == STATUS.completed"></i>
+                    <i class="fa fa-exclamation-triangle" ng-show="active_proj.status == STATUS.aborted"></i>
                     <span class="project_name">{{active_proj.name}}</span> <span>
 
                     <span class="label label-danger pull-right" ng-show="active_proj.status == STATUS.running" ng-click="kill(active_proj._id)">abort</span>
