@@ -48,7 +48,7 @@
                     <i class="fa fa-check" ng-show="active_proj.status == STATUS.completed"></i>
                     <span class="project_name">{{active_proj.name}}</span> <span>
 
-                    <span class="label label-danger pull-right" ng-show="active_proj.status == STATUS.running">abort</span>
+                    <span class="label label-danger pull-right" ng-show="active_proj.status == STATUS.running" ng-click="kill(active_proj._id)">abort</span>
                     <span class="label label-default pull-right" ng-show="active_proj.status == STATUS.completed">remove</span>
                 </li>
             </ul>
@@ -73,9 +73,7 @@
                     <td class="project_name"><a href="javascript: void(0);" ng-click="get_project(project._id)">{{project.name}}</a></td>
                     <td>{{project.desc}}</td>
                     <td>
-                        <button ng-click="run_cmd(project._id)" class="btn btn-default pull-right" ng-hide="has_proj_run(project._id)">Run</button>
-
-                        <button class="btn btn-danger pull-right" ng-show="get_proj_status(project._id) == STATUS.running">Abort</button>
+                        <button ng-click="run_cmd(project._id)" class="btn btn-default pull-right" ng-hide="get_proj_status(project._id) == 'running'">Run</button>
                     </td>
                 </tr>
             </table>
@@ -201,6 +199,7 @@
         <div class="header row">
             Output for Project: {{stdout_proj.name}}
             <span class="label label_completed" ng-show="stdout_proj.status == 'completed'">completed</span>
+            <span class="label label_aborted" ng-show="stdout_proj.status == 'aborted'">aborted</span>
             <span class="label label_running" ng-show="stdout_proj.status == 'running'">running <img src="/images/loader_circle.gif"></span>
 
             <button class="btn btn-danger pull-right" ng-click="active_screen = 'view_projects'">Close</button>
@@ -209,6 +208,7 @@
         <div class="output_console">
             <ul>
                 <li ng-repeat="(key, each_line) in stdout_proj.stdout track by $index">{{each_line}}</li>
+                <li ng-show="stdout_proj.status == 'running'"><img src="/images/loader_circle.gif"></li>
             </ul>
         </div>
     </div>

@@ -312,6 +312,10 @@ input[type='text'], textarea {
     color: rgb(74, 146, 74);
 }
 
+.stdout .label_aborted {
+    color: rgb(229, 62, 62);
+}
+
 .stdout .label_running {
     color: rgb(214, 140, 3);
 }
@@ -353,6 +357,7 @@ input[type='text'], textarea {
     height: 85%;
     margin-top: 5px;
     background: #fcfcfc;
+    overflow: auto;
 }
 
 .output_console ul {
@@ -361,7 +366,6 @@ input[type='text'], textarea {
     font-family: courier;
     font-size: 11px;
     padding: 10px;
-    overflow: auto;
 }
 
 input.project_name {

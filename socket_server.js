@@ -11,7 +11,8 @@ running_processes = {};
 var STATUS = {
     completed: 'completed',
     running: 'running',
-    error: 'error'
+    error: 'error',
+    aborted: 'aborted'
 };
 
 function nullOrEmpty(input) {
@@ -95,8 +96,10 @@ io.sockets.on('connection', function(socket) {
     }
 
     socket.on('kill', function(data) {
-        var name = data.name;
-        running_processes[name].id.prog.kill();
+        var _id = data._id;
+        running_processes[_id].prog.kill();
+        running_processes[_id].status = STATUS.aborted;
+        fs.unlink(running_processes[_id].filename);
     });
 
     socket.on('remove_project', function(data) {
