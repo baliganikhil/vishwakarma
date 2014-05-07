@@ -55,6 +55,10 @@ body {
     cursor: pointer;
 }
 
+.edit_title:hover {
+    color: #888;
+}
+
 .big_dialog .body {
     padding: 15px;
     position: relative;
@@ -141,7 +145,7 @@ button:disabled {
 
 input[type='text'], textarea {
     border: solid 1px #ccc;
-    height: 25px;
+    /*height: 25px;*/
     padding-left: 3px;
     font-family: "Open Sans";
 }
@@ -358,4 +362,75 @@ input[type='text'], textarea {
     font-size: 11px;
     padding: 10px;
     overflow: auto;
+}
+
+input.project_name {
+    height: 35px;
+    padding-left: 10px;
+    width: 400px;
+}
+
+.sidebar_right .header {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.crontab {
+    overflow: hidden;
+}
+.asterisk_label_container {
+    background: #fafafa;
+    border-right: solid 1px #ccc;
+    height: 100%;
+    padding: 0 !important;
+}
+
+.asterisk_label {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    margin-top: 50px;
+}
+
+.asterisk_label li {
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.asterisk_label li:hover {
+    background: #f0f0f0;
+    cursor: pointer;
+}
+.asterisk_label li.active {
+    font-weight: bold;
+    background: white;
+    width: 100%;
+    border-top: solid 1px #ddd;
+    border-bottom: solid 1px #ddd;
+    margin-left: 1px;
+}
+
+.cron_big {
+    text-align: center;
+    font-weight: bold;
+    font-size: 2em;
+    color: #666;
+}
+
+.crontb {
+    text-align: center;
+    outline: none;
+}
+
+.schedule_switch {
+    font-size: 11px;
+    font-weight: 400;
+    color: #666;
+    position: relative;
+}
+
+.schedule_switch span {
+    top: -2px;
+    position: relative;
 }

@@ -9,7 +9,7 @@
 </head>
 <body ng-controller="VKController" class="container">
 
-<header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+<header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner" ng-hide="active_screen == 'login_register'">
   <div class="container">
     <div class="navbar-header">
       <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
@@ -73,9 +73,9 @@
                     <td class="project_name"><a href="javascript: void(0);" ng-click="get_project(project._id)">{{project.name}}</a></td>
                     <td>{{project.desc}}</td>
                     <td>
-                        <button ng-click="run_cmd(project._id)" class="btn btn-default pull-right" ng-hide="has_proj_run(project.name)">Run</button>
+                        <button ng-click="run_cmd(project._id)" class="btn btn-default pull-right" ng-hide="has_proj_run(project._id)">Run</button>
 
-                        <button class="btn btn-danger pull-right" ng-show="get_proj_status(project.name) == STATUS.running">Abort</button>
+                        <button class="btn btn-danger pull-right" ng-show="get_proj_status(project._id) == STATUS.running">Abort</button>
                     </td>
                 </tr>
             </table>
@@ -88,7 +88,9 @@
     <div class="col-xs-12">
         <div class="header">
             <span ng-show="cur_project._id != null && !edit_proj_title">{{cur_project.name}} <i class="fa fa-pencil edit_title" ng-click="edit_proj_title = true"></i></span>
-            <span ng-show="cur_project._id == null || edit_proj_title"><input type="text" ng-model="cur_project.name"></span>
+            <span ng-show="cur_project._id == null || edit_proj_title">
+                <input type="text" ng-model="cur_project.name" class="project_name">
+            </span>
 
             <div class="pull-right">
                 <button class="btn btn-default" ng-click="active_screen = 'view_projects'">Cancel</button>
@@ -106,9 +108,89 @@
                     <div class="header row">Chain projects</div>
                     <div>
                         <div style="font-size: 12px;">On success, execute this project</div>
-                        <div><select ng-options="project.name as project.name for (key, project) in projects" ng-model="cur_project.chained" class="chain_dropdown"></select></div>
+                        <div><select ng-options="project._id as project.name for (key, project) in projects" ng-model="cur_project.next" class="chain_dropdown"></select></div>
+                    </div>
+
+                    <div class="header row">
+                        Schedule <i class="fa fa-pencil edit_title hide" ng-click="active_screen = 'edit_schedule'"></i>
+
+                        <label class="pull-right schedule_switch">
+                            <input type="checkbox" ng-model="cur_project.is_scheduled"> <span>Enable Scheduling</span>
+                        </label>
+                    </div>
+                    <div class="row" style="padding-left: 10px;">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td>
+                                    <input type="text" class="col-xs-10 crontb" ng-model="split_cron.minute" ng-disabled="!cur_project.is_scheduled">
+                                </td>
+                                <td>
+                                    <input type="text" class="col-xs-10 crontb" ng-model="split_cron.hour" ng-disabled="!cur_project.is_scheduled">
+                                </td>
+                                <td>
+                                    <input type="text" class="col-xs-10 crontb" ng-model="split_cron.day" ng-disabled="!cur_project.is_scheduled">
+                                </td>
+                                <td>
+                                    <input type="text" class="col-xs-10 crontb" ng-model="split_cron.month" ng-disabled="!cur_project.is_scheduled">
+                                </td>
+                                <td>
+                                    <input type="text" class="col-xs-10 crontb" ng-model="split_cron.DOW" ng-disabled="!cur_project.is_scheduled">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; font-size: 11px;">minute</td>
+                                <td style="text-align: center; font-size: 11px;">hour</td>
+                                <td style="text-align: center; font-size: 11px;">day</td>
+                                <td style="text-align: center; font-size: 11px;">month</td>
+                                <td style="text-align: center; font-size: 11px;">DOW</td>
+                            </tr>
+                        </table>
+
+                    </div>
+                    <div class="row" style="padding-left: 10px;">
+
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="big_dialog row crontab" ng-show="active_screen == 'edit_schedule'">
+    <div class="col-xs-12">
+        <div class="header">Schedule Job: {{cur_project.name}}</div>
+
+        <div class="cron_big">* 1 2,11 4 3 /usr/sbin/update-motd</div>
+
+        <div class="row" style="border-top: solid 1px #ccc;">
+            <div class="col-xs-3 asterisk_label_container">
+                <ul class="asterisk_label">
+                    <li>minute</li>
+                    <li>hour</li>
+                    <li>day of month</li>
+                    <li>month</li>
+                    <li>day of week</li>
+                </ul>
+            </div>
+            <div class="col-xs-9">
+
+                <div class="minute">
+                    <ul class="nav nav-tabs" style="margin-top: 20px;">
+                      <li class="active"><a href="javascript:void(0);" data-toggle="tab">Every Minute</a></li>
+                      <li><a href="javascript:void(0);" data-toggle="tab">Every n minutes</a></li>
+                      <li><a href="javascript:void(0);" data-toggle="tab">Each selected minute</a></li>
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div class="tab-pane active">
+                            <div style="font-size: 3em; text-align: center;">*</div>
+                        </div>
+                      <div class="tab-pane">...</div>
+                      <div class="tab-pane">...</div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -160,6 +242,56 @@
     </div>
 </div>
 
+<!-- -->
+<div class="" id="modal_login_register" ng-show="active_screen == 'login_register'">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">
+            <span ng-show="login_mode == 'register'">Register</span>
+            <span ng-show="login_mode == 'login'">Login</span>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+            <div class="col-xs-12 form-group" ng-show="login_mode == 'register'">
+                <div class="form-group">
+                    <input type="text" placeholder="Username" class="form-control" ng-model="username">
+                </div>
+
+                <div class="form-group">
+                    <input type="password" placeholder="Password" class="form-control" ng-model="password">
+                </div>
+
+                <div class="form-group">
+                    <input type="password" placeholder="Confirm Password" class="form-control" ng-model="confirm_password">
+                </div>
+
+                <span style="font-size: 11px; color: #aa0000;" ng-show="password != confirm_password">Passwords don't match</span>
+            </div>
+
+            <div class="col-xs-12 form-group" ng-show="login_mode == 'login'">
+                <div class="form-group">
+                    <input type="text" placeholder="Username" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <input type="password" placeholder="Password" class="form-control">
+                </div>
+
+            </div>
+        </div>
+
+        <a href="javascript:void(0);" class="pull-right" ng-click="login_mode = 'register'" ng-show="login_mode == 'login'">Register for an account</a>
+        <a href="javascript:void(0);" class="pull-right" ng-click="login_mode = 'login'" ng-show="login_mode == 'register'">I already have an account</a>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" ng-show="login_mode == 'register'" ng-disabled="!validate_registration()" ng-click="register()">Sign Up</button>
+        <button type="button" class="btn btn-primary" ng-show="login_mode == 'login'">Sign In</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script type="text/javascript" src="javascripts/vishwakarma.js"></script>
 

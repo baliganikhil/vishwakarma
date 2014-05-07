@@ -14,6 +14,10 @@ var STATUS = {
     error: 'error'
 };
 
+function nullOrEmpty(input) {
+    return [undefined, null, ''].indexOf(input) > -1;
+}
+
 Object.deepExtend = function(destination, source) {
   for (var property in source) {
     if (typeof source[property] === "object" &&
@@ -30,6 +34,10 @@ Object.deepExtend = function(destination, source) {
 io.sockets.on('connection', function(socket) {
 
     socket.on('exec', function(data) {
+        execute_project(data);
+    });
+
+    function execute_project(data) {
         var _id = data._id;
 
         Project.findOne({_id: _id}, function(err, doc) {
@@ -50,35 +58,41 @@ io.sockets.on('connection', function(socket) {
         function execute(filename, doc) {
             var prog = spawn('bash', [filename]);
 
-            running_processes[doc.name] = {prog: prog, name: doc.name, id: filename, status: STATUS.running, stdout: []};
+            running_processes[doc._id] = {prog: prog, name: doc.name, id: filename, status: STATUS.running, stdout: []};
 
-            socket.emit('proj_start', {name: doc.name, id: filename, status: STATUS.running});
+            socket.emit('proj_start', {name: doc.name, id: filename, status: STATUS.running, _id: doc._id});
 
             prog.stdout.setEncoding('utf8');
             prog.stdout.on('data', function (data) {
-                running_processes[doc.name].stdout.push(data);
+                running_processes[doc._id].stdout.push(data);
 
-                var payload = {name: doc.name, id: filename, stdout: data, status: STATUS.running};
+                var payload = {name: doc.name, id: filename, stdout: data, status: STATUS.running, _id: doc._id};
                 socket.emit('stdout', payload);
                 socket.broadcast.emit('stdout', payload);
             });
 
             prog.stderr.setEncoding('utf8');
             prog.stderr.on('data', function (data) {
-                var payload = {name: doc.name, id: filename, stdout: data};
+                var payload = {name: doc.name, id: filename, stdout: data, _id: doc._id};
                 socket.emit('stdout', payload);
                 socket.broadcast.emit('stdout', payload);
             });
 
             prog.on('close', function (code) {
-                running_processes[doc.name].status = STATUS.completed;
+                running_processes[doc._id].status = STATUS.completed;
 
-                var payload = {name: doc.name, id: filename, status: STATUS.completed};
+                var payload = {name: doc.name, id: filename, status: STATUS.completed, _id: doc._id};
                 socket.emit('proj_done', payload);
                 socket.broadcast.emit('proj_done', payload);
+
+                fs.unlink(filename);
+
+                if (!nullOrEmpty(doc.next)) {
+                    execute_project({_id: doc.next});
+                }
             });
         }
-    });
+    }
 
     socket.on('kill', function(data) {
         var name = data.name;
@@ -86,17 +100,19 @@ io.sockets.on('connection', function(socket) {
     });
 
     socket.on('remove_project', function(data) {
-        var proj_name = data.name;
+        var proj_id = data._id;
 
-        if (!running_processes.hasOwnProperty(proj_name)) {
+        if (!running_processes.hasOwnProperty(proj_id)) {
             return false;
         }
 
-        if (running_processes[proj_name].status != STATUS.completed && running_processes[proj_name].status != STATUS.error) {
+        if (running_processes[proj_id].status != STATUS.completed && running_processes[proj_id].status != STATUS.error) {
             return false;
         }
 
-        delete running_processes[proj_name];
+        delete running_processes[proj_id];
+
+
     });
 
     socket.on('get_running_projects', function() {

@@ -9,6 +9,10 @@
     "express": "3.4.7",
     "jade": "*",
     "nodemon": "*",
-    "mongoose": "*"
+    "passport": "*",
+    "passport-local": "*",
+    "passport-local-mongoose": "*",
+    "mongoose": "*",
+    "connect-flash": "*"
   }
 }

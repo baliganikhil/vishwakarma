@@ -27,12 +27,22 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
                 url: base_url + '/projects/save'
             });
 
+        },
+
+        register: function(params) {
+            return $http({
+                method: 'POST',
+                data: JSON.stringify(params),
+                url: base_url + '/accounts/register'
+            });
+
         }
     }
 });
 
 VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServices) {
-    $scope.active_screen = 'view_projects';
+    $scope.active_screen = 'login_register';
+    $scope.login_mode = 'login';
     $scope.active_modal = '';
     show_error('Unable to connect to server...');
     $scope.running_projects = {};
@@ -57,35 +67,35 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
         $scope.show_error = false;
 
         socket.on('stdout', function(data) {
-            if ($scope.running_projects[data.name] == undefined) {
-                $scope.running_projects[data.name] = data;
-                $scope.running_projects[data.name].stdout = [data.stdout];
+            if ($scope.running_projects[data._id] == undefined) {
+                $scope.running_projects[data._id] = data;
+                $scope.running_projects[data._id].stdout = [data.stdout];
             }
 
-            if ($scope.running_projects[data.name].stdout == undefined) {
-                $scope.running_projects[data.name].stdout = [];
+            if ($scope.running_projects[data._id].stdout == undefined) {
+                $scope.running_projects[data._id].stdout = [];
             }
 
-            $scope.running_projects[data.name].stdout.push(data.stdout);
+            $scope.running_projects[data._id].stdout.push(data.stdout);
             $scope.$apply();
         });
 
         socket.on('proj_start', function(data) {
-            if ($scope.running_projects[data.name] == undefined) {
-                $scope.running_projects[data.name] = data;
-                $scope.running_projects[data.name].stdout = [data.stdout];
+            if ($scope.running_projects[data._id] == undefined) {
+                $scope.running_projects[data._id] = data;
+                $scope.running_projects[data._id].stdout = [data.stdout];
             }
 
-            if ($scope.running_projects[data.name].stdout == undefined) {
-                $scope.running_projects[data.name].stdout = [];
+            if ($scope.running_projects[data._id].stdout == undefined) {
+                $scope.running_projects[data._id].stdout = [];
             }
 
-            $scope.running_projects[data.name].stdout.push(data.stdout);
+            $scope.running_projects[data._id].stdout.push(data.stdout);
             $scope.$apply();
         });
 
         socket.on('proj_done', function(data) {
-            $scope.running_projects[data.name].status = data.status;
+            $scope.running_projects[data._id].status = data.status;
             $scope.$apply();
         });
 
@@ -129,20 +139,20 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
         $scope.active_modal = '';
     };
 
-    $scope.has_proj_run = function(proj_name) {
-        return $scope.running_projects.hasOwnProperty(proj_name);
+    $scope.has_proj_run = function(proj_id) {
+        return $scope.running_projects.hasOwnProperty(proj_id);
     };
 
-    $scope.get_proj_status = function(proj_name) {
-        if (!$scope.has_proj_run(proj_name)) {
+    $scope.get_proj_status = function(proj_id) {
+        if (!$scope.has_proj_run(proj_id)) {
             return null;
         }
 
-        return $scope.running_projects[proj_name].status;
+        return $scope.running_projects[proj_id].status;
     };
 
-    $scope.remove_project = function(proj_name) {
-        socket.emit('remove_project', {name: proj_name});
+    $scope.remove_project = function(proj_id) {
+        socket.emit('remove_project', {name: proj_id});
     };
 
     $scope.get_project = function(id) {
@@ -154,6 +164,19 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
 
             $scope.cur_project = data.data;
 
+            if (!nullOrEmpty($scope.cur_project.cron)) {
+                var split_cron = $scope.cur_project.cron.split(' ');
+                $scope.split_cron = {
+                    minute: split_cron[0],
+                    hour: split_cron[1],
+                    day: split_cron[2],
+                    month: split_cron[3],
+                    DOW: split_cron[4],
+                };
+            } else {
+                $scope.split_cron = {};
+            }
+
             $scope.edit_proj_title = false;
             $scope.active_screen = 'edit_project';
 
@@ -161,6 +184,18 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
 
         });
     };
+
+    $scope.$watch('split_cron', function() {
+        var joined_cron = [];
+
+        joined_cron.push(nullOrEmpty($scope.split_cron.minute) ? '*' : $scope.split_cron.minute);
+        joined_cron.push(nullOrEmpty($scope.split_cron.hour) ? '*' : $scope.split_cron.hour);
+        joined_cron.push(nullOrEmpty($scope.split_cron.day) ? '*' : $scope.split_cron.day);
+        joined_cron.push(nullOrEmpty($scope.split_cron.month) ? '*' : $scope.split_cron.month);
+        joined_cron.push(nullOrEmpty($scope.split_cron.DOW) ? '*' : $scope.split_cron.DOW);
+
+        $scope.cur_project.cron = joined_cron.join(' ');
+    }, true);
 
     $scope.get_projects = function() {
         VishwakarmaServices.get_projects($scope.cur_project).success(function(data) {
@@ -192,8 +227,39 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
         });
     };
 
+    $scope.register = function() {
+        var params = {
+            username: $scope.username,
+            password: $scope.password
+        };
+        VishwakarmaServices.register(params).success(function(data) {
+            if (data.status == 'error') {
+                alert('An error occurred while trying to save');
+                return;
+            }
+
+            alert('Saved successfully');
+            console.log(data);
+
+        }).error(function(data) {
+
+        });
+    };
+
     $scope.has_running_projects = function() {
         return Object.keys($scope.running_projects).length === 0;
+    };
+
+    $scope.validate_registration = function() {
+        if ($scope.confirm_password != $scope.password) {
+            return false;
+        }
+
+        if (nullOrEmpty($scope.password) || nullOrEmpty($scope.username)) {
+            return false;
+        }
+
+        return true;
     };
 
     function nullOrEmpty(input) {
