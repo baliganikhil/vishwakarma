@@ -51,15 +51,15 @@ io.sockets.on('connection', function(socket) {
             var temp_file_name = Math.random().toString().slice(4) + '.sh';
 
             fs.writeFile(temp_file_name, code, function(err) {
-                execute(temp_file_name, doc);
+                execute(temp_file_name, doc, data);
             });
 
         });
 
-        function execute(filename, doc) {
+        function execute(filename, doc, extra_data) {
             var prog = spawn('bash', [filename]);
 
-            running_processes[doc._id] = {prog: prog, name: doc.name, id: filename, status: STATUS.running, stdout: []};
+            running_processes[doc._id] = {prog: prog, name: doc.name, id: filename, status: STATUS.running, stdout: [], created_at: extra_data.created_at, created_by: extra_data.created_by};
 
             socket.emit('proj_start', {name: doc.name, id: filename, status: STATUS.running, _id: doc._id});
 
@@ -70,6 +70,7 @@ io.sockets.on('connection', function(socket) {
                 var payload = {name: doc.name, id: filename, stdout: data, status: STATUS.running, _id: doc._id};
                 socket.emit('stdout', payload);
                 socket.broadcast.emit('stdout', payload);
+
             });
 
             prog.stderr.setEncoding('utf8');
@@ -77,6 +78,8 @@ io.sockets.on('connection', function(socket) {
                 var payload = {name: doc.name, id: filename, stdout: data, _id: doc._id};
                 socket.emit('stdout', payload);
                 socket.broadcast.emit('stdout', payload);
+
+                running_processes[doc._id].stdout.push(data);
             });
 
             prog.on('close', function (code) {
@@ -97,8 +100,12 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('kill', function(data) {
         var _id = data._id;
+
         running_processes[_id].prog.kill();
+        running_processes[_id].stdout.push('=== ABORTED ===');
         running_processes[_id].status = STATUS.aborted;
+        running_processes[_id].aborted_by = data.aborted_by;
+        running_processes[_id].aborted_at = new Date();
         fs.unlink(running_processes[_id].filename);
     });
 
@@ -129,5 +136,16 @@ io.sockets.on('connection', function(socket) {
 
         socket.emit('get_running_projects', running_processes_copy);
     });
+
+    function write_proj_to_log(_id) {
+        var ProjectLog = require('models/project_log')
+
+        var project_log = new ProjectLog(running_processes[_id]);
+        project_log.save(function(err) {
+            if (err) {
+                console.log('Cannot save project log');
+            }
+        });
+    }
 
 });

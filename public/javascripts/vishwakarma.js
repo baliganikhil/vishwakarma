@@ -116,11 +116,12 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
     });
 
     $scope.run_cmd = function(_id) {
-        socket.emit('exec', {_id: _id});
+        var payload = {_id: _id, created_by: $scope.username, created_at: new Date()};
+        socket.emit('exec', payload);
     };
 
     $scope.kill = function(_id) {
-        socket.emit('kill', {_id: _id});
+        socket.emit('kill', {_id: _id, aborted_by: $scope.username});
     };
 
     $scope.show_stdout = function(active_proj) {
