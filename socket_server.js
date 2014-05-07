@@ -92,9 +92,11 @@ io.sockets.on('connection', function(socket) {
             });
 
             prog.on('close', function (code) {
-                running_processes[doc._id].status = STATUS.completed;
+                if (running_processes[doc._id].status != STATUS.aborted) {
+                    running_processes[doc._id].status = STATUS.completed;
+                }
 
-                var payload = {name: doc.name, filename: filename, status: STATUS.completed, _id: doc._id};
+                var payload = {name: doc.name, filename: filename, status: running_processes[doc._id].status, _id: doc._id};
                 socket.emit('proj_done', payload);
                 socket.broadcast.emit('proj_done', payload);
 
@@ -106,7 +108,7 @@ io.sockets.on('connection', function(socket) {
 
                 write_proj_to_log(doc._id);
 
-                if (!nullOrEmpty(doc.next)) {
+                if (!nullOrEmpty(doc.next) && running_processes[doc._id].status == STATUS.completed) {
                     execute_project({_id: doc.next});
                 }
             });
@@ -116,19 +118,22 @@ io.sockets.on('connection', function(socket) {
     socket.on('kill', function(data) {
         var _id = data._id;
 
-        console.log(running_processes[_id].filename);
         running_processes[_id].prog.kill();
         running_processes[_id].stdout.push('=== ABORTED ===');
         running_processes[_id].status = STATUS.aborted;
         running_processes[_id].aborted_by = data.aborted_by;
         running_processes[_id].aborted_at = new Date();
 
-
         fs.unlink(running_processes[_id].filename, function (err) {
             if (err) {
                 return false;
             }
         });
+
+        var payload = {status: STATUS.aborted, _id: _id};
+        socket.emit('proj_done', payload);
+        socket.broadcast.emit('proj_done', payload);
+
     });
 
     socket.on('remove_project', function(data) {
