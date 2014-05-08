@@ -431,7 +431,10 @@
             Manage Users & Groups
 
             <span class="pull-right">
-                <button class="btn btn-primary" ng-click="">New Group</button>
+                <button class="btn btn-primary hide" ng-click="">New Group</button>
+
+                <button class="btn btn-default" ng-click="">Close</button>
+                <button class="btn btn-success" ng-click="">Save Changes</button>
             </span>
         </div>
 
@@ -460,18 +463,23 @@
                 <div class="row" style="height: calc(100% - 50px);">
                     <div class="col-xs-5" >
                         <ul class="user_list">
-                            <li ng-repeat="(key, user) in USERS.users">{{user.username}}</li>
+                            <li ng-repeat="(key, user) in USERS.users"
+                            ng-click="toggle_select_user(user.username, 'lhs')"
+                            ng-class="{user_selected: is_user_selected(user.username, 'lhs')}"
+                            ng-hide="indexOf(user.username, USERS.users_rhs) > -1">
+                                {{user.username}}
+                            </li>
                         </ul>
                     </div>
                     <div class="col-xs-1">
                         <div style="position: relative; top: 100px;">
-                            <div><button class="btn btn-success"> &raquo;</button></div>
-                            <div style="margin-top: 10px;"><button class="btn btn-danger"> &laquo;</button></div>
+                            <div><button class="btn btn-success" ng-click="add_users_rhs()"> &raquo;</button></div>
+                            <div style="margin-top: 10px;"><button class="btn btn-danger" ng-click="remove_users_rhs()"> &laquo;</button></div>
                         </div>
                     </div>
                     <div class="col-xs-5">
                         <ul class="user_list">
-                            <li ng-repeat="(key, user) in USERS.users">{{user.username}}</li>
+                            <li ng-repeat="(key, username) in USERS.users_rhs" ng-click="toggle_select_user(username, 'rhs')" ng-class="{user_selected: is_user_selected(username, 'rhs')}">{{username}}</li>
                         </ul>
                     </div>
                 </div>

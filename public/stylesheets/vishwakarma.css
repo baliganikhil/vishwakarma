@@ -536,4 +536,10 @@ input.project_name {
     border: solid 1px #eee;
     color: #333;
     font-size: 13px;
+    cursor: pointer;
+}
+
+.user_selected {
+    font-weight: bold;
+    background: #eee !important;
 }

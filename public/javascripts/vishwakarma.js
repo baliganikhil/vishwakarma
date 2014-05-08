@@ -96,7 +96,13 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
 
     $scope.USERS = {
         users: [],
-        groups: []
+        groups: [],
+        selected_users_lhs: [],
+        selected_groups_lhs: [],
+        selected_users_rhs: [],
+        selected_groups_rhs: [],
+        users_rhs: [],
+        groups_rhs: []
     };
 
     $scope.STATUS = {
@@ -418,6 +424,38 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
         }).error(function(data) {
 
         });
+    };
+
+    $scope.toggle_select_user = function(username, direction) {
+        var target = direction == 'lhs' ? $scope.USERS.selected_users_lhs : $scope.USERS.selected_users_rhs;
+
+        if (!$scope.is_user_selected(username, direction)) {
+            target.push(username);
+        } else {
+            target.splice(target.indexOf(username), 1);
+        }
+    };
+
+    $scope.is_user_selected = function(username, direction) {
+        var target = direction == 'lhs' ? $scope.USERS.selected_users_lhs : $scope.USERS.selected_users_rhs;
+        return target.indexOf(username) > -1;
+    };
+
+    $scope.add_users_rhs = function() {
+        $scope.USERS.users_rhs = $scope.USERS.users_rhs.concat($scope.USERS.selected_users_lhs);
+        $scope.USERS.selected_users_lhs = [];
+    };
+
+    $scope.remove_users_rhs = function() {
+        $scope.USERS.selected_users_rhs.forEach(function(username) {
+            $scope.USERS.users_rhs.splice($scope.USERS.users_rhs.indexOf(username), 1);
+        });
+
+        $scope.USERS.selected_users_rhs = [];
+    };
+
+    $scope.indexOf = function(needle, haystack) {
+        return haystack.indexOf(needle);
     };
 
     function nullOrEmpty(input) {
