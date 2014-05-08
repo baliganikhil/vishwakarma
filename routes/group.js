@@ -1,4 +1,5 @@
 var Group = require('../models/group.js');
+var UserGroupMap = require('../models/user_group');
 
 exports.get = function(req, res) {
     Group.find({}, {}, function(err, docs) {
@@ -8,6 +9,25 @@ exports.get = function(req, res) {
 
         res.send({status: 'success', data: docs});
 
+    });
+};
+
+exports.get_users_for_group = function(req, res) {
+    var group = req.params.group;
+    UserGroupMap.find({group: group}, {}, function(err, docs) {
+        if (err) {
+            res.send({status: 'error'});
+        }
+
+        var data = {};
+        data.group = group;
+        data.users = [];
+
+        docs.forEach(function(rec) {
+            data.users.push(rec.username);
+        });
+
+        res.send({status: 'success', data: data});
     });
 };
 
@@ -39,4 +59,33 @@ exports.save = function(req, res) {
         });
     }
 
+};
+
+exports.add_users_to_group = function(req, res) {
+    var group = req.body.group;
+
+    UserGroupMap.remove({group: group}, function(err) {
+        if (err) {
+            res.send({status: 'error'});
+        }
+
+        var records_to_process = req.body.usernames.length;
+
+        if (records_to_process == 0) {
+            res.send({status: 'success'});
+        }
+
+        req.body.usernames.forEach(function(username) {
+            var usergroupmap = new UserGroupMap({group: group, username: username});
+
+            usergroupmap.save(function(err, doc) {
+                records_to_process--;
+
+                if (records_to_process === 0) {
+                    res.send({status: 'success'});
+                }
+            });
+        });
+
+    });
 };

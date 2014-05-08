@@ -77,6 +77,9 @@ app.get('/logs/:id', project_log.get_log);
 
 app.get('/groups', groups.get);
 app.post('/groups/save', groups.save);
+app.get('/groups/:group/users', groups.get_users_for_group);
+app.post('/groups/users/add', groups.add_users_to_group);
+
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

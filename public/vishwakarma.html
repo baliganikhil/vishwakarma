@@ -418,7 +418,7 @@
                 </div>
 
                 <ul class="user_list" ng-show="USERS.groups.length != 0">
-                    <li ng-repeat="(key, group) in USERS.groups" ng-click="group_to_map = group.group; USERS.user_view = 'add_users_to_group'">
+                    <li ng-repeat="(key, group) in USERS.groups" ng-click="get_users_for_group(group.group)">
                         {{group.group}}
                     </li>
                 </ul>
@@ -435,7 +435,7 @@
 
                 <span ng-show="USERS.user_view == 'add_users_to_group'">
                     <button class="btn btn-default" ng-click="">Close</button>
-                    <button class="btn btn-success" ng-click="">Save Changes</button>
+                    <button class="btn btn-success" ng-click="add_users_to_group()">Save Changes</button>
                 </span>
             </span>
         </div>

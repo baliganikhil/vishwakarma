@@ -61,17 +61,24 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
             });
         },
 
-        get_users: function(log_id) {
+        get_users: function() {
             return $http({
                 method: 'GET',
                 url: base_url + '/users'
             });
         },
 
-        get_groups: function(log_id) {
+        get_groups: function() {
             return $http({
                 method: 'GET',
                 url: base_url + '/groups'
+            });
+        },
+
+        get_users_for_group: function(group) {
+            return $http({
+                method: 'GET',
+                url: base_url + '/groups/' + group + '/users'
             });
         },
 
@@ -80,6 +87,15 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
                 method: 'POST',
                 data: JSON.stringify(params),
                 url: base_url + '/groups/save'
+            });
+
+        },
+
+        add_users_to_group: function(params) {
+            return $http({
+                method: 'POST',
+                data: JSON.stringify(params),
+                url: base_url + '/groups/users/add'
             });
 
         }
@@ -465,6 +481,48 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
         });
     };
 
+    $scope.get_users_for_group = function(group) {
+        $scope.USERS.group_to_map = group;
+        $scope.USERS.user_view = 'add_users_to_group'
+
+        $scope.USERS.getting_groups = true;
+        VishwakarmaServices.get_users_for_group(group).success(function(data) {
+            $scope.USERS.getting_groups = false;
+
+            if (data.status == 'error') {
+                alert('An error occurred while trying to save');
+                return;
+            }
+
+            $scope.USERS.users_rhs = data.data.users;
+
+        }).error(function(data) {
+
+        });
+    };
+
+    $scope.add_users_to_group = function() {
+        var params = {
+            group: $scope.USERS.group_to_map,
+            usernames: $scope.USERS.users_rhs
+        };
+
+        $scope.USERS.getting_groups = true;
+        VishwakarmaServices.add_users_to_group(params).success(function(data) {
+            $scope.USERS.getting_groups = false;
+
+            if (data.status == 'error') {
+                alert('An error occurred while trying to save');
+                return;
+            }
+
+            alert('success');
+
+        }).error(function(data) {
+
+        });
+    };
+
     $scope.get_users = function() {
         $scope.USERS.getting_users = true;
         VishwakarmaServices.get_users().success(function(data) {
@@ -506,6 +564,8 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
         $scope.USERS.selected_users_rhs.forEach(function(username) {
             $scope.USERS.users_rhs.splice($scope.USERS.users_rhs.indexOf(username), 1);
         });
+
+        console.log($scope.USERS.users_rhs);
 
         $scope.USERS.selected_users_rhs = [];
     };
