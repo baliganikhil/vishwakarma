@@ -45,27 +45,50 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
                 url: base_url + '/login'
             });
 
+        },
+
+        get_logs: function() {
+            return $http({
+                method: 'GET',
+                url: base_url + '/logs'
+            });
+        },
+
+        get_log: function(log_id) {
+            return $http({
+                method: 'GET',
+                url: base_url + '/logs/' + log_id
+            });
         }
     }
 });
 
 VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServices) {
-    $scope.active_screen = 'login_register';
-    $scope.login_mode = 'login';
+    $scope.SCREENS = {
+        active_screen: 'login_register',
+        login_mode: 'login',
+
+    };
+
+    $scope.LOGS = {
+        log_list: [],
+        log_view: 'log_list'
+    };
+
     $scope.active_modal = '';
     show_error('Unable to connect to server...');
     $scope.running_projects = {};
-
+    $scope.split_cron = {};
     $scope.stdout = [];
 
     $scope.STATUS = {
         completed: 'completed',
         running: 'running',
-        error: 'error'
+        error: 'error',
+        aborted: 'aborted'
     };
 
     socket = io.connect('http://localhost:8888');
-    console.log(socket)
 
     socket.on('disconnect', function() {
         show_error('Lost connection with server...');
@@ -105,6 +128,7 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
 
         socket.on('proj_done', function(data) {
             $scope.running_projects[data._id].status = data.status;
+            $scope.running_projects[data._id].stdout.push(data.stdout);
             $scope.$apply();
         });
 
@@ -120,7 +144,7 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
             delete $scope.running_projects[_id];
         }
 
-        var payload = {_id: _id, created_by: $scope.username, created_at: new Date()};
+        var payload = {_id: _id, created_by: $scope.username};
         socket.emit('exec', payload);
     };
 
@@ -130,7 +154,7 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
 
     $scope.show_stdout = function(active_proj) {
         $scope.stdout_proj = active_proj;
-        $scope.active_screen = 'stdout';
+        $scope.SCREENS.active_screen = 'stdout';
     };
 
     $scope.init_new_project = function() {
@@ -140,12 +164,12 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
             code: ''
         };
 
-        $scope.active_screen = 'edit_project';
+        $scope.SCREENS.active_screen = 'edit_project';
         // $scope.active_modal = 'modal_new_project';
     };
 
     $scope.cancel_new_project = function() {
-        $scope.active_screen = 'view_projects';
+        $scope.SCREENS.active_screen = 'view_projects';
         $scope.hide_modal();
     };
 
@@ -166,7 +190,7 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
     };
 
     $scope.remove_project = function(proj_id) {
-        socket.emit('remove_project', {name: proj_id});
+        socket.emit('remove_project', {_id: proj_id});
     };
 
     $scope.get_project = function(_id) {
@@ -192,7 +216,7 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
             }
 
             $scope.edit_proj_title = false;
-            $scope.active_screen = 'edit_project';
+            $scope.SCREENS.active_screen = 'edit_project';
 
         }).error(function(data) {
 
@@ -200,6 +224,10 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
     };
 
     $scope.$watch('split_cron', function() {
+        if (nullOrEmpty($scope.cur_project)) {
+            return false;
+        }
+
         var joined_cron = [];
 
         joined_cron.push(nullOrEmpty($scope.split_cron.minute) ? '*' : $scope.split_cron.minute);
@@ -232,6 +260,7 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
                 return;
             }
 
+            $scope.get_projects();
             alert('Saved successfully');
 
         }).error(function(data) {
@@ -264,14 +293,19 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
             password: $scope.password
         };
 
+        $scope.SCREENS.signing_in = true;
+
         VishwakarmaServices.login(params).success(function(data) {
+            $scope.SCREENS.signing_in = false;
+
             if (data.status == 'error') {
                 alert('Could not log you in');
                 return;
             }
 
             $scope.get_projects();
-            $scope.active_screen = 'view_projects';
+            $scope.SCREENS.active_screen = 'view_projects';
+            $scope.SCREENS.active_screen = 'view_logs';
 
         }).error(function(data) {
 
@@ -294,8 +328,42 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
         return true;
     };
 
+    $scope.get_logs = function() {
+        VishwakarmaServices.get_logs($scope.cur_project).success(function(data) {
+            if (data.status == 'error') {
+                alert('An error occurred while trying to get logs');
+                return;
+            }
+
+            $scope.LOGS.log_list = data.data;
+            $scope.LOGS.log_view = 'log_list';
+
+        }).error(function(data) {
+
+        });
+    };
+
+    $scope.get_log = function(log_id) {
+        VishwakarmaServices.get_log(log_id).success(function(data) {
+            if (data.status == 'error') {
+                alert('An error occurred while trying to get log');
+                return;
+            }
+
+            $scope.LOGS.cur_log = data.data;
+            $scope.LOGS.log_view = 'log_view';
+
+        }).error(function(data) {
+
+        });
+    };
+
     function nullOrEmpty(input) {
         return [null, undefined, ''].indexOf(input) > -1;
+    }
+
+    $scope.nullOrEmpty = function(input) {
+        return nullOrEmpty(input);
     }
 
     function show_error(error_msg) {
@@ -307,4 +375,38 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
         $scope.show_error = true;
     };
 
+});
+
+
+VishwakarmaModule.filter('date_cleaner', function() {
+    return function(input) {
+        if (input == undefined) {
+            return '';
+        }
+
+        // 2014-05-07T10:29:13.375Z
+        var input_split = input.split('T');
+        var date = input_split[0];
+        var time = input_split[1];
+
+        var date_split = date.split('-');
+        time = time.split('.')[0];
+
+        var months = {
+            "01": "Jan",
+            "02": "Feb",
+            "03": "Mar",
+            "04": "Apr",
+            "05": "May",
+            "06": "Jun",
+            "07": "Jul",
+            "08": "Aug",
+            "09": "Sep",
+            "10": "Oct",
+            "11": "Nov",
+            "12": "Dec"
+        };
+
+        return [months[date_split[1].toString()], date_split[2], date_split[0], time].join(' ');
+    };
 });

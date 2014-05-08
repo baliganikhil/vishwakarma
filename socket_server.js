@@ -66,7 +66,7 @@ io.sockets.on('connection', function(socket) {
                                             filename: filename,
                                             status: STATUS.running,
                                             stdout: [],
-                                            created_at: extra_data.created_at,
+                                            created_at: new Date(),
                                             created_by: extra_data.created_by
                                         };
 
@@ -92,11 +92,13 @@ io.sockets.on('connection', function(socket) {
             });
 
             prog.on('close', function (code) {
+                var stdout = '';
                 if (running_processes[doc._id].status != STATUS.aborted) {
                     running_processes[doc._id].status = STATUS.completed;
+                    stdout = '=== COMPLETED ===';
                 }
 
-                var payload = {name: doc.name, filename: filename, status: running_processes[doc._id].status, _id: doc._id};
+                var payload = {name: doc.name, filename: filename, status: running_processes[doc._id].status, _id: doc._id, stdout: stdout};
                 socket.emit('proj_done', payload);
                 socket.broadcast.emit('proj_done', payload);
 
@@ -109,7 +111,7 @@ io.sockets.on('connection', function(socket) {
                 write_proj_to_log(doc._id);
 
                 if (!nullOrEmpty(doc.next) && running_processes[doc._id].status == STATUS.completed) {
-                    execute_project({_id: doc.next});
+                    execute_project({_id: doc.next, created_by: running_processes[doc._id]});
                 }
             });
         }
@@ -130,7 +132,7 @@ io.sockets.on('connection', function(socket) {
             }
         });
 
-        var payload = {status: STATUS.aborted, _id: _id};
+        var payload = {status: STATUS.aborted, _id: _id, stdout: '=== ABORTED by ' + data.aborted_by + ' at ' + running_processes[_id].aborted_at + ' ==='};
         socket.emit('proj_done', payload);
         socket.broadcast.emit('proj_done', payload);
 
@@ -143,18 +145,21 @@ io.sockets.on('connection', function(socket) {
             return false;
         }
 
-        if (running_processes[proj_id].status != STATUS.completed && running_processes[proj_id].status != STATUS.error) {
+        if (running_processes[proj_id].status == STATUS.running) {
             return false;
         }
 
         delete running_processes[proj_id];
-
+        get_running_projects();
 
     });
 
     socket.on('get_running_projects', function() {
+        get_running_projects();
+    });
+
+    function get_running_projects() {
         var running_processes_copy = {};
-        // Object.deepExtend(running_processes_copy, running_processes);
 
         for (prc in running_processes) {
             running_processes_copy[prc] = running_processes[prc]
@@ -162,7 +167,7 @@ io.sockets.on('connection', function(socket) {
         }
 
         socket.emit('get_running_projects', running_processes_copy);
-    });
+    }
 
     function write_proj_to_log(_id) {
         var ProjectLog = require('./models/project_log')

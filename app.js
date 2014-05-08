@@ -11,6 +11,7 @@ var path = require('path');
 
 var mongoose = require('mongoose');
 var projects = require('./routes/projects');
+var project_log = require('./routes/project_log');
 
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
@@ -69,6 +70,9 @@ app.post('/accounts/register', accountAPI.register);
 app.get('/projects', projects.get);
 app.get('/projects/:id', projects.get_project);
 app.post('/projects/save', projects.save);
+
+app.get('/logs', project_log.get);
+app.get('/logs/:id', project_log.get_log);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

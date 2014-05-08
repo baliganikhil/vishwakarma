@@ -9,7 +9,7 @@
 </head>
 <body ng-controller="VKController" class="container">
 
-<header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner" ng-hide="active_screen == 'login_register'">
+<header class="navbar navbar-static-top bs-docs-nav row" id="top" role="banner" ng-hide="SCREENS.active_screen == 'login_register'">
   <div class="container">
     <div class="navbar-header">
       <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
@@ -18,11 +18,18 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a href="javascript:void(0);" class="navbar-brand">Vishwakarma</a>
+      <a href="javascript:void(0);" class="navbar-brand">Vishwakarma Build System</a>
     </div>
     <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
-      <ul class="nav navbar-nav">
-        <!-- <li ng-class="{active: active_screen == 'view_projects'}" ng-click="active_screen = 'view_projects'"><a href="javascript:void(0);">All Projects</a></li> -->
+      <ul class="nav navbar-nav pull-right">
+        <li ng-class="{active: SCREENS.active_screen == 'view_projects'}">
+            <a href="javascript:void(0);" ng-click="SCREENS.active_screen = 'view_projects'">Home</a>
+        </li>
+        <li ng-class="{active: SCREENS.active_screen == 'view_logs'}">
+            <a href="javascript:void(0);" ng-click="SCREENS.active_screen = 'view_logs'">Logs</a>
+        </li>
+        <li><a href="javascript:void(0);">Help</a></li>
+        <li><a href="javascript:void(0);">About</a></li>
       </ul>
     </nav>
   </div>
@@ -32,7 +39,8 @@
     {{error_msg}} <a href="javascript:void(0);">Reload</a>
 </div>
 
-<div class="row big_dialog proj_container" ng-show="active_screen == 'view_projects'">
+<!-- Home - View Projects -->
+<div class="row big_dialog proj_container" ng-show="SCREENS.active_screen == 'view_projects'">
     <div class="col-xs-3 sidebar">
         <div style="font-size: 18px; padding: 10px;">
             Running Projects
@@ -43,14 +51,17 @@
                 You have no running projects
             </div>
             <ul class="running_projects">
-                <li ng-repeat="(key, active_proj) in running_projects" ng-click="show_stdout(active_proj)">
+                <li ng-repeat="(key, active_proj) in running_projects">
                     <img src="/images/loader_circle.gif" ng-show="active_proj.status == STATUS.running">
                     <i class="fa fa-check" ng-show="active_proj.status == STATUS.completed"></i>
                     <i class="fa fa-exclamation-triangle" ng-show="active_proj.status == STATUS.aborted"></i>
-                    <span class="project_name">{{active_proj.name}}</span> <span>
+
+                    <span class="project_name" ng-click="show_stdout(active_proj)">
+                        {{active_proj.name}}
+                    </span>
 
                     <span class="label label-danger pull-right" ng-show="active_proj.status == STATUS.running" ng-click="kill(active_proj._id)">abort</span>
-                    <span class="label label-default pull-right" ng-show="active_proj.status == STATUS.completed">remove</span>
+                    <span class="label label-default pull-right" ng-show="active_proj.status != STATUS.running" ng-click="remove_project(active_proj._id)">remove</span>
                 </li>
             </ul>
         </div>
@@ -83,7 +94,8 @@
     </div>
 </div>
 
-<div class="big_dialog new_project row" ng-show="active_screen == 'edit_project'">
+<!-- Edit a project -->
+<div class="big_dialog new_project row" ng-show="SCREENS.active_screen == 'edit_project'">
     <div class="col-xs-12">
         <div class="header">
             <span ng-show="cur_project._id != null && !edit_proj_title">{{cur_project.name}} <i class="fa fa-pencil edit_title" ng-click="edit_proj_title = true"></i></span>
@@ -92,7 +104,7 @@
             </span>
 
             <div class="pull-right">
-                <button class="btn btn-default" ng-click="active_screen = 'view_projects'">Cancel</button>
+                <button class="btn btn-default" ng-click="SCREENS.active_screen = 'view_projects'">Cancel</button>
                 <button class="btn btn-primary" ng-click="save_project()">Save</button>
             </div>
         </div>
@@ -111,7 +123,7 @@
                     </div>
 
                     <div class="header row">
-                        Schedule <i class="fa fa-pencil edit_title hide" ng-click="active_screen = 'edit_schedule'"></i>
+                        Schedule <i class="fa fa-pencil edit_title hide" ng-click="SCREENS.active_screen = 'edit_schedule'"></i>
 
                         <label class="pull-right schedule_switch">
                             <input type="checkbox" ng-model="cur_project.is_scheduled"> <span>Enable Scheduling</span>
@@ -155,7 +167,8 @@
     </div>
 </div>
 
-<div class="big_dialog row crontab" ng-show="active_screen == 'edit_schedule'">
+<!-- Visual Crontab -->
+<div class="big_dialog row crontab" ng-show="SCREENS.active_screen == 'edit_schedule'">
     <div class="col-xs-12">
         <div class="header">Schedule Job: {{cur_project.name}}</div>
 
@@ -195,7 +208,8 @@
     </div>
 </div>
 
-<div class="big_dialog stdout row" ng-show="active_screen == 'stdout'">
+<!-- STDOUT Console -->
+<div class="big_dialog stdout row" ng-show="SCREENS.active_screen == 'stdout'">
     <div class="col-xs-12">
         <div class="header row">
             Output for Project: {{stdout_proj.name}}
@@ -203,7 +217,7 @@
             <span class="label label_aborted" ng-show="stdout_proj.status == 'aborted'">aborted</span>
             <span class="label label_running" ng-show="stdout_proj.status == 'running'">running <img src="/images/loader_circle.gif"></span>
 
-            <button class="btn btn-danger pull-right" ng-click="active_screen = 'view_projects'">Close</button>
+            <button class="btn btn-danger pull-right" ng-click="SCREENS.active_screen = 'view_projects'">Close</button>
         </div>
 
         <div class="output_console">
@@ -215,47 +229,90 @@
     </div>
 </div>
 
+<!-- Logs Viewer -->
+<div class="row big_dialog proj_container" ng-show="SCREENS.active_screen == 'view_logs'">
+    <div class="col-xs-12">
+        <div class="header row" ng-show="LOGS.log_view == 'log_view'">
+            Log for project: {{LOGS.cur_log.name}}
 
-<div class="modal_backdrop" ng-show="active_modal != ''"></div>
+            <span class="pull-right">
+                <button class="btn btn-default" ng-click="LOGS.log_view = 'log_list'"><i class="fa fa-chevron-left"></i> Log List</button>
 
-<div class="modal small" id="modal_new_project" ng-show="active_modal == 'modal_new_project'">
-    <div class="header">
-        <label class="large">Create New Project</label>
-    </div>
+                <button class="btn btn-danger" ng-show="LOGS.log_view == 'log_view'">Delete Log</button>
+            </span>
 
-    <div class="body">
-        <form name="FormNewProject">
-            <div>
-                <input type="text" ng-model="cur_project.name" placeholder="Name of the project" required>
+            <div style="margin-top: 20px; font-size: 13px;">
+                <span style="margin-right: 50px;">Run by {{LOGS.cur_log.created_by}} on {{LOGS.cur_log.created_at | date_cleaner}}</span>
+                <span ng-show="!nullOrEmpty(LOGS.cur_log.aborted_by)">Aborted by {{LOGS.cur_log.aborted_by}} on {{LOGS.cur_log.aborted_at | date_cleaner}}</span>
+            </div>
+        </div>
+
+        <div class="body row log_container">
+
+            <div ng-show="LOGS.log_view == 'log_list'">
+                <div class="no_logs" ng-show="LOGS.log_list.length == 0">
+                    You have no logs - <a href="javascript:void(0);" ng-click="get_logs()">fetch recent logs</a>
+                </div>
+
+                <div ng-show="LOGS.log_list.length > 0">
+                    <h4>Logs</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <td><input type="text" ng-model="log_filter.name"></td>
+                                <td><input type="text" ng-model="log_filter.created_by"></td>
+                                <td><input type="text" ng-model="log_filter.created_at"></td>
+                                <td><input type="text" ng-model="log_filter.aborted_by"></td>
+                                <td><input type="text" ng-model="log_filter.aborted_at"></td>
+                            </tr>
+                            <tr>
+                                <th>Project</th>
+                                <th>Run By</th>
+                                <th>Run At</th>
+                                <th>Aborted By</th>
+                                <th>Aborted At</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="(key, log_entry) in LOGS.log_list | filter:log_filter">
+                                <td><a href="javascript:void(0);" ng-click="get_log(log_entry._id)">{{log_entry.name}}</a></td>
+                                <td>{{log_entry.created_by}}</td>
+                                <td>{{log_entry.created_at | date_cleaner}}</td>
+                                <td>{{log_entry.aborted_by}}</td>
+                                <td>{{log_entry.aborted_at | date_cleaner}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="desc_container">
-                <textarea type="text" ng-model="cur_project.desc" placeholder="Description"></textarea>
+            <div ng-show="LOGS.log_view == 'log_view'">
+                <div class="output_console" style="height: 98%;">
+                    <ul>
+                        <li ng-repeat="(key, each_line) in LOGS.cur_log.stdout track by $index">{{each_line}}</li>
+                    </ul>
+                </div>
             </div>
-        </form>
-
-    </div>
-    <div class="footer">
-        <div style="position: absolute; right: 20px">
-            <button ng-click="cancel_new_project()">Cancel</button>
-            <button class="green" ng-disabled="FormNewProject.$invalid" ng-click="hide_modal()">OK</button>
         </div>
     </div>
 </div>
 
-<!-- -->
-<div class="" id="modal_login_register" ng-show="active_screen == 'login_register'">
+
+<div class="modal_backdrop" ng-show="active_modal != ''"></div>
+
+<!-- Login and Register -->
+<div class="" id="modal_login_register" ng-show="SCREENS.active_screen == 'login_register'">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">
-            <span ng-show="login_mode == 'register'">Register</span>
-            <span ng-show="login_mode == 'login'">Login</span>
+            <span ng-show="SCREENS.login_mode == 'register'">Register</span>
+            <span ng-show="SCREENS.login_mode == 'login'">Login</span>
         </h4>
       </div>
       <div class="modal-body">
         <div class="row">
-            <div class="col-xs-12 form-group" ng-show="login_mode == 'register'">
+            <div class="col-xs-12 form-group" ng-show="SCREENS.login_mode == 'register'">
                 <div class="form-group">
                     <input type="text" placeholder="Username" class="form-control" ng-model="username">
                 </div>
@@ -271,7 +328,7 @@
                 <span style="font-size: 11px; color: #aa0000;" ng-show="password != confirm_password">Passwords don't match</span>
             </div>
 
-            <div class="col-xs-12 form-group" ng-show="login_mode == 'login'">
+            <div class="col-xs-12 form-group" ng-show="SCREENS.login_mode == 'login'">
                 <div class="form-group">
                     <input type="text" placeholder="Username" class="form-control" ng-model="username">
                 </div>
@@ -283,12 +340,14 @@
             </div>
         </div>
 
-        <a href="javascript:void(0);" class="pull-right" ng-click="login_mode = 'register'" ng-show="login_mode == 'login'">Register for an account</a>
-        <a href="javascript:void(0);" class="pull-right" ng-click="login_mode = 'login'" ng-show="login_mode == 'register'">I already have an account</a>
+        <a href="javascript:void(0);" class="pull-right" ng-click="SCREENS.login_mode = 'register'" ng-show="SCREENS.login_mode == 'login'">Register for an account</a>
+        <a href="javascript:void(0);" class="pull-right" ng-click="SCREENS.login_mode = 'login'" ng-show="SCREENS.login_mode == 'register'">I already have an account</a>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" ng-show="login_mode == 'register'" ng-disabled="!validate_registration()" ng-click="register()">Sign Up</button>
-        <button type="button" class="btn btn-primary" ng-show="login_mode == 'login'" ng-click="login()">Sign In</button>
+        <img src="/images/loader_circle.gif" ng-show="SCREENS.signing_in">
+
+        <button type="button" class="btn btn-primary" ng-show="SCREENS.login_mode == 'register'" ng-disabled="!validate_registration()" ng-click="register()">Sign Up</button>
+        <button type="button" class="btn btn-primary" ng-show="SCREENS.login_mode == 'login'" ng-click="login()" ng-disabled="SCREENS.signing_in">Sign In</button>
       </div>
     </div>
   </div>

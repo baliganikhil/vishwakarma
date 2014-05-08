@@ -38,6 +38,7 @@ body {
     border: solid 1px #aaa;
     border-radius: 0 3px 3px 0;
     height: calc(100% - 100px);
+    overflow: hidden;
 }
 
 .big_dialog .header {
@@ -62,7 +63,7 @@ body {
 .big_dialog .body {
     padding: 15px;
     position: relative;
-    height: 85%;
+    height: 100%;
     background: #fff;
 }
 
@@ -116,15 +117,18 @@ button:disabled {
 }
 
 .running_projects li {
-    /*position: relative;*/
     margin-bottom: 8px;
-    cursor: pointer;
 }
 
 .running_projects .project_name {
-    /*position: absolute;*/
     top: 2px;
     left: 30px;
+}
+
+.running_projects li:hover .project_name {
+    text-decoration: underline;
+    color: #48ADE0;
+    cursor: pointer;
 }
 
 .green.orb {
@@ -437,4 +441,29 @@ input.project_name {
 .schedule_switch span {
     top: -2px;
     position: relative;
+}
+
+.log_container {
+    position: relative;
+    overflow: auto;
+}
+
+.no_logs {
+    position: absolute;
+    top: 33%;
+    bottom: 0;
+    height: 30px;
+    width: 97%;
+    display: inline-block;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 20px;
+    color: #999;
+}
+
+.nav.navbar-nav .active a {
+    border-bottom: solid 2px;
+    padding-bottom: 2px;
+    padding-left: 3px;
+    padding-right: 3px;
 }
