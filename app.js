@@ -71,6 +71,8 @@ app.get('/users', accountAPI.get);
 app.get('/projects', projects.get);
 app.get('/projects/:id', projects.get_project);
 app.post('/projects/save', projects.save);
+app.get('/projects/:project/groups', groups.get_groups_for_project);
+app.post('/projects/project/groups/add', groups.add_groups_to_project);
 
 app.get('/logs', project_log.get);
 app.get('/logs/:id', project_log.get_log);

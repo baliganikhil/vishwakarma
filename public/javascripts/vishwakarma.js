@@ -82,6 +82,13 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
             });
         },
 
+        get_groups_for_project: function(project_id) {
+            return $http({
+                method: 'GET',
+                url: base_url + '/projects/' + project_id + '/groups'
+            });
+        },
+
         save_group: function(params) {
             return $http({
                 method: 'POST',
@@ -97,7 +104,14 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
                 data: JSON.stringify(params),
                 url: base_url + '/groups/users/add'
             });
+        },
 
+        add_groups_to_project: function(params) {
+            return $http({
+                method: 'POST',
+                data: JSON.stringify(params),
+                url: base_url + '/projects/project/groups/add'
+            });
         }
     }
 });
@@ -138,6 +152,11 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
         users_rhs: [],
         groups_rhs: [],
         group_to_map: ''
+    };
+
+    $scope.GRPPRJ = {
+        getting_groups: false,
+        saving_groups: false
     };
 
     $scope.STATUS = {
@@ -388,7 +407,6 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
 
             $scope.get_projects();
             $scope.SCREENS.active_screen = 'view_projects';
-            $scope.SCREENS.active_screen = 'manage_users';
 
         }).error(function(data) {
 
@@ -501,6 +519,23 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
         });
     };
 
+    $scope.get_groups_for_project = function(project_id) {
+        $scope.GRPPRJ.getting_groups = true;
+        VishwakarmaServices.get_groups_for_project(project_id).success(function(data) {
+            $scope.GRPPRJ.getting_groups = false;
+
+            if (data.status == 'error') {
+                alert('An error occurred while trying to save');
+                return;
+            }
+
+            $scope.GRPPRJ.grpprjmap = data.data;
+
+        }).error(function(data) {
+
+        });
+    };
+
     $scope.add_users_to_group = function() {
         var params = {
             group: $scope.USERS.group_to_map,
@@ -534,6 +569,58 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
             }
 
             $scope.USERS.users = data.data;
+
+        }).error(function(data) {
+
+        });
+    };
+
+    $scope.show_manage_users_pane = function() {
+        $scope.get_users();
+        $scope.get_groups();
+        $scope.SCREENS.active_screen = 'manage_users';
+    };
+
+    $scope.show_manage_prjgrp_pane = function() {
+        $scope.get_groups();
+        $scope.SCREENS.active_screen = 'project_group_map';
+        $scope.get_groups_for_project($scope.cur_project._id);
+    };
+
+    $scope.add_grpprj_row = function() {
+        $scope.GRPPRJ.grpprjmap.push({});
+    };
+
+    $scope.save_grpprj = function() {
+        var group_names = [];
+        var is_valid = true;
+        $scope.GRPPRJ.grpprjmap.forEach(function(row) {
+            if (group_names.indexOf(row.group) != -1) {
+                alert('The group ' + row.group + ' is present on multiple lines');
+                is_valid = false;
+                return false;
+            }
+        });
+
+        if (!is_valid) {
+            return false;
+        }
+
+        var params = {
+            project: $scope.cur_project._id,
+            groups: $scope.GRPPRJ.grpprjmap
+        };
+
+        $scope.GRPPRJ.saving_groups = true;
+        VishwakarmaServices.add_groups_to_project(params).success(function(data) {
+            $scope.GRPPRJ.saving_groups = false;
+
+            if (data.status == 'error') {
+                alert('An error occurred while trying to save');
+                return;
+            }
+
+            alert('success');
 
         }).error(function(data) {
 

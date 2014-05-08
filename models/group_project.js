@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 var ProjectGroupMap = new mongoose.Schema({
     group: String,
-    project: String,
+    project: mongoose.Schema.Types.ObjectId,
     see: {type: Boolean, default: false},
     get: {type: Boolean, default: false},
     edit: {type: Boolean, default: false},
