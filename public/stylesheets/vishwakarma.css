@@ -154,7 +154,6 @@ button:disabled {
 textarea {
     border: solid 1px #ccc;
     padding-left: 3px;
-    font-family: "Open Sans";
 }
 
 .cmd {
@@ -174,8 +173,10 @@ textarea {
     width: 100%;
     border: solid 1px #ccc;
     border-radius: 3px;
-    font-family: "Open Sans";
+    font-family: courier;
+    font-size: 11px;
     outline: none;
+    background: #fafafa;
 }
 
 
@@ -494,7 +495,7 @@ input.project_name {
     color: #aa0000;
 }
 
-.signup_success {
+.signup_success, .save_success {
     font-size: 13px;
     color: #4CA04C;
     font-weight: bold;

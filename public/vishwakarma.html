@@ -104,8 +104,12 @@
             </span>
 
             <div class="pull-right">
-                <button class="btn btn-default" ng-click="SCREENS.active_screen = 'view_projects'">Cancel</button>
-                <button class="btn btn-primary" ng-click="save_project()">Save</button>
+                <span class="save_success" ng-show="PROJECTS.save_success"><i class="fa fa-check"></i> Saved Successfully</span>
+                <button class="btn btn-default" ng-click="SCREENS.active_screen = 'view_projects'">Close</button>
+                <button class="btn btn-primary" ng-click="save_project()" ng-disabled="PROJECTS.saving">
+                    <img src="/images/loader_circle.gif" ng-show="PROJECTS.saving"></span>
+                    Save
+                </button>
             </div>
         </div>
 
@@ -238,7 +242,7 @@
             Log for project: {{LOGS.cur_log.name}}
 
             <span class="pull-right">
-                <button class="btn btn-default" ng-click="LOGS.log_view = 'log_list'"><i class="fa fa-chevron-left"></i> Log List</button>
+                <button class="btn btn-default" ng-click="LOGS.log_view = 'log_list'">Close</button>
 
                 <button class="btn btn-danger" ng-show="LOGS.log_view == 'log_view'">Delete Log</button>
             </span>

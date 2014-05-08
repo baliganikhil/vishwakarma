@@ -63,7 +63,7 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
     }
 });
 
-VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServices) {
+VishwakarmaModule.controller('VKController', function ($scope, $timeout, VishwakarmaServices) {
     $scope.SCREENS = {
         active_screen: 'login_register',
         login_mode: 'login',
@@ -81,6 +81,10 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
     $scope.LOGS = {
         log_list: [],
         log_view: 'log_list'
+    };
+
+    $scope.PROJECTS = {
+        saving: false
     };
 
     $scope.STATUS = {
@@ -262,7 +266,10 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
     };
 
     $scope.save_project = function() {
+        $scope.PROJECTS.saving = true;
         VishwakarmaServices.save_project($scope.cur_project).success(function(data) {
+            $scope.PROJECTS.saving = false;
+
             if (data.status == 'error') {
                 alert('An error occurred while trying to save');
                 return;
@@ -272,7 +279,10 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
 
             socket.emit('proj_saved', {_id: $scope.cur_project._id});
 
-            alert('Saved successfully');
+            $scope.PROJECTS.save_success = true;
+            $timeout(function() {
+                $scope.PROJECTS.save_success = false;
+            }, 5000);
 
         }).error(function(data) {
 
