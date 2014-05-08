@@ -33,3 +33,14 @@ exports.register = function(req, res) {
         });
     });
 };
+
+exports.get = function(req, res) {
+    Account.find({}, {username: 1}, function(err, docs) {
+        if (err) {
+            res.send({status: 'error'});
+        }
+
+        res.send({status: 'success', data: docs});
+
+    });
+};

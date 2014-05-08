@@ -375,6 +375,111 @@
   </div>
 </div>
 
+
+<!-- Manage Users -->
+<div class="row big_dialog proj_container" ng-show="SCREENS.active_screen == 'manage_users'">
+    <div class="col-xs-3 sidebar">
+        <div style="height: 50%;">
+            <div style="font-size: 18px; padding: 10px;">
+                Users
+
+                <span class="pull-right" style="font-size: 12px;">
+                    <img src="/images/loader_circle.gif" ng-show="USERS.getting_users">
+                    <a href="javascript:void(0);" ng-click="get_users();">Refresh</a>
+                </span>
+            </div>
+
+            <div class="user_list_container">
+                <div style="font-size: 12px; padding-left: 10px;" ng-show="USERS.users.length == 0">
+                    You have no users
+                </div>
+
+                <ul class="user_list" ng-show="USERS.users.length != 0">
+                    <li ng-repeat="(key, user) in USERS.users">
+                        {{user.username}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div style="height: 50%; border-top: solid 1px #ccc;">
+            <div style="font-size: 18px; padding: 10px;">
+                Groups
+
+                <span class="pull-right" style="font-size: 12px;">
+                    <img src="/images/loader_circle.gif" ng-show="USERS.getting_users">
+                    <a href="javascript:void(0);" ng-click="get_users();">Refresh</a>
+                </span>
+            </div>
+
+            <div class="user_list_container">
+                <div style="font-size: 12px; padding-left: 10px;" ng-show="USERS.groups.length == 0">
+                    You have no groups
+                </div>
+
+                <ul class="user_list" ng-show="USERS.groups.length != 0">
+                    <li ng-repeat="(key, group) in USERS.groups">
+                        {{group.group}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-9">
+        <div class="header row">
+            Manage Users & Groups
+
+            <span class="pull-right">
+                <button class="btn btn-primary" ng-click="">New Group</button>
+            </span>
+        </div>
+
+        <div class="body row">
+            <div class="col-xs-12 hide">
+                <h3>Use this screen to add Users to Groups</h3>
+                <h5>To get started, click on a user or a group from the left pane</h5>
+            </div>
+
+            <div class="col-xs-12 hide">
+                <h3>Create New Group</h3>
+                <div class="form-group">
+                    <input type="text" ng-model="new_group.group" class="form-control" placeholder="Group Name">
+                </div>
+
+                <div class="form-group">
+                    <input type="text" ng-model="new_group.description" class="form-control" placeholder="Description">
+                </div>
+
+                <button class="btn btn-success pull-right">Save</button>
+            </div>
+
+            <div class="col-xs-12 user_group_map">
+                <h3>Add Users to Group</h3>
+
+                <div class="row" style="height: calc(100% - 50px);">
+                    <div class="col-xs-5" >
+                        <ul class="user_list">
+                            <li ng-repeat="(key, user) in USERS.users">{{user.username}}</li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-1">
+                        <div style="position: relative; top: 100px;">
+                            <div><button class="btn btn-success"> &raquo;</button></div>
+                            <div style="margin-top: 10px;"><button class="btn btn-danger"> &laquo;</button></div>
+                        </div>
+                    </div>
+                    <div class="col-xs-5">
+                        <ul class="user_list">
+                            <li ng-repeat="(key, user) in USERS.users">{{user.username}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript" src="javascripts/vishwakarma.js"></script>
 
 <script src="javascripts/socket.io.min.js"></script>

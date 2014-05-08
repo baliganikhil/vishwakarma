@@ -504,3 +504,36 @@ input.project_name {
 .signup_success i {
     margin-right: 5px;
 }
+
+.user_list_container {
+    height: calc(100% - 60px);
+}
+
+.user_list {
+    height: 100%;
+    border: solid 1px #ddd;
+    padding: 0;
+    border-radius: 5px;
+    overflow: auto;
+    background: #fdfdfd;
+}
+
+.user_list li {
+    padding: 5px 10px;
+    color: #555;
+    margin-bottom: 8px;
+    border-bottom: solid 1px #ddd;
+}
+
+.user_group_map .user_list {
+    padding: 0;
+    list-style-type: none;
+}
+
+.user_group_map .user_list li {
+    padding: 5px 10px;
+    background: #fafafa;
+    border: solid 1px #eee;
+    color: #333;
+    font-size: 13px;
+}

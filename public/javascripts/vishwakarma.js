@@ -59,6 +59,13 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
                 method: 'GET',
                 url: base_url + '/logs/' + log_id
             });
+        },
+
+        get_users: function(log_id) {
+            return $http({
+                method: 'GET',
+                url: base_url + '/users'
+            });
         }
     }
 });
@@ -87,12 +94,19 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
         saving: false
     };
 
+    $scope.USERS = {
+        users: [],
+        groups: []
+    };
+
     $scope.STATUS = {
         completed: 'completed',
         running: 'running',
         error: 'error',
         aborted: 'aborted'
     };
+
+    $scope.new_group = {};
 
     $scope.active_modal = '';
     show_error('Unable to connect to server...');
@@ -333,6 +347,7 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
 
             $scope.get_projects();
             $scope.SCREENS.active_screen = 'view_projects';
+            $scope.SCREENS.active_screen = 'manage_users';
 
         }).error(function(data) {
 
@@ -382,6 +397,23 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
 
             $scope.LOGS.cur_log = data.data;
             $scope.LOGS.log_view = 'log_view';
+
+        }).error(function(data) {
+
+        });
+    };
+
+    $scope.get_users = function() {
+        $scope.USERS.getting_users = true;
+        VishwakarmaServices.get_users().success(function(data) {
+            $scope.USERS.getting_users = false;
+
+            if (data.status == 'error') {
+                alert('An error occurred while trying to get users');
+                return;
+            }
+
+            $scope.USERS.users = data.data;
 
         }).error(function(data) {
 
