@@ -12,7 +12,8 @@ exports.list = function(req, res){
 exports.register = function(req, res) {
     Account.register(new Account({username : req.body.username}), req.body.password, function(err, account) {
         if (err) {
-            res.send({status: 'error'});
+            console.log(err);
+            res.send({status: 'error', msg: err.message});
         }
 
         passport.authenticate('local')(req, res, function () {

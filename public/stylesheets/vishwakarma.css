@@ -151,9 +151,8 @@ button:disabled {
     display: inline-block;
 }
 
-input[type='text'], textarea {
+textarea {
     border: solid 1px #ccc;
-    /*height: 25px;*/
     padding-left: 3px;
     font-family: "Open Sans";
 }
@@ -433,6 +432,8 @@ input.project_name {
 .crontb {
     text-align: center;
     outline: none;
+    padding: 2px 0 2px 0 !important;
+    font-size: 15px;
 }
 
 .schedule_switch {
@@ -470,4 +471,35 @@ input.project_name {
     padding-bottom: 2px;
     padding-left: 3px;
     padding-right: 3px;
+}
+
+#modal_login_register {
+    position: fixed;
+    display: inline-block;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 330px;
+    width: 600px;
+}
+
+#modal_login_register .modal-content {
+    box-shadow: none;
+}
+
+.signin_error {
+    font-size: 11px;
+    color: #aa0000;
+}
+
+.signup_success {
+    font-size: 13px;
+    color: #4CA04C;
+    font-weight: bold;
+}
+
+.signup_success i {
+    margin-right: 5px;
 }

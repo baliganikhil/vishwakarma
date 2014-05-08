@@ -70,16 +70,18 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
 
     };
 
+    $scope.SIGNIN = {
+        username: '',
+        password: '',
+        confirm_password: '',
+        signin_error: '',
+        signup_error: ''
+    };
+
     $scope.LOGS = {
         log_list: [],
         log_view: 'log_list'
     };
-
-    $scope.active_modal = '';
-    show_error('Unable to connect to server...');
-    $scope.running_projects = {};
-    $scope.split_cron = {};
-    $scope.stdout = [];
 
     $scope.STATUS = {
         completed: 'completed',
@@ -87,6 +89,12 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
         error: 'error',
         aborted: 'aborted'
     };
+
+    $scope.active_modal = '';
+    show_error('Unable to connect to server...');
+    $scope.running_projects = {};
+    $scope.split_cron = {};
+    $scope.stdout = [];
 
     socket = io.connect('http://localhost:8888');
 
@@ -144,12 +152,12 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
             delete $scope.running_projects[_id];
         }
 
-        var payload = {_id: _id, created_by: $scope.username};
+        var payload = {_id: _id, created_by: $scope.SIGNIN.username};
         socket.emit('exec', payload);
     };
 
     $scope.kill = function(_id) {
-        socket.emit('kill', {_id: _id, aborted_by: $scope.username});
+        socket.emit('kill', {_id: _id, aborted_by: $scope.SIGNIN.username});
     };
 
     $scope.show_stdout = function(active_proj) {
@@ -273,17 +281,22 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
 
     $scope.register = function() {
         var params = {
-            username: $scope.username,
-            password: $scope.password
+            username: $scope.SIGNIN.username,
+            password: $scope.SIGNIN.password
         };
+
+        $scope.SCREENS.signing_in = true;
         VishwakarmaServices.register(params).success(function(data) {
+            $scope.SCREENS.signing_in = false;
+
             if (data.status == 'error') {
-                alert('An error occurred while trying to register you');
+                $scope.SIGNIN.signup_error = data.msg;
                 return;
             }
 
-            alert('Registered successfully');
-            console.log(data);
+            $scope.SIGNIN.password = undefined;
+            $scope.SIGNIN.signup_success = true;
+            $scope.SCREENS.login_mode == 'login';
 
         }).error(function(data) {
 
@@ -292,8 +305,8 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
 
     $scope.login = function() {
         var params = {
-            username: $scope.username,
-            password: $scope.password
+            username: $scope.SIGNIN.username,
+            password: $scope.SIGNIN.password
         };
 
         $scope.SCREENS.signing_in = true;
@@ -302,13 +315,14 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
             $scope.SCREENS.signing_in = false;
 
             if (data.status == 'error') {
-                alert('Could not log you in');
+                $scope.SIGNIN.signin_error = 'Invalid username or password';
                 return;
             }
 
+            $scope.SIGNIN.password = undefined;
+
             $scope.get_projects();
             $scope.SCREENS.active_screen = 'view_projects';
-            $scope.SCREENS.active_screen = 'view_logs';
 
         }).error(function(data) {
 
@@ -320,11 +334,11 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
     };
 
     $scope.validate_registration = function() {
-        if ($scope.confirm_password != $scope.password) {
+        if ($scope.SIGNIN.confirm_password != $scope.SIGNIN.password) {
             return false;
         }
 
-        if (nullOrEmpty($scope.password) || nullOrEmpty($scope.username)) {
+        if (nullOrEmpty($scope.SIGNIN.password) || nullOrEmpty($scope.SIGNIN.username)) {
             return false;
         }
 
