@@ -5,13 +5,14 @@
 
 var express = require('express');
 var routes = require('./routes');
-var accountAPI = require('./routes/account');
 var http = require('http');
 var path = require('path');
 
 var mongoose = require('mongoose');
+var accountAPI = require('./routes/account');
 var projects = require('./routes/projects');
 var project_log = require('./routes/project_log');
+var groups = require('./routes/group');
 
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
@@ -50,7 +51,6 @@ passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
 
 app.get('/', routes.index);
-// app.get('/users', user.list);
 
 app.post('/login', function(req, res, next) {
 
@@ -75,6 +75,8 @@ app.post('/projects/save', projects.save);
 app.get('/logs', project_log.get);
 app.get('/logs/:id', project_log.get_log);
 
+app.get('/groups', groups.get);
+app.post('/groups/save', groups.save);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

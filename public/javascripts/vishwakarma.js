@@ -66,6 +66,22 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
                 method: 'GET',
                 url: base_url + '/users'
             });
+        },
+
+        get_groups: function(log_id) {
+            return $http({
+                method: 'GET',
+                url: base_url + '/groups'
+            });
+        },
+
+        save_group: function(params) {
+            return $http({
+                method: 'POST',
+                data: JSON.stringify(params),
+                url: base_url + '/groups/save'
+            });
+
         }
     }
 });
@@ -95,6 +111,8 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
     };
 
     $scope.USERS = {
+        user_view: '',
+        saving_group: false,
         users: [],
         groups: [],
         selected_users_lhs: [],
@@ -102,7 +120,8 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
         selected_users_rhs: [],
         selected_groups_rhs: [],
         users_rhs: [],
-        groups_rhs: []
+        groups_rhs: [],
+        group_to_map: ''
     };
 
     $scope.STATUS = {
@@ -112,7 +131,7 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
         aborted: 'aborted'
     };
 
-    $scope.new_group = {};
+    $scope.cur_group = {};
 
     $scope.active_modal = '';
     show_error('Unable to connect to server...');
@@ -403,6 +422,43 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
 
             $scope.LOGS.cur_log = data.data;
             $scope.LOGS.log_view = 'log_view';
+
+        }).error(function(data) {
+
+        });
+    };
+
+    $scope.init_new_group = function() {
+        $scope.cur_group = {};
+        $scope.USERS.user_view = 'create_group';
+    };
+
+    $scope.save_group = function() {
+        $scope.USERS.saving_group = true;
+        VishwakarmaServices.save_group($scope.cur_group).success(function(data) {
+            $scope.USERS.saving_group = false;
+
+            if (data.status == 'error') {
+                alert('An error occurred while trying to save');
+                return;
+            }
+
+        }).error(function(data) {
+
+        });
+    };
+
+    $scope.get_groups = function() {
+        $scope.USERS.getting_groups = true;
+        VishwakarmaServices.get_groups().success(function(data) {
+            $scope.USERS.getting_groups = false;
+
+            if (data.status == 'error') {
+                alert('An error occurred while trying to save');
+                return;
+            }
+
+            $scope.USERS.groups = data.data;
 
         }).error(function(data) {
 

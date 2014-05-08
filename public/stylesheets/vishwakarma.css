@@ -523,6 +523,7 @@ input.project_name {
     color: #555;
     margin-bottom: 8px;
     border-bottom: solid 1px #ddd;
+    cursor: pointer;
 }
 
 .user_group_map .user_list {

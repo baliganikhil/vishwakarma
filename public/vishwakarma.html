@@ -407,8 +407,8 @@
                 Groups
 
                 <span class="pull-right" style="font-size: 12px;">
-                    <img src="/images/loader_circle.gif" ng-show="USERS.getting_users">
-                    <a href="javascript:void(0);" ng-click="get_users();">Refresh</a>
+                    <img src="/images/loader_circle.gif" ng-show="USERS.getting_groups">
+                    <a href="javascript:void(0);" ng-click="get_groups();">Refresh</a>
                 </span>
             </div>
 
@@ -418,7 +418,7 @@
                 </div>
 
                 <ul class="user_list" ng-show="USERS.groups.length != 0">
-                    <li ng-repeat="(key, group) in USERS.groups">
+                    <li ng-repeat="(key, group) in USERS.groups" ng-click="group_to_map = group.group; USERS.user_view = 'add_users_to_group'">
                         {{group.group}}
                     </li>
                 </ul>
@@ -431,34 +431,41 @@
             Manage Users & Groups
 
             <span class="pull-right">
-                <button class="btn btn-primary hide" ng-click="">New Group</button>
+                <button class="btn btn-primary" ng-click="init_new_group()" ng-hide="USERS.user_view == 'add_users_to_group'">New Group</button>
 
-                <button class="btn btn-default" ng-click="">Close</button>
-                <button class="btn btn-success" ng-click="">Save Changes</button>
+                <span ng-show="USERS.user_view == 'add_users_to_group'">
+                    <button class="btn btn-default" ng-click="">Close</button>
+                    <button class="btn btn-success" ng-click="">Save Changes</button>
+                </span>
             </span>
         </div>
 
         <div class="body row">
-            <div class="col-xs-12 hide">
-                <h3>Use this screen to add Users to Groups</h3>
+            <div class="col-xs-12" ng-show="nullOrEmpty(USERS.user_view)">
+                <h3>Use this screen to manage Users & Groups</h3>
                 <h5>To get started, click on a user or a group from the left pane</h5>
             </div>
 
-            <div class="col-xs-12 hide">
+            <div class="col-xs-12" ng-show="USERS.user_view == 'create_group'">
                 <h3>Create New Group</h3>
-                <div class="form-group">
-                    <input type="text" ng-model="new_group.group" class="form-control" placeholder="Group Name">
-                </div>
+                <form name="FormGroup">
+                    <div class="form-group">
+                        <input type="text" ng-model="cur_group.group" class="form-control" placeholder="Group Name" ng-disabled="!nullOrEmpty(cur_group._id)" required>
+                    </div>
 
-                <div class="form-group">
-                    <input type="text" ng-model="new_group.description" class="form-control" placeholder="Description">
-                </div>
+                    <div class="form-group">
+                        <input type="text" ng-model="cur_group.description" class="form-control" placeholder="Description">
+                    </div>
+                </form>
 
-                <button class="btn btn-success pull-right">Save</button>
+                <button class="btn btn-success pull-right" ng-click="save_group()" ng-disabled="FormGroup.$invalid || USERS.saving_group">
+                    <img src="/images/loader_circle.gif" ng-show="USERS.saving_group">
+                    Save
+                </button>
             </div>
 
-            <div class="col-xs-12 user_group_map">
-                <h3>Add Users to Group</h3>
+            <div class="col-xs-12 user_group_map" ng-show="USERS.user_view == 'add_users_to_group'">
+                <h3>Add Users to Group {{USERS.group_to_map}}</h3>
 
                 <div class="row" style="height: calc(100% - 50px);">
                     <div class="col-xs-5" >
