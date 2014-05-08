@@ -7,6 +7,7 @@ mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/vishwakarma');
 
 running_processes = {};
+scheduled_processes = {};
 
 var STATUS = {
     completed: 'completed',
@@ -141,6 +142,8 @@ io.sockets.on('connection', function(socket) {
     socket.on('remove_project', function(data) {
         var proj_id = data._id;
 
+        console.log(proj_id, Object.keys(running_processes));
+
         if (!running_processes.hasOwnProperty(proj_id)) {
             return false;
         }
@@ -156,6 +159,36 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('get_running_projects', function() {
         get_running_projects();
+    });
+
+    socket.on('proj_saved', function(data) {
+        // Project saved - Check cron
+        var _id = data._id;
+
+        Project.findOne({_id: _id}, function(err, doc) {
+            if (err) {
+                console.log('ERROR' + err);
+                return;
+            }
+
+            if (!doc.is_scheduled) {
+                // Unschedule if scheduled
+                if (scheduled_processes.hasOwnProperty(_id)) {
+                    scheduled_processes[_id].stop();
+                    delete scheduled_processes[_id];
+                }
+
+                return false;
+            }
+
+            var cronJob = require('cron').CronJob;
+            scheduled_processes[_id] = new cronJob(doc.cron, function() {
+                var extra_data = {_id: _id, created_by: 'cron'};
+                execute_project(extra_data);
+            }, null, true);
+
+        });
+
     });
 
     function get_running_projects() {

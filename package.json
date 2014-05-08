@@ -13,6 +13,7 @@
     "passport-local": "*",
     "passport-local-mongoose": "*",
     "mongoose": "*",
-    "connect-flash": "*"
+    "connect-flash": "*",
+    "cron": "*"
   }
 }

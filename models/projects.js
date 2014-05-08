@@ -6,7 +6,11 @@ var Project = new mongoose.Schema({
     code: String,
     next: String,
     is_scheduled: Boolean,
-    cron: String
+    cron: String,
+    created_by: String,
+    updated_by: String,
+    created_at: {type: Date, default: Date.now},
+    updated_at: {type: Date, default: Date.now}
 });
 
 module.exports = mongoose.model('Project', Project);

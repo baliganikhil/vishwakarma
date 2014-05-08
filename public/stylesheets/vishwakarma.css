@@ -63,7 +63,7 @@ body {
 .big_dialog .body {
     padding: 15px;
     position: relative;
-    height: 100%;
+    height: calc(100% - 60px);
     background: #fff;
 }
 
@@ -128,6 +128,10 @@ button:disabled {
 .running_projects li:hover .project_name {
     text-decoration: underline;
     color: #48ADE0;
+    cursor: pointer;
+}
+
+.running_projects .label:hover {
     cursor: pointer;
 }
 
@@ -358,7 +362,7 @@ input[type='text'], textarea {
 
 .output_console {
     border: solid 1px #ccc;
-    height: 85%;
+    height: 100%;
     margin-top: 5px;
     background: #fcfcfc;
     overflow: auto;

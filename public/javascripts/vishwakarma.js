@@ -261,6 +261,9 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
             }
 
             $scope.get_projects();
+
+            socket.emit('proj_saved', {_id: $scope.cur_project._id});
+
             alert('Saved successfully');
 
         }).error(function(data) {
@@ -329,7 +332,10 @@ VishwakarmaModule.controller('VKController', function ($scope, VishwakarmaServic
     };
 
     $scope.get_logs = function() {
+        $scope.LOGS.getting_logs = true;
         VishwakarmaServices.get_logs($scope.cur_project).success(function(data) {
+            $scope.LOGS.getting_logs = false;
+
             if (data.status == 'error') {
                 alert('An error occurred while trying to get logs');
                 return;

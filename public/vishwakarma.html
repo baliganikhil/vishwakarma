@@ -51,7 +51,7 @@
                 You have no running projects
             </div>
             <ul class="running_projects">
-                <li ng-repeat="(key, active_proj) in running_projects">
+                <li ng-repeat="(proj_id, active_proj) in running_projects">
                     <img src="/images/loader_circle.gif" ng-show="active_proj.status == STATUS.running">
                     <i class="fa fa-check" ng-show="active_proj.status == STATUS.completed"></i>
                     <i class="fa fa-exclamation-triangle" ng-show="active_proj.status == STATUS.aborted"></i>
@@ -60,8 +60,8 @@
                         {{active_proj.name}}
                     </span>
 
-                    <span class="label label-danger pull-right" ng-show="active_proj.status == STATUS.running" ng-click="kill(active_proj._id)">abort</span>
-                    <span class="label label-default pull-right" ng-show="active_proj.status != STATUS.running" ng-click="remove_project(active_proj._id)">remove</span>
+                    <span class="label label-danger pull-right" ng-show="active_proj.status == STATUS.running" ng-click="kill(proj_id)">abort</span>
+                    <span class="label label-default pull-right" ng-show="active_proj.status != STATUS.running" ng-click="remove_project(proj_id)">remove</span>
                 </li>
             </ul>
         </div>
@@ -220,11 +220,13 @@
             <button class="btn btn-danger pull-right" ng-click="SCREENS.active_screen = 'view_projects'">Close</button>
         </div>
 
-        <div class="output_console">
-            <ul>
-                <li ng-repeat="(key, each_line) in stdout_proj.stdout track by $index">{{each_line}}</li>
-                <li ng-show="stdout_proj.status == 'running'"><img src="/images/loader_circle.gif"></li>
-            </ul>
+        <div class="body" style="height: 88%;">
+            <div class="output_console">
+                <ul>
+                    <li ng-repeat="(key, each_line) in stdout_proj.stdout track by $index">{{each_line}}</li>
+                    <li ng-show="stdout_proj.status == 'running'"><img src="/images/loader_circle.gif"></li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
@@ -252,10 +254,18 @@
             <div ng-show="LOGS.log_view == 'log_list'">
                 <div class="no_logs" ng-show="LOGS.log_list.length == 0">
                     You have no logs - <a href="javascript:void(0);" ng-click="get_logs()">fetch recent logs</a>
+                    <img src="/images/loader_circle.gif" ng-show="LOGS.getting_logs">
                 </div>
 
                 <div ng-show="LOGS.log_list.length > 0">
-                    <h4>Logs</h4>
+                    <div>
+                        <h4 style="float: left;">Logs</h4>
+                        <span class="pull-right" style="font-size: 12px;">
+                            <img src="/images/loader_circle.gif" ng-show="LOGS.getting_logs">
+                            <a href="javascript:void(0);" ng-click="get_logs();">Refresh</a>
+                        </span>
+                    </div>
+
                     <table class="table">
                         <thead>
                             <tr>
@@ -286,8 +296,8 @@
                 </div>
             </div>
 
-            <div ng-show="LOGS.log_view == 'log_view'">
-                <div class="output_console" style="height: 98%;">
+            <div ng-show="LOGS.log_view == 'log_view'" style="position: absolute; top: 0; bottom: 50px; right: 20px; left: 20px;">
+                <div class="output_console">
                     <ul>
                         <li ng-repeat="(key, each_line) in LOGS.cur_log.stdout track by $index">{{each_line}}</li>
                     </ul>
