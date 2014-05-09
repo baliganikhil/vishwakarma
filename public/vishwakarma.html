@@ -537,7 +537,7 @@
                     <tbody>
                         <tr ng-repeat="(key, prjgrp) in GRPPRJ.grpprjmap">
                             <td><select ng-options="group.group as group.group for (key, group) in USERS.groups" ng-model="prjgrp.group"></select></td>
-                            <td><input type="checkbox" ng-model="prjgrp.hide"></td>
+                            <td><input type="checkbox" ng-model="prjgrp.hidden"></td>
                             <td><input type="checkbox" ng-model="prjgrp.get"></td>
                             <td><input type="checkbox" ng-model="prjgrp.edit"></td>
                             <td><input type="checkbox" ng-model="prjgrp.run"></td>
