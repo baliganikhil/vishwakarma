@@ -26,7 +26,7 @@ function get_groups_for_user(username, res) {
 }
 
 function get_projects_for_group(groups, res) {
-    GroupProjectMap.find({}, function(err, proj_permissions) {
+    GroupProjectMap.find({group: {'$in': groups}}, function(err, proj_permissions) {
         if (err) {
             console.log(JSON.stringify(err));
             return false;
