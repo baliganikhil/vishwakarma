@@ -112,18 +112,7 @@ exports.get_groups_for_project = function(req, res) {
     });
 };
 
-exports.add_groups_to_project = function(req, res) {
-    var project = req.body.project;
-    var groups = req.body.groups;
-
-    function callback(payload) {
-        res.send(payload);
-    }
-
-    add_groups_to_project(project, groups, callback);
-};
-
-function add_groups_to_project(project, groups, callback) {
+exports.v_add_groups_to_project = function(project, groups, callback) {
 
     GroupProjectMap.remove({project: project}, function(err) {
         if (err) {
@@ -148,7 +137,18 @@ function add_groups_to_project(project, groups, callback) {
 
     });
 
-}
+};
+
+exports.add_groups_to_project = function(req, res) {
+    var project = req.body.project;
+    var groups = req.body.groups;
+
+    function callback(payload) {
+        res.send(payload);
+    }
+
+    add_groups_to_project(project, groups, callback);
+};
 
 exports.create_admin_group = function(admin, callback) {
     var admin_group = {

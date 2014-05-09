@@ -1,6 +1,7 @@
 var Project = require('../models/projects.js');
 var UserGroupMap = require('../models/user_group');
 var GroupProjectMap = require('../models/group_project');
+var Group = require('./group');
 
 exports.get = function(req, res) {
     var username = req.params.username;
@@ -97,7 +98,10 @@ exports.save = function(req, res) {
                 res.send({status: 'error'});
             }
 
-            res.send({status: 'success', data: doc});
+            // New project - add admin
+            Group.v_add_groups_to_project(doc._id, [], function() {
+                res.send({status: 'success', data: doc});
+            });
 
         });
     } else {

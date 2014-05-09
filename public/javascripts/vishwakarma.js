@@ -350,6 +350,7 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
             }
 
             $scope.get_projects();
+            $scope.cur_project._id = data.data._id;
 
             socket.emit('proj_saved', {_id: $scope.cur_project._id});
 
