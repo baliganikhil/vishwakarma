@@ -56,8 +56,15 @@ app.post('/login', function(req, res, next) {
 
     passport.authenticate('local', function(err, user) {
         if (user) {
-            console.log('user logged in');
-            res.send({status: 'success'});
+
+            var username = user.username;
+
+            groups.v_get_users_for_group('admin', function(data) {
+                var is_admin = data.users.indexOf(username) > -1;
+
+                res.send({status: 'success', is_admin: is_admin});
+            });
+
         } else {
             res.send({status: 'error'});
         }

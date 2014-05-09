@@ -40,8 +40,6 @@ function get_projects_for_group(groups, res) {
             }
         });
 
-        console.log(project_ids);
-
         Project.find({_id: {'$in': project_ids}}, {code: 0}, function(err, docs) {
             if (err) {
                 res.send({status: 'error'});
@@ -55,17 +53,37 @@ function get_projects_for_group(groups, res) {
                     doc = JSON.parse(JSON.stringify(doc));
 
                     if (proj_permission_line.project == doc._id) {
-                        doc.get = proj_permission_line.get;
-                        doc.edit = proj_permission_line.edit;
-                        doc.run = proj_permission_line.run;
-                        doc.abort = proj_permission_line.abort;
-                        doc.logs = proj_permission_line.logs;
+                        doc.get = doc.get || proj_permission_line.get;
+                        doc.edit = doc.edit || proj_permission_line.edit;
+                        doc.run = doc.run || proj_permission_line.run;
+                        doc.abort = doc.abort || proj_permission_line.abort;
+                        doc.logs = doc.logs || proj_permission_line.logs;
 
                         final_response.push(doc);
                         return false;
                     }
                 });
             });
+
+            // Perform OR operation across permissions
+            var map = {};
+            final_response.forEach(function(line) {
+                if (map[line._id] == undefined) {
+                    map[line._id] = line;
+                    return true;
+                }
+
+                map[line._id].get = line.get;
+                map[line._id].edit = line.edit;
+                map[line._id].run = line.run;
+                map[line._id].abort = line.abort;
+                map[line._id].logs = line.logs;
+            });
+
+            final_response = [];
+            for (proj in map) {
+                final_response.push(map[proj]);
+            }
 
             res.send({status: 'success', data: final_response});
 
@@ -108,11 +126,13 @@ exports.save = function(req, res) {
         var _id = project._id;
         delete project._id;
 
-        Project.update({_id: _id}, project, {upsert: true}, function(err, doc) {
+        Project.findOneAndUpdate({_id: _id}, project, {upsert: true}, function(err, doc) {
             if (err) {
                 console.log(err);
                 res.send({status: 'error'});
             }
+
+            console.log(doc);
 
             res.send({status: 'success', data: doc});
 

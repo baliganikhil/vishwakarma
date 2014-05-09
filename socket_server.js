@@ -200,6 +200,7 @@ io.sockets.on('connection', function(socket) {
         }
 
         socket.emit('get_running_projects', running_processes_copy);
+        socket.broadcast.emit('get_running_projects', running_processes_copy);
     }
 
     function write_proj_to_log(_id) {

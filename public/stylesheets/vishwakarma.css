@@ -538,6 +538,7 @@ input.project_name {
     color: #333;
     font-size: 13px;
     cursor: pointer;
+    margin-bottom: 0px;
 }
 
 .user_selected {

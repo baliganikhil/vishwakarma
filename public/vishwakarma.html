@@ -25,7 +25,7 @@
         <li ng-class="{active: SCREENS.active_screen == 'view_projects'}">
             <a href="javascript:void(0);" ng-click="SCREENS.active_screen = 'view_projects'">Home</a>
         </li>
-        <li ng-class="{active: SCREENS.active_screen == 'manage_users'}">
+        <li ng-class="{active: SCREENS.active_screen == 'manage_users'}" ng-show="is_admin">
             <a href="javascript:void(0);" ng-click="show_manage_users_pane()">Users & Groups</a>
         </li>
         <li ng-class="{active: SCREENS.active_screen == 'view_logs'}">
@@ -54,16 +54,14 @@
                 You have no running projects
             </div>
             <ul class="running_projects">
-                <li ng-repeat="(proj_id, active_proj) in running_projects">
+                <li ng-repeat="(proj_id, active_proj) in running_projects" ng-hide="nullOrEmpty(proj_perm_map[proj_id])">
                     <img src="/images/loader_circle.gif" ng-show="active_proj.status == STATUS.running">
                     <i class="fa fa-check" ng-show="active_proj.status == STATUS.completed"></i>
                     <i class="fa fa-exclamation-triangle" ng-show="active_proj.status == STATUS.aborted"></i>
 
-                    <span class="project_name" ng-click="show_stdout(active_proj)">
-                        {{active_proj.name}}
-                    </span>
+                    <span class="project_name" ng-click="show_stdout(active_proj)">{{active_proj.name}}</span>
 
-                    <span class="label label-danger pull-right" ng-show="active_proj.status == STATUS.running" ng-click="kill(proj_id)">abort</span>
+                    <span class="label label-danger pull-right" ng-show="proj_perm_map[proj_id].kill && active_proj.status == STATUS.running" ng-click="kill(proj_id)">abort</span>
                     <span class="label label-default pull-right" ng-show="active_proj.status != STATUS.running" ng-click="remove_project(proj_id)">remove</span>
                 </li>
             </ul>
@@ -74,7 +72,7 @@
         <div class="header row">
             Projects
 
-            <button class="btn btn-success pull-right" ng-click="init_new_project()">New Project</button>
+            <button class="btn btn-success pull-right" ng-click="init_new_project()" ng-show="is_admin">New Project</button>
         </div>
 
         <div class="body row">
@@ -85,7 +83,10 @@
 
             <table class="projects table">
                 <tr ng-repeat="(key, project) in projects">
-                    <td class="project_name"><a href="javascript: void(0);" ng-click="get_project(project._id)">{{project.name}}</a></td>
+                    <td class="project_name">
+                        <a href="javascript: void(0);" ng-click="get_project(project._id)" ng-show="project.get || project.edit">{{project.name}}</a>
+                        <span ng-hide="project.get">{{project.name}}</span>
+                    </td>
                     <td>{{project.desc}}</td>
                     <td>
                         <button ng-click="run_cmd(project._id)" class="btn btn-default pull-right" ng-hide="!project.run || get_proj_status(project._id) == 'running'">Run</button>
@@ -470,6 +471,10 @@
                     <img src="/images/loader_circle.gif" ng-show="USERS.saving_group">
                     Save
                 </button>
+
+                <span class="save_success" ng-show="USERS.saved_group" style="margin-right: 25px; line-height: 35px;">
+                    <i class="fa fa-check"></i> Saved Successfully
+                </span>
             </div>
 
             <div class="col-xs-12 user_group_map" ng-show="USERS.user_view == 'add_users_to_group'">
@@ -515,7 +520,7 @@
                     <img src="/images/loader_circle.gif" ng-show="GRPPRJ.saving_groups">
                     Save
                 </button>
-                <button class="btn btn-default">Close</button>
+                <button class="btn btn-default" ng-click="SCREENS.active_screen = 'edit_project'">Close</button>
             </span>
         </div>
 

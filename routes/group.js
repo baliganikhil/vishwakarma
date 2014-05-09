@@ -13,11 +13,10 @@ exports.get = function(req, res) {
     });
 };
 
-exports.get_users_for_group = function(req, res) {
-    var group = req.params.group;
+exports.v_get_users_for_group = function(group, callback) {
     UserGroupMap.find({group: group}, {}, function(err, docs) {
         if (err) {
-            res.send({status: 'error'});
+            callback({status: 'error'});
         }
 
         var data = {};
@@ -28,8 +27,20 @@ exports.get_users_for_group = function(req, res) {
             data.users.push(rec.username);
         });
 
-        res.send({status: 'success', data: data});
+        callback(data);
+
     });
+};
+
+exports.get_users_for_group = function(req, res) {
+    var group = req.params.group;
+
+    function callback(data) {
+        res.send({status: 'success', data: data});
+    }
+
+    exports.v_get_users_for_group(group, callback);
+
 };
 
 exports.save = function(req, res) {
@@ -108,6 +119,15 @@ exports.get_groups_for_project = function(req, res) {
             res.send({status: 'error'});
         }
 
+        docs.forEach(function(doc, k) {
+            doc = JSON.parse(JSON.stringify(doc));
+
+            if (doc.group == 'admin') {
+                docs.splice(k, 1);
+                return false;
+            }
+        });
+
         res.send({status: 'success', data: docs});
     });
 };
@@ -147,7 +167,7 @@ exports.add_groups_to_project = function(req, res) {
         res.send(payload);
     }
 
-    add_groups_to_project(project, groups, callback);
+    exports.v_add_groups_to_project(project, groups, callback);
 };
 
 exports.create_admin_group = function(admin, callback) {

@@ -1,6 +1,7 @@
 var VishwakarmaModule = angular.module('VishwakarmaModule', []);
 
-var base_url = 'http://localhost:3000';
+var server_url = 'http://localhost';
+var base_url = server_url + ':3000';
 
 VishwakarmaModule.factory('VishwakarmaServices', function($http) {
 
@@ -166,6 +167,8 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
         aborted: 'aborted'
     };
 
+    $scope.proj_perm_map = {};
+
     $scope.cur_group = {};
 
     $scope.active_modal = '';
@@ -174,7 +177,7 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
     $scope.split_cron = {};
     $scope.stdout = [];
 
-    socket = io.connect('http://localhost:8888');
+    socket = io.connect(server_url + ':8888');
 
     socket.on('disconnect', function() {
         show_error('Lost connection with server...');
@@ -239,6 +242,10 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
     };
 
     $scope.show_stdout = function(active_proj) {
+        if (!$scope.proj_perm_map[active_proj.proj_id].logs) {
+            return;
+        }
+
         $scope.stdout_proj = active_proj;
         $scope.SCREENS.active_screen = 'stdout';
     };
@@ -334,6 +341,11 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
 
             $scope.projects = data.data;
 
+            $scope.proj_perm_map = {};
+            data.data.forEach(function(project) {
+                $scope.proj_perm_map[project._id] = project;
+            });
+
         }).error(function(data) {
 
         });
@@ -409,6 +421,7 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
             }
 
             $scope.SIGNIN.password = undefined;
+            $scope.is_admin = data.is_admin;
 
             $scope.get_projects();
             $scope.SCREENS.active_screen = 'view_projects';
@@ -481,6 +494,13 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
                 alert('An error occurred while trying to save');
                 return;
             }
+
+            $scope.USERS.saved_group = true;
+            $timeout(function() {
+                $scope.USERS.saved_group = false;
+            }, 5000);
+
+            $scope.get_groups();
 
         }).error(function(data) {
 
