@@ -68,7 +68,7 @@ app.post('/login', function(req, res, next) {
 app.post('/accounts/register', accountAPI.register);
 app.get('/users', accountAPI.get);
 
-app.get('/projects', projects.get);
+app.get('/:username/projects', projects.get);
 app.get('/projects/:id', projects.get_project);
 app.post('/projects/save', projects.save);
 app.get('/projects/:project/groups', groups.get_groups_for_project);

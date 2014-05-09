@@ -6,10 +6,10 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
 
     return {
 
-        get_projects: function() {
+        get_projects: function(username) {
             return $http({
                 method: 'GET',
-                url: base_url + '/projects'
+                url: base_url + '/' + username + '/projects'
             });
         },
 
@@ -326,7 +326,7 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
     }, true);
 
     $scope.get_projects = function() {
-        VishwakarmaServices.get_projects($scope.cur_project).success(function(data) {
+        VishwakarmaServices.get_projects($scope.SIGNIN.username).success(function(data) {
             if (data.status == 'error') {
                 alert('An error occurred while trying to get projects');
                 return;
