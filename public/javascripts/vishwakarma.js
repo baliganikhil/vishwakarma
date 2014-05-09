@@ -378,9 +378,13 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
                 return;
             }
 
+            $scope.SIGNIN.signup_error = undefined;
+            $scope.SIGNIN.signin_error = undefined;
             $scope.SIGNIN.password = undefined;
+            $scope.SIGNIN.confirm_password = undefined;
             $scope.SIGNIN.signup_success = true;
-            $scope.SCREENS.login_mode == 'login';
+
+            $scope.SCREENS.login_mode = 'login';
 
         }).error(function(data) {
 

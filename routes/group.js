@@ -34,62 +34,71 @@ exports.get_users_for_group = function(req, res) {
 
 exports.save = function(req, res) {
     var group = req.body;
+    function callback(err, doc) {
+        if (err) {
+            res.send({status: 'error'});
+        }
 
+        res.send({status: 'success', data: doc});
+    }
+
+    save(group, callback);
+};
+
+function save(group, callback) {
     if (group._id == undefined) {
         group = new Group(group);
 
         group.save(function(err, doc) {
-            if (err) {
-                res.send({status: 'error'});
-            }
-
-            res.send({status: 'success', data: doc});
-
+            callback(err, doc);
         });
     } else {
         var _id = group._id;
         delete group._id;
 
         Group.update({_id: _id}, group, {upsert: true}, function(err, doc) {
-            if (err) {
-                res.send({status: 'error'});
-            }
-
-            res.send({status: 'success', data: doc});
-
+            callback(doc);
         });
     }
-
-};
+}
 
 exports.add_users_to_group = function(req, res) {
     var group = req.body.group;
+    var usernames = req.body.usernames;
 
+    function callback() {
+        res.send({status: 'success'});
+    }
+
+    add_users_to_group(group, usernames, callback);
+};
+
+function add_users_to_group(group, usernames, callback) {
     UserGroupMap.remove({group: group}, function(err) {
         if (err) {
             res.send({status: 'error'});
         }
 
-        var records_to_process = req.body.usernames.length;
+        var records_to_process = usernames.length;
 
         if (records_to_process == 0) {
-            res.send({status: 'success'});
+            callback()
         }
 
-        req.body.usernames.forEach(function(username) {
+        usernames.forEach(function(username) {
             var usergroupmap = new UserGroupMap({group: group, username: username});
 
             usergroupmap.save(function(err, doc) {
                 records_to_process--;
 
                 if (records_to_process === 0) {
-                    res.send({status: 'success'});
+                    callback()
                 }
             });
         });
 
     });
-};
+}
 
 exports.get_groups_for_project = function(req, res) {
     var project = req.params.project;
@@ -105,19 +114,26 @@ exports.get_groups_for_project = function(req, res) {
 
 exports.add_groups_to_project = function(req, res) {
     var project = req.body.project;
+    var groups = req.body.groups;
+
+    function callback(payload) {
+        res.send(payload);
+    }
+
+    add_groups_to_project(project, groups, callback);
+};
+
+function add_groups_to_project(project, groups, callback) {
 
     GroupProjectMap.remove({project: project}, function(err) {
         if (err) {
-            res.send({status: 'error'});
+            callback({status: 'error'});
         }
 
-        var records_to_process = req.body.groups.length;
+        groups.push({group: 'admin', get: true, edit: true, run: true, abort: true, logs: true});
+        var records_to_process = groups.length;
 
-        if (records_to_process == 0) {
-            res.send({status: 'success'});
-        }
-
-        req.body.groups.forEach(function(groupproject) {
+        groups.forEach(function(groupproject) {
             groupproject.project = project;
             var groupprojectmap = new GroupProjectMap(groupproject);
 
@@ -125,10 +141,22 @@ exports.add_groups_to_project = function(req, res) {
                 records_to_process--;
 
                 if (records_to_process === 0) {
-                    res.send({status: 'success'});
+                    callback({status: 'success'});
                 }
             });
         });
 
+    });
+
+}
+
+exports.create_admin_group = function(admin, callback) {
+    var admin_group = {
+        group: 'admin',
+        description: 'Admin Group'
+    };
+
+    save(admin_group, function() {
+        add_users_to_group('admin', [admin], callback);
     });
 };

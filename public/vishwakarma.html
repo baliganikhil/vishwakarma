@@ -88,7 +88,7 @@
                     <td class="project_name"><a href="javascript: void(0);" ng-click="get_project(project._id)">{{project.name}}</a></td>
                     <td>{{project.desc}}</td>
                     <td>
-                        <button ng-click="run_cmd(project._id)" class="btn btn-default pull-right" ng-hide="get_proj_status(project._id) == 'running'">Run</button>
+                        <button ng-click="run_cmd(project._id)" class="btn btn-default pull-right" ng-hide="!project.run || get_proj_status(project._id) == 'running'">Run</button>
                     </td>
                 </tr>
             </table>

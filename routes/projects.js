@@ -3,15 +3,6 @@ var UserGroupMap = require('../models/user_group');
 var GroupProjectMap = require('../models/group_project');
 
 exports.get = function(req, res) {
-    // Project.find({}, {code: 0}, function(err, docs) {
-    //     if (err) {
-    //         res.send({status: 'error'});
-    //     }
-
-    //     res.send({status: 'success', data: docs});
-
-    // });
-
     var username = req.params.username;
     get_groups_for_user(username, res);
 };
