@@ -359,6 +359,8 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
 
             $scope.projects = data.data;
 
+            $scope.projects_to_chain = [{_id: '', name: ''}].concat($scope.projects);
+
             $scope.proj_perm_map = {};
             data.data.forEach(function(project) {
                 $scope.proj_perm_map[project._id] = project;
