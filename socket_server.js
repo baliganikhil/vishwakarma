@@ -75,6 +75,9 @@ io.sockets.on('connection', function(socket) {
 
             prog.stdout.setEncoding('utf8');
             prog.stdout.on('data', function (data) {
+
+                console.log(data);
+
                 running_processes[doc._id].stdout.push(data);
 
                 var payload = {name: doc.name, filename: filename, stdout: data, status: STATUS.running, _id: doc._id};
