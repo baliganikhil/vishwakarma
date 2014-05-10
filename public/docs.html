@@ -7,7 +7,7 @@
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.css" rel="stylesheet">
     <title>Vishwakarma Build System</title>
 </head>
-<body class="container" ng-controller="VKController">
+<body class="container" ng-controller="VKDocsController">
 <header class="navbar navbar-static-top bs-docs-nav row" id="top" role="banner">
   <div class="container">
     <div class="navbar-header">
@@ -21,8 +21,8 @@
     </div>
     <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
       <ul class="nav navbar-nav pull-right">
-        <li><a href="javascript:void(0);">Home</a></li>
-        <li><a href="javascript:void(0);">Docs</a></li>
+        <li onclick="window.location = '/vishwakarma.html'"><a href="javascript:void(0);">Home</a></li>
+        <li class="active"><a href="javascript:void(0);">Docs</a></li>
         <li><a href="javascript:void(0);">About</a></li>
       </ul>
     </nav>
@@ -32,24 +32,25 @@
 <div class="row" style="calc(100% - 100px); border: solid 1px #ccc">
     <div class="col-xs-3" style="height: calc(100% - 100px); background: #fafafa; padding: 20px 25px; overflow: auto;">
         <ul style="padding: 0; list-style-type: none;">
-            <li><a href="javascript:void(0);">Introduction</a></li>
-            <li><a href="javascript:void(0);">Getting Started</a></li>
-            <li><a href="javascript:void(0);">Administrator</a></li>
+            <li><a href="javascript:void(0);" ng-click="show_pane = 1">Introduction</a></li>
+            <li><a href="javascript:void(0);" ng-click="show_pane = 2">Getting Started</a></li>
+            <li><a href="javascript:void(0);" ng-click="show_pane = 3">Administrator</a></li>
             <li>
-                <a href="javascript:void(0);">Creating Projects</a>
+                <a href="javascript:void(0);" ng-click="show_pane = 4">Creating Projects</a>
                 <ul style="list-style-type: none; padding-left: 25px;">
-                    <li><a href="javascript:void(0);">Chaining Projects</a></li>
-                    <li><a href="javascript:void(0);">Scheduling Projects</a></li>
-                    <li><a href="javascript:void(0);">Manage Groups & Permissions</a></li>
+                    <li><a href="javascript:void(0);" ng-click="show_pane = 4">Chaining Projects</a></li>
+                    <li><a href="javascript:void(0);" ng-click="show_pane = 4">Scheduling Projects</a></li>
+                    <li><a href="javascript:void(0);" ng-click="show_pane = 4">Manage Groups & Permissions</a></li>
                 </ul>
             </li>
-            <li><a href="javascript:void(0);">Logs</a></li>
+            <li><a href="javascript:void(0);" ng-click="show_pane = 5">Logs</a></li>
+            <li><a href="javascript:void(0);" ng-click="show_pane = 6">About</a></li>
 
         </ul>
     </div>
     <div class="col-xs-9" style="border-left: solid 1px #ccc; height: calc(100% - 100px); overflow: auto; padding: 20px 25px; ">
 
-        <div class="section hide">
+        <div class="section" ng-show="show_pane == 1">
             <h3>Introduction</h3>
 
             <p>
@@ -65,7 +66,7 @@
             </p>
         </div>
 
-        <div class="section hide">
+        <div class="section" ng-show="show_pane == 2">
             <h3>Getting Started</h3>
 
             <p>
@@ -85,7 +86,7 @@
 
         </div>
 
-        <div class="section hide">
+        <div class="section" ng-show="show_pane == 3">
             <h3>Administrator</h3>
             <p>
                 The admin has the following powers
@@ -104,7 +105,7 @@
             <p>Admins get all privileges to all projects by default</p>
         </div>
 
-        <div class="section hide">
+        <div class="section" ng-show="show_pane == 4">
             <h3>Creating Projects</h3>
             <p>In Vishwakarma, only admins can create projects</p>
 
@@ -147,22 +148,44 @@
             </p>
         </div>
 
-        <div class="section">
+        <div class="section" ng-show="show_pane == 5">
             <h3>Logs</h3>
+            <p>
+                Vishwakarma logs all executed projects
+            </p>
+        </div>
+
+        <div class="section" ng-show="show_pane == 6">
+            <h3>About</h3>
+            <p>
+                Vishwakarma was completely designed and developed by Nikhil Baliga
+            </p>
+
+            <p>
+                You can get in touch with me at <a href="javascript:void(0);">baliganikhil@gmail.com</a>
+            </p>
+
+            <p></p>
         </div>
 
         <div>
             <span class="pull-right">
-                <button class="btn btn-default">Prev</button>
-                <button class="btn btn-default">Next</button>
+                <button class="btn btn-default" ng-hide="show_pane == 1" ng-click="show_pane = show_pane - 1">Prev</button>
+                <button class="btn btn-default" ng-hide="show_pane == 6" ng-click="show_pane = show_pane + 1">Next</button>
             </span>
         </div>
 
     </div>
 </div>
 
-<script src="javascripts/socket.io.min.js"></script>
-<script type="text/javascript" src="javascripts/vishwakarma.js"></script>
+<script type="text/javascript">
+    var VishwakarmaModule = angular.module('VishwakarmaModule', []);
+
+    VishwakarmaModule.controller('VKDocsController', function($scope) {
+        $scope.show_pane = 1;
+    });
+</script>
+
 <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.css" rel="stylesheet">
 
 </body>
