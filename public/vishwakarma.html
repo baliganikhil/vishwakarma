@@ -62,7 +62,7 @@
                     <span class="project_name" ng-click="show_stdout(active_proj)">{{active_proj.name}}</span>
 
                     <span class="label label-danger pull-right" ng-show="(proj_perm_map[proj_id].kill || is_admin) && active_proj.status == STATUS.running" ng-click="kill(proj_id)">abort</span>
-                    <span class="label label-default pull-right" ng-show="active_proj.status != STATUS.running" ng-click="remove_project(proj_id)">remove</span>
+                    <span class="label label-default pull-right" ng-show="(proj_perm_map[proj_id].kill || is_admin) &&active_proj.status != STATUS.running" ng-click="remove_project(proj_id)">remove</span>
                 </li>
             </ul>
         </div>
@@ -84,8 +84,8 @@
             <table class="projects table">
                 <tr ng-repeat="(key, project) in projects">
                     <td class="project_name">
-                        <a href="javascript: void(0);" ng-click="get_project(project._id)" ng-show="project.get || project.edit">{{project.name}}</a>
-                        <span ng-hide="project.get">{{project.name}}</span>
+                        <a href="javascript: void(0);" ng-click="get_project(project._id)" ng-show="project.edit">{{project.name}}</a>
+                        <span ng-show="project.get && !project.edit">{{project.name}}</span>
                     </td>
                     <td>{{project.desc}}</td>
                     <td>
@@ -102,15 +102,16 @@
 <div class="big_dialog new_project row" ng-show="SCREENS.active_screen == 'edit_project'">
     <div class="col-xs-12">
         <div class="header">
-            <span ng-show="cur_project._id != null && !edit_proj_title">{{cur_project.name}} <i class="fa fa-pencil edit_title" ng-click="edit_proj_title = true"></i></span>
+            <span ng-show="cur_project._id != null && !edit_proj_title">Project: {{cur_project.name}} <i class="fa fa-pencil edit_title" ng-click="edit_proj_title = true"></i></span>
             <span ng-show="cur_project._id == null || edit_proj_title">
                 <input type="text" ng-model="cur_project.name" class="project_name">
+                <span class="vk_error" ng-show="nullOrEmpty(cur_project.name)">Project name is required</span>
             </span>
 
             <div class="pull-right">
                 <span class="save_success" ng-show="PROJECTS.save_success"><i class="fa fa-check"></i> Saved Successfully</span>
                 <button class="btn btn-default" ng-click="SCREENS.active_screen = 'view_projects'">Close</button>
-                <button class="btn btn-primary" ng-click="save_project()" ng-disabled="PROJECTS.saving">
+                <button class="btn btn-primary" ng-click="save_project()" ng-disabled="PROJECTS.saving" ng-show="is_admin || proj_perm_map[cur_project._id].edit">
                     <img src="/images/loader_circle.gif" ng-show="PROJECTS.saving"></span>
                     Save
                 </button>
@@ -167,12 +168,14 @@
 
                     </div>
 
-                    <div class="header row">
-                        Manage Groups & Permissions
-                    </div>
+                    <div ng-hide="nullOrEmpty(cur_project._id)">
+                        <div class="header row">
+                            Manage Groups & Permissions
+                        </div>
 
-                    <div class="row" style="text-align: center;">
-                        <a href="javascript:void(0);" ng-click="show_manage_prjgrp_pane()">View & Edit Permissions</a>
+                        <div class="row" style="text-align: center;">
+                            <a href="javascript:void(0);" ng-click="show_manage_prjgrp_pane()">View & Edit Permissions</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -443,6 +446,7 @@
                 <button class="btn btn-primary" ng-click="init_new_group()" ng-hide="USERS.user_view == 'add_users_to_group'">New Group</button>
 
                 <span ng-show="USERS.user_view == 'add_users_to_group'">
+                    <span class="save_success" ng-show="USERS.save_success" style="margin-right: 50px;"><i class="fa fa-check"></i> Saved Successfully</span>
                     <button class="btn btn-default" ng-click="USERS.user_view = ''">Close</button>
                     <button class="btn btn-success" ng-click="add_users_to_group()">Save Changes</button>
                 </span>
@@ -515,6 +519,7 @@
             Add Permissions to Groups for Project: {{cur_project.name}}
 
             <span class="pull-right">
+                <span class="save_success" ng-show="GRPPRJ.save_success" style="margin-right: 50px;"><i class="fa fa-check"></i> Saved Successfully</span>
                 <button class="btn btn-primary" ng-click="add_grpprj_row()">Add Row</button>
                 <button class="btn btn-success" ng-click="save_grpprj()" ng-disabled="GRPPRJ.saving_groups()">
                     <img src="/images/loader_circle.gif" ng-show="GRPPRJ.saving_groups">
@@ -541,14 +546,14 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="(key, prjgrp) in GRPPRJ.grpprjmap">
-                            <td><select ng-options="group.group as group.group for (key, group) in USERS.groups" ng-model="prjgrp.group"></select></td>
+                            <td><select class="project_dd" ng-options="group.group as group.group for (key, group) in USERS.groups" ng-model="prjgrp.group"></select></td>
                             <td><input type="checkbox" ng-model="prjgrp.hidden"></td>
                             <td><input type="checkbox" ng-model="prjgrp.get"></td>
                             <td><input type="checkbox" ng-model="prjgrp.edit"></td>
                             <td><input type="checkbox" ng-model="prjgrp.run"></td>
                             <td><input type="checkbox" ng-model="prjgrp.abort"></td>
                             <td><input type="checkbox" ng-model="prjgrp.logs"></td>
-                            <td><button class="btn btn-danger"><i class="fa fa-minus"></i></button></td>
+                            <td><button class="btn btn-danger" ng-click="remove_grpprj_row(key)"><i class="fa fa-minus"></i></button></td>
                         </tr>
                     </tbody>
                 </table>

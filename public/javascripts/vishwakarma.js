@@ -199,10 +199,8 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
             });
 
             socket.on('proj_start', function(data) {
-                if ($scope.running_projects[data._id] == undefined) {
-                    $scope.running_projects[data._id] = data;
-                    $scope.running_projects[data._id].stdout = [];
-                }
+                $scope.running_projects[data._id] = data;
+                $scope.running_projects[data._id].stdout = [];
 
                 $scope.$apply();
             });
@@ -264,10 +262,9 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
 
     }
 
-
-
     $scope.show_stdout = function(active_proj) {
-        if (!$scope.is_admin && !$scope.proj_perm_map[active_proj.proj_id].logs) {
+        console.log(active_proj)
+        if (!$scope.is_admin && !$scope.proj_perm_map[active_proj.project_id].logs) {
             return;
         }
 
@@ -580,7 +577,10 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
                 return;
             }
 
-            alert('success');
+            $scope.USERS.save_success = true;
+            $timeout(function() {
+                $scope.USERS.save_success = false;
+            }, 5000);
 
         }).error(function(data) {
 
@@ -620,6 +620,10 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
         $scope.GRPPRJ.grpprjmap.push({});
     };
 
+    $scope.remove_grpprj_row = function(key) {
+        $scope.GRPPRJ.grpprjmap.splice(key, 1);
+    };
+
     $scope.save_grpprj = function() {
         var group_names = [];
         var is_valid = true;
@@ -629,6 +633,8 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
                 is_valid = false;
                 return false;
             }
+
+            group_names.push(row.group);
         });
 
         if (!is_valid) {
@@ -649,7 +655,10 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
                 return;
             }
 
-            alert('success');
+            $scope.GRPPRJ.save_success = true;
+            $timeout(function() {
+                $scope.GRPPRJ.save_success = false;
+            }, 5000);
 
         }).error(function(data) {
 

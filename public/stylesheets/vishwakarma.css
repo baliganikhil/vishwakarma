@@ -490,7 +490,7 @@ input.project_name {
     box-shadow: none;
 }
 
-.signin_error {
+.signin_error, .vk_error {
     font-size: 11px;
     color: #aa0000;
 }
@@ -544,4 +544,12 @@ input.project_name {
 .user_selected {
     font-weight: bold;
     background: #eee !important;
+}
+
+.project_dd {
+    background: #fff;
+    font-size: 12px;
+    height: 25px;
+    min-width: 150px;
+    border-radius: 3px;
 }

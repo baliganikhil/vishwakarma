@@ -72,11 +72,10 @@ io.sockets.on('connection', function(socket) {
                                         };
 
             socket.emit('proj_start', {name: doc.name, filename: filename, status: STATUS.running, _id: doc._id});
+            socket.broadcast.emit('proj_start', {name: doc.name, filename: filename, status: STATUS.running, _id: doc._id});
 
             prog.stdout.setEncoding('utf8');
             prog.stdout.on('data', function (data) {
-
-                console.log(data);
 
                 running_processes[doc._id].stdout.push(data);
 
