@@ -1,0 +1,163 @@
+<html ng-app="VishwakarmaModule">
+<head>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/vishwakarma.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/bootstrap.min.css">
+    <script type="text/javascript" src="javascripts/lib/angular.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.css" rel="stylesheet">
+    <title>Vishwakarma Build System</title>
+</head>
+<body class="container" ng-controller="VKController">
+<header class="navbar navbar-static-top bs-docs-nav row" id="top" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="javascript:void(0);" class="navbar-brand">Vishwakarma Build System</a>
+    </div>
+    <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+      <ul class="nav navbar-nav pull-right">
+        <li><a href="javascript:void(0);">Home</a></li>
+        <li><a href="javascript:void(0);">Docs</a></li>
+        <li><a href="javascript:void(0);">About</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div class="row" style="calc(100% - 100px); border: solid 1px #ccc">
+    <div class="col-xs-3" style="height: calc(100% - 100px); background: #fafafa; padding: 20px 25px; overflow: auto;">
+        <ul style="padding: 0; list-style-type: none;">
+            <li><a href="javascript:void(0);">Introduction</a></li>
+            <li><a href="javascript:void(0);">Getting Started</a></li>
+            <li><a href="javascript:void(0);">Administrator</a></li>
+            <li>
+                <a href="javascript:void(0);">Creating Projects</a>
+                <ul style="list-style-type: none; padding-left: 25px;">
+                    <li><a href="javascript:void(0);">Chaining Projects</a></li>
+                    <li><a href="javascript:void(0);">Scheduling Projects</a></li>
+                    <li><a href="javascript:void(0);">Manage Groups & Permissions</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="col-xs-9" style="border-left: solid 1px #ccc; height: calc(100% - 100px); overflow: auto; padding: 20px 25px; ">
+
+        <div class="section hide">
+            <h3>Introduction</h3>
+
+            <p>
+                Vishwakarma Build System is built completely on top of Node JS. It is designed to be super fast and hassle-free. The project is fully Open Source and can be found here
+            </p>
+
+            <p>
+                The name Vishwakarma was chosen because Vishwakarma was the celestial architect and builder of the <em>devas</em> as per Hindu Mythology
+            </p>
+
+            <p>
+                These docs are written to get you up and running with the least effort. Click on any topic on the left to skip ahead, or click on Next below
+            </p>
+        </div>
+
+        <div class="section hide">
+            <h3>Getting Started</h3>
+
+            <p>
+                If you are running Vishwakarma for the first time, you have to create an administrator account. To create the first administrator account, <a href="/bootstrap.html" target="_blank">click here</a> to open the bootstrap page
+            </p>
+
+            <p>
+                Provide a username and a password and create the administrator account. This account is very important. Please do not lose the username and password
+            </p>
+
+            <hr>
+
+            <h4>Non-Administrator Accounts</h4>
+            <p>
+            It is possible to create Non-Administrator accounts from the <a href="/bootstrap.html" target="_blank">Login & Registration</a> page. However, these accounts will not have ANY privileges in the beginning. They also do not belong to any groups. The administrator can assign users to groups and give privileges to groups
+            </p>
+
+        </div>
+
+        <div class="section hide">
+            <h3>Administrator</h3>
+            <p>
+                The admin has the following powers
+            </p>
+
+            <hr>
+            <h4>Manage User & Groups</h4>
+            <p>The admin can access the "Manage User & Groups" section</p>
+            <p>The admin can create groups</p>
+            <p>The admin can assign users to groups or remove them from groups</p>
+
+            <hr>
+            <h4>Create & Manage Projects</h4>
+            <p>In Vishwakarma, only admins can create projects</p>
+            <p>Admins can provide privileges to other groups (see project privileges)</p>
+            <p>Admins get all privileges to all projects by default</p>
+        </div>
+
+        <div class="section">
+            <h3>Creating Projects</h3>
+            <p>In Vishwakarma, only admins can create projects</p>
+
+            <p>To create a new project, click on 'New Project' on the home screen</p>
+            <p>Provide a project name and the code of the project. The code is always a shell script</p>
+            <p>Save the project</p>
+
+            <hr>
+            <h4>Chaining Projects</h4>
+            <p>On successful execution of a project, you can automatically execute another project. This is called as Chaining Projects</p>
+            <p>
+                In Vishwakarma, it is as simple as selecting a project from the drop down
+            </p>
+
+            <hr>
+            <h4>Scheduling Projects</h4>
+            <p>
+                You can schedule projects using standard cron notation
+            </p>
+
+            <p>
+                The Kaala-Bhairava Visual Cron Tool is currently under development. Kaala-Bhairava is the god of time
+            </p>
+
+            <hr>
+            <h4>Manage Groups & Permissions</h4>
+            <p>
+                This section lets you manage permissions to different groups. Vishwakarma has the following permissions for projects
+            </p>
+
+            <p>
+                <ul>
+                    <li><strong>Hide</strong> - Projects can be hidden from groups. Hidden projects are completely non-existent to the groups in all ways</li>
+                    <li><strong>Read</strong> - Groups with Read privilege can see project's existence and the status of the project (running, completed, aborted)</li>
+                    <li><strong>Edit</strong> - Groups with Edit privilege can read and edit code of projects</li>
+                    <li><strong>Run</strong> - Groups with Run privilege can run projects</li>
+                    <li><strong>Abort</strong> - Groups with Abort privilege can abort running projects</li>
+                    <li><strong>See Logs</strong> - Groups with See Logs privilege can see logs of projects, running and historic</li>
+                </ul>
+            </p>
+        </div>
+
+        <div>
+            <span class="pull-right">
+                <button class="btn btn-default">Prev</button>
+                <button class="btn btn-default">Next</button>
+            </span>
+        </div>
+
+    </div>
+</div>
+
+<script src="javascripts/socket.io.min.js"></script>
+<script type="text/javascript" src="javascripts/vishwakarma.js"></script>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.css" rel="stylesheet">
+
+</body>
+</html>

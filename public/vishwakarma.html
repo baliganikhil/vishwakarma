@@ -377,7 +377,7 @@
       <div class="modal-footer">
         <img src="/images/loader_circle.gif" ng-show="SCREENS.signing_in">
 
-        <button type="button" class="btn btn-primary" ng-show="SCREENS.login_mode == 'register'" ng-disabled="!validate_registration()" ng-click="register()">Sign Up</button>
+        <button type="button" class="btn btn-primary" ng-show="SCREENS.login_mode == 'register'" ng-disabled="!validate_registration()" ng-click="register(false)">Sign Up</button>
         <button type="button" class="btn btn-primary" ng-show="SCREENS.login_mode == 'login'" ng-click="login()" ng-disabled="SCREENS.signing_in">Sign In</button>
       </div>
     </div>

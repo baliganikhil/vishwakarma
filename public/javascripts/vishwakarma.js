@@ -384,6 +384,8 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
 
         if (is_bootstrap) {
             params.is_bootstrap = true;
+        } else {
+            params.is_bootstrap = false;
         }
 
         $scope.SCREENS.signing_in = true;

@@ -25,7 +25,7 @@ exports.register = function(req, res) {
             delete req.body.password;
 
             var is_bootstrap = false;
-            if (req.body.is_bootstrap) {
+            if (req.body.is_bootstrap == true) {
                 is_bootstrap = true;
                 delete req.body.is_bootstrap;
             }
@@ -37,22 +37,27 @@ exports.register = function(req, res) {
 
                 if (!is_bootstrap) {
                     res.send({status: 'success'});
+                    return;
                 }
 
-                Account.count({}, function(err, count) {
-                    if (err) {
-                        res.send({status: 'error'});
-                    }
+                // Account.count({}, function(err, count) {
+                //     if (err) {
+                //         res.send({status: 'error'});
+                //     }
 
-                    // If this is the first user, add him to admin group
-                    if (count == 1) {
-                        Group.create_admin_group(username, function() {
-                            res.send({status: 'success'});
-                        });
-                    } else {
-                        res.send({status: 'error', msg: 'Admin account has already been created'});
-                    }
+                    // if (count == 1) {
+
+                    console.log("========++", is_bootstrap);
+
+                Group.create_admin_group(username, function() {
+                    res.send({status: 'success'});
                 });
+
+                    // }
+                    // else {
+                    //     res.send({status: 'error', msg: 'Admin account has already been created'});
+                    // }
+                // });
 
             });
 
