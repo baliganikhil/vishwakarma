@@ -486,7 +486,7 @@ input.project_name {
     width: 600px;
 }
 
-#modal_login_register .modal-content {
+#modal_login_register .modal-content, #modal_admin_account .modal-content {
     box-shadow: none;
 }
 

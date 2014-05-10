@@ -24,9 +24,19 @@ exports.register = function(req, res) {
             // Remove plaintext password
             delete req.body.password;
 
+            var is_bootstrap = false;
+            if (req.body.is_bootstrap) {
+                is_bootstrap = true;
+                delete req.body.is_bootstrap;
+            }
+
             Account.findOneAndUpdate(query, req.body, function(err, doc) {
                 if (err) {
                     res.send({status: 'error'});
+                }
+
+                if (!is_bootstrap) {
+                    res.send({status: 'success'});
                 }
 
                 Account.count({}, function(err, count) {
@@ -35,13 +45,12 @@ exports.register = function(req, res) {
                     }
 
                     // If this is the first user, add him to admin group
-                    console.log("Count: %d", count);
                     if (count == 1) {
                         Group.create_admin_group(username, function() {
                             res.send({status: 'success'});
                         });
                     } else {
-                        res.send({status: 'success'});
+                        res.send({status: 'error', msg: 'Admin account has already been created'});
                     }
                 });
 

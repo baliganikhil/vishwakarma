@@ -1,0 +1,121 @@
+<html ng-app="VishwakarmaModule">
+<head>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/vishwakarma.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/bootstrap.min.css">
+    <script type="text/javascript" src="javascripts/lib/angular.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.css" rel="stylesheet">
+    <title>Vishwakarma Build System</title>
+</head>
+<body class="container" ng-controller="VKController">
+<header class="navbar navbar-static-top bs-docs-nav row" id="top" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="javascript:void(0);" class="navbar-brand">Vishwakarma Build System</a>
+    </div>
+    <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+      <ul class="nav navbar-nav pull-right">
+        <li><a href="javascript:void(0);">Home</a></li>
+        <li><a href="javascript:void(0);">Docs</a></li>
+        <li><a href="javascript:void(0);">About</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div class="row">
+    <div class="col-xs-12">
+        <h2>Welcome</h2>
+        <p>
+            Thank you for choosing Vishwakarma Build System. This page will help you get up and running
+        </p>
+
+        <!-- Login and Register -->
+        <div class="" id="modal_admin_account" ng-hide="SIGNIN.signup_success">
+          <div class="modal-dialog pull-left">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">
+                    <span>Create Admin Account</span>
+                    <!-- <span class="pull-right" style="color: #ddd; font-weight: bold;">Vishwakarma Build System</span> -->
+                </h4>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12 form-group">
+                        <div class="form-group">
+                            <input type="text" placeholder="Admin Username" class="form-control" ng-model="SIGNIN.username">
+                        </div>
+
+                        <div class="form-group">
+                            <input type="password" placeholder="Password" class="form-control" ng-model="SIGNIN.password">
+                        </div>
+
+                        <div class="form-group">
+                            <input type="password" placeholder="Confirm Password" class="form-control" ng-model="SIGNIN.confirm_password">
+                        </div>
+
+                        <span class="signin_error" ng-show="SIGNIN.password != SIGNIN.confirm_password">Passwords don't match</span>
+                        <span class="signin_error" ng-show="!nullOrEmpty(SIGNIN.signup_error)">{{SIGNIN.signup_error}}</span>
+                        <span class="signup_success" ng-show="SIGNIN.signup_success">
+                            <i class="fa fa-check"></i>
+                            Your account has been successfully created
+                        </span>
+                    </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <span class="signin_error pull-left" style="position: relative; top: 10px;">Please do not lose this username and password</span>
+
+                <img src="/images/loader_circle.gif" ng-show="SCREENS.signing_in">
+                <button type="button" class="btn btn-default" ng-disabled="!validate_registration()" ng-click="register(true)">Create Admin Account</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="border: solid 1px #D6E9C6; border-radius: 5px; width: 600px;" ng-show="SIGNIN.signup_success">
+            <h3 class="alert alert-success" style="margin-top: 0; border-radius: 5px 5px 0 0; border-left: none; border-right: none; border-top: none;">Congratulations</h3>
+
+            <div style="padding: 0 0 25px 25px;">
+                <ul class="things_done">
+                    <li><strong>The following actions have been performed</strong></li>
+                    <li>An admin account has been created for username <strong>{{SIGNIN.username}}</strong></li>
+                    <li>An admin group <strong>admin</strong> has been created</li>
+                    <li>This account <strong>{{SIGNIN.username}}</strong> has been associated with the <strong>admin</strong> group</li>
+                </ul>
+
+                <div>
+                    <button class="btn btn-default" onclick="window.location='/vishwakarma.html'">Login</button>
+                    <button class="btn btn-default" onclick="window.location='/docs.html'">Read the docs</button>
+                </div>
+
+                <style type="text/css">
+                .things_done {
+                    padding: 0;
+                    margin-left: 0px;
+                }
+
+                .things_done li {
+                    margin-bottom: 20px;
+                    list-style-type: none;
+                }
+                </style>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="javascripts/socket.io.min.js"></script>
+<script type="text/javascript" src="javascripts/vishwakarma.js"></script>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.css" rel="stylesheet">
+
+</body>
+</html>

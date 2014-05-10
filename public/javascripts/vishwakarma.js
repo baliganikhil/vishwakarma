@@ -376,15 +376,21 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
         });
     };
 
-    $scope.register = function() {
+    $scope.register = function(is_bootstrap) {
         var params = {
             username: $scope.SIGNIN.username,
             password: $scope.SIGNIN.password
         };
 
+        if (is_bootstrap) {
+            params.is_bootstrap = true;
+        }
+
         $scope.SCREENS.signing_in = true;
         VishwakarmaServices.register(params).success(function(data) {
             $scope.SCREENS.signing_in = false;
+            $scope.SIGNIN.password = undefined;
+            $scope.SIGNIN.confirm_password = undefined;
 
             if (data.status == 'error') {
                 $scope.SIGNIN.signup_error = data.msg;
@@ -393,8 +399,6 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
 
             $scope.SIGNIN.signup_error = undefined;
             $scope.SIGNIN.signin_error = undefined;
-            $scope.SIGNIN.password = undefined;
-            $scope.SIGNIN.confirm_password = undefined;
             $scope.SIGNIN.signup_success = true;
 
             $scope.SCREENS.login_mode = 'login';
