@@ -61,7 +61,7 @@
 
                     <span class="project_name" ng-click="show_stdout(active_proj)">{{active_proj.name}}</span>
 
-                    <span class="label label-danger pull-right" ng-show="proj_perm_map[proj_id].kill && active_proj.status == STATUS.running" ng-click="kill(proj_id)">abort</span>
+                    <span class="label label-danger pull-right" ng-show="(proj_perm_map[proj_id].kill || is_admin) && active_proj.status == STATUS.running" ng-click="kill(proj_id)">abort</span>
                     <span class="label label-default pull-right" ng-show="active_proj.status != STATUS.running" ng-click="remove_project(proj_id)">remove</span>
                 </li>
             </ul>

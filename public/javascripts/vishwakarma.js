@@ -242,7 +242,7 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
     };
 
     $scope.show_stdout = function(active_proj) {
-        if (!$scope.proj_perm_map[active_proj.proj_id].logs) {
+        if (!$scope.is_admin && !$scope.proj_perm_map[active_proj.proj_id].logs) {
             return;
         }
 
