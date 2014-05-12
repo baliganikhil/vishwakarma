@@ -196,6 +196,9 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
 
                 $scope.running_projects[data._id].stdout.push(data.stdout);
                 $scope.$apply();
+
+                var output_console = document.getElementById('output_console');
+                output_console.scrollTop = output_console.scrollHeight;
             });
 
             socket.on('proj_start', function(data) {
@@ -263,12 +266,15 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
     }
 
     $scope.show_stdout = function(active_proj) {
-        console.log(active_proj)
         if (!$scope.is_admin && !$scope.proj_perm_map[active_proj.project_id].logs) {
             return;
         }
 
         $scope.stdout_proj = active_proj;
+        $scope.stdout_proj.stdout.forEach(function(line) {
+            line = line.replace(/\n/g, '<br>');
+        });
+
         $scope.SCREENS.active_screen = 'stdout';
     };
 

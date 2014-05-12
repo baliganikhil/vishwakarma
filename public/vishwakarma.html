@@ -237,11 +237,13 @@
         </div>
 
         <div class="body" style="height: 88%;">
-            <div class="output_console">
+            <div class="output_console" id="output_console">
+            <pre style="border: none; background: none;">
                 <ul>
-                    <li ng-repeat="(key, each_line) in stdout_proj.stdout track by $index">{{each_line}}</li>
+                    <li ng-repeat="(key, each_line) in stdout_proj.stdout track by $index" ng-bind="each_line"></li>
                     <li ng-show="stdout_proj.status == 'running'"><img src="/images/loader_circle.gif"></li>
                 </ul>
+            </pre>
             </div>
         </div>
     </div>
