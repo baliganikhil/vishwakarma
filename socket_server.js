@@ -2,6 +2,7 @@ io = require('socket.io').listen(8888);
 spawn = require('child_process').spawn;
 Project = require('./models/projects.js');
 fs = require('fs');
+var kill = require('tree-kill');
 
 mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/vishwakarma');
@@ -19,19 +20,6 @@ var STATUS = {
 function nullOrEmpty(input) {
     return [undefined, null, ''].indexOf(input) > -1;
 }
-
-Object.deepExtend = function(destination, source) {
-  for (var property in source) {
-    if (typeof source[property] === "object" &&
-     source[property] !== null ) {
-      destination[property] = destination[property] || {};
-      arguments.callee(destination[property], source[property]);
-    } else {
-      destination[property] = source[property];
-    }
-  }
-  return destination;
-};
 
 io.sockets.on('connection', function(socket) {
 
@@ -123,7 +111,12 @@ io.sockets.on('connection', function(socket) {
     socket.on('kill', function(data) {
         var _id = data._id;
 
-        running_processes[_id].prog.kill();
+        // running_processes[_id].prog.kill();
+
+        // console.log(running_processes[_id].prog.pid);
+
+
+        kill(running_processes[_id].prog.pid, 'SIGKILL');
         running_processes[_id].stdout.push('=== ABORTED ===');
         running_processes[_id].status = STATUS.aborted;
         running_processes[_id].aborted_by = data.aborted_by;

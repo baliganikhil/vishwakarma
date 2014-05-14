@@ -14,6 +14,7 @@
     "passport-local-mongoose": "*",
     "mongoose": "*",
     "connect-flash": "*",
-    "cron": "*"
+    "cron": "*",
+    "tree-kill": "*"
   }
 }
