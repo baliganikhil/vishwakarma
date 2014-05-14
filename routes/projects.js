@@ -132,11 +132,23 @@ exports.save = function(req, res) {
                 res.send({status: 'error'});
             }
 
-            console.log(doc);
-
             res.send({status: 'success', data: doc});
 
         });
     }
 
+};
+
+exports.remove = function(req, res) {
+    var _id = req.params._id;
+
+    console.log(_id);
+
+    Project.remove({_id: _id}, function(err) {
+        if (err) {
+            res.send({status: 'err'});
+        }
+
+        res.send({status: 'success'});
+    });
 };

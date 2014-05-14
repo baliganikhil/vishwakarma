@@ -177,6 +177,16 @@
                             <a href="javascript:void(0);" ng-click="show_manage_prjgrp_pane()">View & Edit Permissions</a>
                         </div>
                     </div>
+
+                    <div ng-hide="nullOrEmpty(cur_project._id)">
+                        <div class="header row">
+                            Danger Zone
+                        </div>
+
+                        <div class="row" style="text-align: center;">
+                            <button class="btn btn-danger" ng-click="delete_project(cur_project._id)">Delete Project</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

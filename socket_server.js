@@ -111,11 +111,6 @@ io.sockets.on('connection', function(socket) {
     socket.on('kill', function(data) {
         var _id = data._id;
 
-        // running_processes[_id].prog.kill();
-
-        // console.log(running_processes[_id].prog.pid);
-
-
         kill(running_processes[_id].prog.pid, 'SIGKILL');
         running_processes[_id].stdout.push('=== ABORTED ===');
         running_processes[_id].status = STATUS.aborted;

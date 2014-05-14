@@ -113,6 +113,14 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
                 data: JSON.stringify(params),
                 url: base_url + '/projects/project/groups/add'
             });
+        },
+
+        remove_project: function(params) {
+            return $http({
+                method: 'DELETE',
+                url: base_url + '/projects/' + params._id + '/remove'
+            });
+
         }
     }
 });
@@ -698,9 +706,29 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
             $scope.USERS.users_rhs.splice($scope.USERS.users_rhs.indexOf(username), 1);
         });
 
-        console.log($scope.USERS.users_rhs);
-
         $scope.USERS.selected_users_rhs = [];
+    };
+
+    $scope.delete_project = function(_id) {
+
+        if (!confirm('Are you sure?')) {
+            return false;
+        }
+
+        VishwakarmaServices.remove_project({_id: _id}).success(function(data) {
+
+            if (data.status == 'error') {
+                alert('An error occurred while trying to save');
+                return;
+            }
+
+            $scope.cur_project = undefined;
+            $scope.get_projects();
+            $scope.SCREENS.active_screen = 'view_projects';
+
+        }).error(function(data) {
+
+        });
     };
 
     $scope.indexOf = function(needle, haystack) {
