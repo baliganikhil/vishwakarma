@@ -177,7 +177,7 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
     $scope.stdout = [];
 
     function init_socket() {
-        show_error('Unable to connect to server...');
+        show_error('Trying to connect to server...');
         socket = io.connect(server_url + ':8888');
 
         socket.on('disconnect', function() {
