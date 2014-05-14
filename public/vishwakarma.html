@@ -332,6 +332,7 @@
 <div class="" id="modal_login_register" ng-show="SCREENS.active_screen == 'login_register'">
   <div class="modal-dialog">
     <div class="modal-content">
+    <form>
       <div class="modal-header">
         <h4 class="modal-title">
             <span ng-show="SCREENS.login_mode == 'register'">Register</span>
@@ -383,8 +384,9 @@
         <img src="/images/loader_circle.gif" ng-show="SCREENS.signing_in">
 
         <button type="button" class="btn btn-primary" ng-show="SCREENS.login_mode == 'register'" ng-disabled="!validate_registration()" ng-click="register(false)">Sign Up</button>
-        <button type="button" class="btn btn-primary" ng-show="SCREENS.login_mode == 'login'" ng-click="login()" ng-disabled="SCREENS.signing_in">Sign In</button>
+        <button type="submit" class="btn btn-primary" ng-show="SCREENS.login_mode == 'login'" ng-click="login()" ng-disabled="SCREENS.signing_in">Sign In</button>
       </div>
+      </form>
     </div>
   </div>
 </div>
