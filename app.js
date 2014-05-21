@@ -19,7 +19,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
 
 var app = express();
-mongoose.connect('mongodb://localhost/vishwakarma');
+mongoose.connect('mongodb://127.0.0.1/vishwakarma');
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -47,10 +47,21 @@ if ('development' == app.get('env')) {
 // passport config
 var Account = require('./models/account');
 passport.use(new LocalStrategy(Account.authenticate()));
-passport.serializeUser(Account.serializeUser());
-passport.deserializeUser(Account.deserializeUser());
 
-app.get('/', routes.index);
+passport.serializeUser(function(user, done) {
+    console.log('===== serialise ' + user)
+    done(null, user);
+});
+
+passport.deserializeUser(function(obj, done) {
+    console.log('=====  deserialise' + username);
+
+    done(null, obj);
+});
+
+app.get('/', function(req, res) {
+    res.sendfile(__dirname + '/public/vishwakarma.html');
+});
 
 app.post('/login', function(req, res, next) {
 
@@ -72,6 +83,20 @@ app.post('/login', function(req, res, next) {
 
 });
 
+app.get('/is_authenticated', function(req, res) {
+    console.log('+++++', req.session)
+    if (req.user) {
+        res.send({authenticated: true});
+    } else {
+        res.send({authenticated: false});
+    }
+});
+
+app.get('/logout', function(req, res){
+    req.logout();
+    res.redirect('/');
+});
+
 app.post('/accounts/register', accountAPI.register);
 app.get('/users', accountAPI.get);
 
@@ -83,7 +108,7 @@ app.del('/projects/:_id/remove', projects.remove);
 app.get('/projects/:project/groups', groups.get_groups_for_project);
 app.post('/projects/project/groups/add', groups.add_groups_to_project);
 
-app.get('/logs', project_log.get);
+app.get('/logs', passport.authenticate('local', { failureRedirect: '/' }), project_log.get);
 app.get('/logs/:id', project_log.get_log);
 
 app.get('/groups', groups.get);

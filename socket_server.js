@@ -5,7 +5,7 @@ fs = require('fs');
 var kill = require('tree-kill');
 
 mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/vishwakarma');
+mongoose.connect('mongodb://127.0.0.1/vishwakarma');
 
 running_processes = {};
 scheduled_processes = {};
@@ -33,6 +33,11 @@ io.sockets.on('connection', function(socket) {
         Project.findOne({_id: _id}, function(err, doc) {
             if (err) {
                 console.log('ERROR' + err);
+                return;
+            }
+
+            if (doc == null) {
+                console.log(' === doc is null === ' + _id);
                 return;
             }
 
@@ -102,6 +107,7 @@ io.sockets.on('connection', function(socket) {
                 write_proj_to_log(doc._id);
 
                 if (!nullOrEmpty(doc.next) && running_processes[doc._id].status == STATUS.completed) {
+                    console.log("===== " + doc.next);
                     execute_project({_id: doc.next, created_by: running_processes[doc._id]});
                 }
             });

@@ -18,7 +18,9 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a href="javascript:void(0);" class="navbar-brand">Vishwakarma Build System</a>
+      <a href="javascript:void(0);" class="navbar-brand">
+        <img src="/images/gulagulaananda.jpg" style="width: 30px;">Vishwakarma Build System
+      </a>
     </div>
     <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
       <ul class="nav navbar-nav pull-right">
@@ -61,8 +63,8 @@
 
                     <span class="project_name" ng-click="show_stdout(active_proj)">{{active_proj.name}}</span>
 
-                    <span class="label label-danger pull-right" ng-show="(proj_perm_map[proj_id].kill || is_admin) && active_proj.status == STATUS.running" ng-click="kill(proj_id)">abort</span>
-                    <span class="label label-default pull-right" ng-show="(proj_perm_map[proj_id].kill || is_admin) &&active_proj.status != STATUS.running" ng-click="remove_project(proj_id)">remove</span>
+                    <span class="label label-danger pull-right" ng-show="(proj_perm_map[proj_id].abort || is_admin) && active_proj.status == STATUS.running" ng-click="kill(proj_id)">abort</span>
+                    <span class="label label-default pull-right" ng-show="(proj_perm_map[proj_id].abort || is_admin) &&active_proj.status != STATUS.running" ng-click="remove_project(proj_id)">remove</span>
                 </li>
             </ul>
         </div>
@@ -243,7 +245,10 @@
             <span class="label label_aborted" ng-show="stdout_proj.status == 'aborted'">aborted</span>
             <span class="label label_running" ng-show="stdout_proj.status == 'running'">running <img src="/images/loader_circle.gif"></span>
 
-            <button class="btn btn-danger pull-right" ng-click="SCREENS.active_screen = 'view_projects'">Close</button>
+            <span class="pull-right">
+                <button class="btn btn-danger" ng-show="(proj_perm_map[stdout_proj._id].abort || is_admin) && stdout_proj.status == STATUS.running" ng-click="kill(stdout_proj._id)">Abort</button>
+                <button class="btn" ng-click="SCREENS.active_screen = 'view_projects'">Close</button>
+            </span>
         </div>
 
         <div class="body" style="height: 88%;">
