@@ -121,11 +121,26 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
                 url: base_url + '/projects/' + params._id + '/remove'
             });
 
+        },
+
+        is_authenticated: function() {
+            return $http({
+                method: 'GET',
+                url: base_url + '/is_authenticated'
+            });
         }
     }
 });
 
 VishwakarmaModule.controller('VKController', function ($scope, $timeout, VishwakarmaServices) {
+    VishwakarmaServices.is_authenticated().success(function(data) {
+        console.log(data);
+
+    }).error(function(data) {
+
+    });
+
+
     $scope.SCREENS = {
         active_screen: 'login_register',
         login_mode: 'login',

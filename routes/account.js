@@ -47,8 +47,6 @@ exports.register = function(req, res) {
 
                     // if (count == 1) {
 
-                    console.log("========++", is_bootstrap);
-
                 Group.create_admin_group(username, function() {
                     res.send({status: 'success'});
                 });

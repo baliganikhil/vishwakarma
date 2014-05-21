@@ -36,6 +36,11 @@ io.sockets.on('connection', function(socket) {
                 return;
             }
 
+            if (doc == null) {
+                console.log(' === doc is null === ' + _id);
+                return;
+            }
+
             var code = doc.code;
             var temp_file_name = Math.random().toString().slice(4) + '.sh';
 
@@ -102,6 +107,7 @@ io.sockets.on('connection', function(socket) {
                 write_proj_to_log(doc._id);
 
                 if (!nullOrEmpty(doc.next) && running_processes[doc._id].status == STATUS.completed) {
+                    console.log("===== " + doc.next);
                     execute_project({_id: doc.next, created_by: running_processes[doc._id]});
                 }
             });
