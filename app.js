@@ -19,10 +19,10 @@ var LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
 
 var app = express();
-mongoose.connect('mongodb://localhost/vishwakarma');
+mongoose.connect('mongodb://127.0.0.1/vishwakarma');
 
 // all environments
-app.set('port', process.env.PORT || 3000);
+app.set('port', 80);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(express.favicon());
@@ -50,7 +50,7 @@ passport.use(new LocalStrategy(Account.authenticate()));
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
 
-app.get('/', routes.index);
+app.get('/', function(req,resp){resp.sendfile(__dirname+'/public/vishwakarma.html')});
 
 app.post('/login', function(req, res, next) {
 

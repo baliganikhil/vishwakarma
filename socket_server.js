@@ -5,7 +5,7 @@ fs = require('fs');
 var kill = require('tree-kill');
 
 mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/vishwakarma');
+mongoose.connect('mongodb://127.0.0.1/vishwakarma');
 
 running_processes = {};
 scheduled_processes = {};
