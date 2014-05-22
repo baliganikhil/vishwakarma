@@ -19,7 +19,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
 
 var app = express();
-mongoose.connect('mongodb://127.0.0.1/vishwakarma');
+mongoose.connect('mongodb://localhost/vishwakarma');
 
 // all environments
 app.set('port', process.env.PORT || 3000);

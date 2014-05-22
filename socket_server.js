@@ -117,6 +117,8 @@ io.sockets.on('connection', function(socket) {
     socket.on('kill', function(data) {
         var _id = data._id;
 
+        console.log("====>  " + Object.keys(running_processes[_id]));
+
         kill(running_processes[_id].prog.pid, 'SIGKILL');
         running_processes[_id].stdout.push('=== ABORTED ===');
         running_processes[_id].status = STATUS.aborted;
@@ -137,8 +139,6 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('remove_project', function(data) {
         var proj_id = data._id;
-
-        console.log(proj_id, Object.keys(running_processes));
 
         if (!running_processes.hasOwnProperty(proj_id)) {
             return false;
@@ -190,9 +190,14 @@ io.sockets.on('connection', function(socket) {
     function get_running_projects() {
         var running_processes_copy = {};
 
-        for (prc in running_processes) {
-            running_processes_copy[prc] = running_processes[prc]
-            delete running_processes_copy[prc].prog;
+        for (prc_id in running_processes) {
+            running_processes_copy[prc_id] = {};
+
+            for (key in running_processes[prc_id]) {
+                if (key != 'prog') {
+                    running_processes_copy[prc_id][key] = running_processes[prc_id][key]
+                }
+            }
         }
 
         socket.emit('get_running_projects', running_processes_copy);
