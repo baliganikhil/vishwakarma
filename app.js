@@ -22,7 +22,7 @@ var app = express();
 mongoose.connect('mongodb://localhost/vishwakarma');
 
 // all environments
-app.set('port', process.env.PORT || 3000);
+app.set('port', 80);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(express.favicon());
@@ -48,6 +48,7 @@ if ('development' == app.get('env')) {
 var Account = require('./models/account');
 passport.use(new LocalStrategy(Account.authenticate()));
 
+app.get('/', function(req,resp){resp.sendfile(__dirname+'/public/vishwakarma.html')});
 passport.serializeUser(function(user, done) {
     console.log('===== serialise ' + user)
     done(null, user);
@@ -58,11 +59,6 @@ passport.deserializeUser(function(obj, done) {
 
     done(null, obj);
 });
-
-app.get('/', function(req, res) {
-    res.sendfile(__dirname + '/public/vishwakarma.html');
-});
-
 app.post('/login', function(req, res, next) {
 
     passport.authenticate('local', function(err, user) {
