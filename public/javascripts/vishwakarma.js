@@ -1,7 +1,7 @@
 var VishwakarmaModule = angular.module('VishwakarmaModule', []);
 
 var server_url = window.location.href.replace(/\/$/,'');
-// var server_url = 'http://localhost'
+var server_url = 'http://localhost'
 var base_url = server_url;// + ':3000';
 
 VishwakarmaModule.factory('VishwakarmaServices', function($http) {
@@ -290,7 +290,8 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
     }
 
     $scope.show_stdout = function(active_proj) {
-        if (!$scope.is_admin && !$scope.proj_perm_map[active_proj.project_id].logs) {
+        console.log(active_proj)
+        if (!$scope.is_admin && !$scope.proj_perm_map[active_proj._id].logs) {
             return;
         }
 
