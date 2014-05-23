@@ -1,6 +1,7 @@
 var VishwakarmaModule = angular.module('VishwakarmaModule', []);
 
-var server_url = window.location.href.replace(/\/$/,''); 
+var server_url = window.location.href.replace(/\/$/,'');
+// var server_url = 'http://localhost'
 var base_url = server_url;// + ':3000';
 
 VishwakarmaModule.factory('VishwakarmaServices', function($http) {

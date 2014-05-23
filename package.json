@@ -15,6 +15,8 @@
     "mongoose": "*",
     "connect-flash": "*",
     "cron": "*",
-    "tree-kill": "*"
+    "tree-kill": "*",
+    "mongodb": "*",
+    "bcrypt": "*"
   }
 }

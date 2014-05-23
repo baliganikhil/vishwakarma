@@ -18,6 +18,9 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
 
+var MongoClient = require('mongodb').MongoClient;
+var bcrypt = require('bcrypt');
+
 var app = express();
 mongoose.connect('mongodb://localhost/vishwakarma');
 
@@ -44,6 +47,9 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+/* CONSTANTS */
+var COLL_USERS = 'users';
+
 // passport config
 var Account = require('./models/account');
 passport.use(new LocalStrategy(Account.authenticate()));
@@ -61,21 +67,38 @@ passport.deserializeUser(function(obj, done) {
 });
 app.post('/login', function(req, res, next) {
 
-    passport.authenticate('local', function(err, user) {
-        if (user) {
+    // passport.authenticate('local', function(err, user) {
+    //     if (user) {
 
-            var username = user.username;
+    //         var username = user.username;
 
-            groups.v_get_users_for_group('admin', function(data) {
-                var is_admin = data.users.indexOf(username) > -1;
+    //         groups.v_get_users_for_group('admin', function(data) {
+    //             var is_admin = data.users.indexOf(username) > -1;
 
-                res.send({status: 'success', is_admin: is_admin});
-            });
+    //             res.send({status: 'success', is_admin: is_admin});
+    //         });
 
-        } else {
+    //     } else {
+    //         res.send({status: 'error'});
+    //     }
+    // })(req, res, next);
+
+    var username = req.body.username;
+    var password = req.body.password;
+
+    login(username, password, function(err, response) {
+        if (err) {
             res.send({status: 'error'});
+            return;
         }
-    })(req, res, next);
+
+        groups.v_get_users_for_group('admin', function(data) {
+            var is_admin = data.users.indexOf(username) > -1;
+
+            res.send({status: 'success', is_admin: is_admin});
+        });
+
+    });
 
 });
 
@@ -93,7 +116,24 @@ app.get('/logout', function(req, res){
     res.redirect('/');
 });
 
-app.post('/accounts/register', accountAPI.register);
+// app.post('/accounts/register', accountAPI.register);
+
+app.post('/accounts/register', function(req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+    console.log(req.body);
+
+    register(username, password, function(err, response) {
+        if (err) {
+            res.send({err: true});
+            return;
+        }
+
+        res.send(response);
+    });
+});
+
+
 app.get('/users', accountAPI.get);
 
 app.get('/:username/projects', projects.get);
@@ -111,6 +151,85 @@ app.get('/groups', groups.get);
 app.post('/groups/save', groups.save);
 app.get('/groups/:group/users', groups.get_users_for_group);
 app.post('/groups/users/add', groups.add_users_to_group);
+
+
+
+
+
+
+function create_auth_token(username, password, callback) {
+    bcrypt.hash(password, 8, function(err, hash) {
+        callback(hash);
+    });
+}
+
+function login(username, password, callback) {
+    get_collection(COLL_USERS, function(err, coll) {
+        if (err) {
+            callback(err);
+            return;
+        }
+
+        coll.findOne({username: username}, {hash: 1}, function(err, doc) {
+            bcrypt.compare(password, doc.hash, function(err, result) {
+                callback(err, result);
+            });
+        });
+    });
+}
+
+function register(username, password, callback) {
+    create_auth_token(username, password, function(hash) {
+        get_collection(COLL_USERS, function(err, coll) {
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            var doc = {
+                username: username,
+                hash: hash,
+                confirmed: false
+            };
+
+            coll.save(doc, function(err, doc) {
+                callback(false, {success: true});
+            });
+        });
+    });
+}
+
+function authenticate(username, hash, callback) {
+
+}
+
+/*******************/
+function mongo_connect(callback) {
+    MongoClient.connect('mongodb://127.0.0.1:27017/vishwakarma', function(err, db) {
+        callback(err, db);
+    });
+}
+
+function get_collection(collection, callback) {
+    mongo_connect(function(err, db) {
+        if (err) {
+            callback(err);
+            return;
+        }
+
+        db.collection(collection, callback);
+    });
+}
+
+
+
+
+
+
+
+
+
+
 
 
 http.createServer(app).listen(app.get('port'), function(){
