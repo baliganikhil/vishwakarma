@@ -59,6 +59,9 @@ app.post('/login', function(req, res, next) {
             return;
         }
 
+        console.log("response");
+        console.log(response);
+
         groups.v_get_users_for_group('admin', function(data) {
             var is_admin = data.users.indexOf(username) > -1;
 
@@ -161,6 +164,16 @@ function login(username, password, callback) {
         }
 
         coll.findOne({username: username}, {hash: 1}, function(err, doc) {
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            if (!doc || doc.length == 0) {
+                callback(err, {success: false});
+                return;
+            }
+
             bcrypt.compare(password, doc.hash, function(err, result) {
                 callback(err, {success: result, doc: doc});
             });
