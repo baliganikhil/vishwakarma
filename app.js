@@ -110,7 +110,6 @@ app.get('/logout', function(req, res){
 app.post('/accounts/register', function(req, res) {
     var username = req.body.username;
     var password = req.body.password;
-    console.log(req.body);
 
     register(username, password, function(err, response) {
         if (err) {
