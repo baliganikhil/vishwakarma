@@ -14,8 +14,6 @@ var projects = require('./routes/projects');
 var project_log = require('./routes/project_log');
 var groups = require('./routes/group');
 
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
 
 var MongoClient = require('mongodb').MongoClient;
@@ -37,8 +35,6 @@ app.use(express.cookieParser('your secret here'));
 app.use(express.session({secret: 'keyboard cat'}));
 app.use(flash());
 app.use(express.bodyParser());
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -50,38 +46,9 @@ if ('development' == app.get('env')) {
 /* CONSTANTS */
 var COLL_USERS = 'users';
 
-// passport config
-var Account = require('./models/account');
-passport.use(new LocalStrategy(Account.authenticate()));
+app.get('/', function(req,resp){resp.sendfile(__dirname + '/public/vishwakarma.html')});
 
-app.get('/', function(req,resp){resp.sendfile(__dirname+'/public/vishwakarma.html')});
-passport.serializeUser(function(user, done) {
-    console.log('===== serialise ' + user)
-    done(null, user);
-});
-
-passport.deserializeUser(function(obj, done) {
-    console.log('=====  deserialise' + username);
-
-    done(null, obj);
-});
 app.post('/login', function(req, res, next) {
-
-    // passport.authenticate('local', function(err, user) {
-    //     if (user) {
-
-    //         var username = user.username;
-
-    //         groups.v_get_users_for_group('admin', function(data) {
-    //             var is_admin = data.users.indexOf(username) > -1;
-
-    //             res.send({status: 'success', is_admin: is_admin});
-    //         });
-
-    //     } else {
-    //         res.send({status: 'error'});
-    //     }
-    // })(req, res, next);
 
     var username = req.body.username;
     var password = req.body.password;
@@ -102,21 +69,29 @@ app.post('/login', function(req, res, next) {
 
 });
 
-app.get('/is_authenticated', function(req, res) {
-    console.log('+++++', req.session)
-    if (req.user) {
-        res.send({authenticated: true});
-    } else {
-        res.send({authenticated: false});
-    }
+app.get('/authenticated', function(req, res) {
+    console.log(req.cookies);
+
+    var username = req.cookies.username;
+    var __auth = req.cookies.__auth;
+
+    console.log("__auth ")
+
+    authenticate(username, __auth, function(err, response) {
+        if (err) {
+            res.send({err: true});
+            return;
+        }
+
+        res.send(response)
+
+    });
 });
 
 app.get('/logout', function(req, res){
     req.logout();
     res.redirect('/');
 });
-
-// app.post('/accounts/register', accountAPI.register);
 
 app.post('/accounts/register', function(req, res) {
     var username = req.body.username;
@@ -144,17 +119,13 @@ app.del('/projects/:_id/remove', projects.remove);
 app.get('/projects/:project/groups', groups.get_groups_for_project);
 app.post('/projects/project/groups/add', groups.add_groups_to_project);
 
-app.get('/logs', passport.authenticate('local', { failureRedirect: '/' }), project_log.get);
+app.get('/logs', project_log.get);
 app.get('/logs/:id', project_log.get_log);
 
 app.get('/groups', groups.get);
 app.post('/groups/save', groups.save);
 app.get('/groups/:group/users', groups.get_users_for_group);
 app.post('/groups/users/add', groups.add_users_to_group);
-
-
-
-
 
 
 function create_auth_token(username, password, callback) {
@@ -200,7 +171,23 @@ function register(username, password, callback) {
 }
 
 function authenticate(username, hash, callback) {
+    get_collection(COLL_USERS, function(err, coll) {
+        if (err) {
+            callback(err);
+            return;
+        }
 
+        coll.find({username: username, hash: hash}).toArray(function(err, docs) {
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            console.log(JSON.stringify(docs));
+
+            callback(false, {authenticated: (docs.length == 1)});
+        });
+    });
 }
 
 /*******************/

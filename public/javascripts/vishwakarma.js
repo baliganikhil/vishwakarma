@@ -127,7 +127,7 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
         is_authenticated: function() {
             return $http({
                 method: 'GET',
-                url: base_url + '/is_authenticated'
+                url: base_url + '/authenticated'
             });
         }
     }
@@ -135,7 +135,6 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
 
 VishwakarmaModule.controller('VKController', function ($scope, $timeout, VishwakarmaServices) {
     VishwakarmaServices.is_authenticated().success(function(data) {
-        console.log(data);
 
     }).error(function(data) {
 
