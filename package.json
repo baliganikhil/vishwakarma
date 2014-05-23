@@ -13,6 +13,7 @@
     "cron": "*",
     "tree-kill": "*",
     "mongodb": "*",
-    "bcrypt": "*"
+    "bcrypt": "*",
+    "socket.io":"*"
   }
 }
