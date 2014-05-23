@@ -90,7 +90,7 @@
                 <tr ng-repeat="(key, project) in projects">
                     <td class="project_name">
                         <a href="javascript: void(0);" ng-click="get_project(project._id)" ng-show="project.edit">{{project.name}}</a>
-                        <span ng-show="project.get && !project.edit">{{project.name}}</span>
+                        <span ng-show="project.read && !project.edit">{{project.name}}</span>
                     </td>
                     <td>{{project.desc}}</td>
                     <td>
@@ -570,7 +570,7 @@
                         <tr ng-repeat="(key, prjgrp) in GRPPRJ.grpprjmap">
                             <td><select class="project_dd" ng-options="group.group as group.group for (key, group) in USERS.groups" ng-model="prjgrp.group"></select></td>
                             <td><input type="checkbox" ng-model="prjgrp.hidden"></td>
-                            <td><input type="checkbox" ng-model="prjgrp.get"></td>
+                            <td><input type="checkbox" ng-model="prjgrp.read"></td>
                             <td><input type="checkbox" ng-model="prjgrp.edit"></td>
                             <td><input type="checkbox" ng-model="prjgrp.run"></td>
                             <td><input type="checkbox" ng-model="prjgrp.abort"></td>

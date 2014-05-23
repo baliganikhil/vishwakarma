@@ -139,7 +139,7 @@ exports.v_add_groups_to_project = function(project, groups, callback) {
             callback({status: 'error'});
         }
 
-        groups.push({group: 'admin', get: true, edit: true, run: true, abort: true, logs: true});
+        groups.push({group: 'admin', read: true, edit: true, run: true, abort: true, logs: true});
         var records_to_process = groups.length;
 
         groups.forEach(function(groupproject) {
