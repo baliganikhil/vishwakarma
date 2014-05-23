@@ -110,11 +110,17 @@ app.get('/logout', function(req, res){
 app.post('/accounts/register', function(req, res) {
     var username = req.body.username;
     var password = req.body.password;
+    var is_bootstrap = req.body.is_bootstrap;
 
     register(username, password, function(err, response) {
         if (err) {
             res.send({err: true});
             return;
+        }
+
+        if (is_bootstrap) {
+            var group = require('./routes/group');
+            group.create_admin_group(username, function() {});
         }
 
         res.send(response);
