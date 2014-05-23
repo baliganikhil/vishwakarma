@@ -25,7 +25,7 @@
     <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
       <ul class="nav navbar-nav pull-right">
         <li>
-            <a href="javascript:void(0);">(logged in as: {{SIGNIN.username}})</a>
+            <a href="javascript:void(0);" ng-click="logout()">({{SIGNIN.username}} - <span>logout</span>)</a>
         </li>
         <li ng-class="{active: SCREENS.active_screen == 'view_projects'}">
             <a href="javascript:void(0);" ng-click="SCREENS.active_screen = 'view_projects'">Home</a>

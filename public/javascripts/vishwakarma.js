@@ -1,7 +1,7 @@
 var VishwakarmaModule = angular.module('VishwakarmaModule', []);
 
 var server_url = window.location.href.replace(/\/$/,'');
-// var server_url = 'http://localhost'
+var server_url = 'http://localhost'
 var base_url = server_url;// + ':3000';
 
 VishwakarmaModule.factory('VishwakarmaServices', function($http) {
@@ -129,12 +129,25 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
                 method: 'GET',
                 url: base_url + '/authenticated'
             });
+        },
+
+        logout: function() {
+            return $http({
+                method: 'GET',
+                url: base_url + '/logout'
+            });
         }
     }
 });
 
 VishwakarmaModule.controller('VKController', function ($scope, $timeout, VishwakarmaServices) {
     VishwakarmaServices.is_authenticated().success(function(data) {
+
+        if (data.status == 'success') {
+            $scope.SIGNIN.username = data.username;
+            $scope.is_admin = data.is_admin;
+            on_sign_in();
+        }
 
     }).error(function(data) {
 
@@ -451,18 +464,22 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
                 return;
             }
 
-            init_socket();
-
-            $scope.SIGNIN.password = undefined;
             $scope.is_admin = data.is_admin;
-
-            $scope.get_projects();
-            $scope.SCREENS.active_screen = 'view_projects';
+            on_sign_in();
 
         }).error(function(data) {
 
         });
     };
+
+    function on_sign_in() {
+        init_socket();
+
+        $scope.SIGNIN.password = undefined;
+
+        $scope.get_projects();
+        $scope.SCREENS.active_screen = 'view_projects';
+    }
 
     $scope.has_running_projects = function() {
         return Object.keys($scope.running_projects).length === 0;
@@ -742,6 +759,14 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
             $scope.get_projects();
             $scope.SCREENS.active_screen = 'view_projects';
 
+        }).error(function(data) {
+
+        });
+    };
+
+    $scope.logout = function() {
+        VishwakarmaServices.logout().success(function(data) {
+            window.location.reload();
         }).error(function(data) {
 
         });

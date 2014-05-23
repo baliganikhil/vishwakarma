@@ -54,13 +54,16 @@ app.post('/login', function(req, res, next) {
     var password = req.body.password;
 
     login(username, password, function(err, response) {
-        if (err) {
+        if (err || !response.success) {
             res.send({status: 'error'});
             return;
         }
 
         groups.v_get_users_for_group('admin', function(data) {
             var is_admin = data.users.indexOf(username) > -1;
+
+            res.cookie('__auth', response.doc.hash)
+            res.cookie('username', username)
 
             res.send({status: 'success', is_admin: is_admin});
         });
@@ -75,22 +78,33 @@ app.get('/authenticated', function(req, res) {
     var username = req.cookies.username;
     var __auth = req.cookies.__auth;
 
-    console.log("__auth ")
-
     authenticate(username, __auth, function(err, response) {
         if (err) {
             res.send({err: true});
             return;
         }
 
-        res.send(response)
+        if (!response.authenticated) {
+            res.cookie('__auth', '');
+            res.cookie('username', '');
+
+            res.send({status: 'error'});
+            return;
+        }
+
+        groups.v_get_users_for_group('admin', function(data) {
+            var is_admin = data.users.indexOf(username) > -1;
+
+            res.send({status: 'success', is_admin: is_admin, username: username});
+        });
 
     });
 });
 
 app.get('/logout', function(req, res){
-    req.logout();
-    res.redirect('/');
+    res.cookie('__auth', '');
+    res.cookie('username', '');
+    res.send({status: 'success'});
 });
 
 app.post('/accounts/register', function(req, res) {
@@ -143,7 +157,7 @@ function login(username, password, callback) {
 
         coll.findOne({username: username}, {hash: 1}, function(err, doc) {
             bcrypt.compare(password, doc.hash, function(err, result) {
-                callback(err, result);
+                callback(err, {success: result, doc: doc});
             });
         });
     });
