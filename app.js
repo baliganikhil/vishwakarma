@@ -130,6 +130,68 @@ app.post('/accounts/register', function(req, res) {
     });
 });
 
+app.post('/accounts/reset', function(req, res) {
+    // Reset Password
+    var username = req.cookies.username;
+    var __auth = req.cookies.__auth;
+
+    var password = req.body.password;
+    var new_password = req.body.new_password;
+
+    authenticate(username, __auth, function(err, response) {
+        if (err) {
+            res.send({err: true});
+            return;
+        }
+
+        if (!response.authenticated) {
+            res.cookie('__auth', '');
+            res.cookie('username', '');
+
+            res.send({status: 'error'});
+            return;
+        }
+
+        bcrypt.compare(password, __auth, function(err, result) {
+            if (!result) {
+                res.cookie('__auth', '');
+                res.cookie('username', '');
+
+                res.send({status: 'error'});
+                return;
+            }
+
+            function callback(err, response) {
+                if (err) {
+                    res.send({status: 'error'});
+                } else {
+                    res.send(response);
+                }
+            }
+
+            create_auth_token(username, new_password, function(hash) {
+                get_collection(COLL_USERS, function(err, coll) {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+
+                    var doc = {
+                        username: username,
+                        hash: hash,
+                        confirmed: false
+                    };
+
+                    coll.update({username: username}, {'$set': {hash: hash}}, function(err, doc) {
+                        callback(false, {success: true});
+                    });
+                });
+            });
+        });
+
+    });
+});
+
 
 app.get('/users', accountAPI.get);
 

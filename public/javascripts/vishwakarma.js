@@ -49,6 +49,14 @@ VishwakarmaModule.factory('VishwakarmaServices', function($http) {
 
         },
 
+        change_password: function(params) {
+            return $http({
+                method: 'POST',
+                data: JSON.stringify(params),
+                url: base_url + '/accounts/reset'
+            });
+        },
+
         get_logs: function() {
             return $http({
                 method: 'GET',
@@ -481,6 +489,34 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
         $scope.SCREENS.active_screen = 'view_projects';
     }
 
+    $scope.change_password = function() {
+        var params = {
+            password: $scope.SIGNIN.password,
+            new_password: $scope.SIGNIN.new_password
+        };
+
+        $scope.SCREENS.signing_in = true;
+        $scope.SIGNIN.reset_success = false;
+
+        VishwakarmaServices.change_password(params).success(function(data) {
+            $scope.SCREENS.signing_in = false;
+
+            if (data.status == 'error') {
+                $scope.SIGNIN.reset_error = 'Sorry, your password could not be changed';
+                return;
+            }
+
+            $scope.SIGNIN.reset_success = true;
+
+            $timeout(function() {
+                window.location.reload();
+            }, 2000);
+
+        }).error(function(data) {
+
+        });
+    };
+
     $scope.has_running_projects = function() {
         return Object.keys($scope.running_projects).length === 0;
     };
@@ -491,6 +527,18 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
         }
 
         if (nullOrEmpty($scope.SIGNIN.password) || nullOrEmpty($scope.SIGNIN.username)) {
+            return false;
+        }
+
+        return true;
+    };
+
+    $scope.validate_change_password = function() {
+        if ($scope.SIGNIN.new_password != $scope.SIGNIN.confirm_new_password) {
+            return false;
+        }
+
+        if (nullOrEmpty($scope.SIGNIN.password) || nullOrEmpty($scope.SIGNIN.new_password)) {
             return false;
         }
 

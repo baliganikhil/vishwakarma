@@ -553,3 +553,31 @@ input.project_name {
     min-width: 150px;
     border-radius: 3px;
 }
+
+.username {
+    position: relative;
+}
+
+.user_menu {
+    list-style-type: none;
+    padding: 10px;
+    border: solid 1px #428bca;
+    position: absolute;
+    top: 35px;
+    left: 15px;
+    border-radius: 5px;
+    width: 150px;
+    display: none;
+    background: #fff;
+    z-index: 100;
+}
+
+.username:hover {
+    font-weight: bold;
+}
+
+.username:hover .user_menu {
+    display: block;
+    font-weight: 400;
+    box-shadow: 0 0 2px #428bca;
+}

@@ -24,9 +24,6 @@
     </div>
     <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
       <ul class="nav navbar-nav pull-right">
-        <li>
-            <a href="javascript:void(0);" ng-click="logout()">({{SIGNIN.username}} - <span>logout</span>)</a>
-        </li>
         <li ng-class="{active: SCREENS.active_screen == 'view_projects'}">
             <a href="javascript:void(0);" ng-click="SCREENS.active_screen = 'view_projects'">Home</a>
         </li>
@@ -38,6 +35,13 @@
         </li>
         <li onclick="window.location = '/docs.html'"><a href="javascript:void(0);">Docs</a></li>
         <li><a href="javascript:void(0);">About</a></li>
+        <li class="username">
+            <a href="javascript:void(0);">{{SIGNIN.username}} <i class="fa fa-sort-down"></i></a>
+            <ul class="user_menu">
+                <li ng-click="SCREENS.active_screen = 'change_password'"><a href="javascript:void(0);">Change Password</a></li>
+                <li ng-click="logout()"><a href="javascript:void(0);">Logout</a></li>
+            </ul>
+        </li>
       </ul>
     </nav>
   </div>
@@ -403,6 +407,52 @@
 
         <button type="button" class="btn btn-primary" ng-show="SCREENS.login_mode == 'register'" ng-disabled="!validate_registration()" ng-click="register(false)">Sign Up</button>
         <button type="submit" class="btn btn-primary" ng-show="SCREENS.login_mode == 'login'" ng-click="login()" ng-disabled="SCREENS.signing_in">Sign In</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Change Password -->
+<div class="" id="modal_reset_password" ng-show="SCREENS.active_screen == 'change_password'">
+  <div class="modal-dialog">
+    <div class="modal-content">
+    <form>
+      <div class="modal-header">
+        <h4 class="modal-title">
+            <span>Change Password for {{SIGNIN.username}}</span>
+            <span class="pull-right" style="color: #ddd; font-weight: bold;">Vishwakarma Build System</span>
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+            <div class="col-xs-12 form-group">
+                <div class="form-group">
+                    <input type="password" placeholder="Current Password" class="form-control" ng-model="SIGNIN.password">
+                </div>
+
+                <div class="form-group">
+                    <input type="password" placeholder="New Password" class="form-control" ng-model="SIGNIN.new_password">
+                </div>
+
+                <div class="form-group">
+                    <input type="password" placeholder="Confirm New Password" class="form-control" ng-model="SIGNIN.confirm_new_password">
+                </div>
+
+                <span class="signin_error" ng-show="SIGNIN.new_password != SIGNIN.confirm_new_password">Passwords don't match</span>
+                <span class="signin_error" ng-show="!nullOrEmpty(SIGNIN.reset_error)">{{SIGNIN.reset_error}}</span>
+                <span class="signup_success" ng-show="SIGNIN.reset_success">
+                    <i class="fa fa-check"></i>
+                    Your password has been changed successfully - Page will refresh in a bit...
+                </span>
+            </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <img src="/images/loader_circle.gif" ng-show="SCREENS.signing_in">
+
+        <button type="button" class="btn btn-primary" ng-disabled="!validate_change_password()" ng-click="change_password()">Change Password</button>
       </div>
       </form>
     </div>
