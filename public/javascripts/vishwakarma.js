@@ -303,7 +303,7 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
 
     $scope.show_stdout = function(active_proj) {
         console.log(active_proj)
-        if (!$scope.is_admin && !$scope.proj_perm_map[active_proj._id].logs) {
+        if (!$scope.is_admin && !$scope.proj_perm_map[active_proj.project_id].logs) {
             return;
         }
 
