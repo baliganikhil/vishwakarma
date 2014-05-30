@@ -23,7 +23,7 @@ var app = express();
 mongoose.connect('mongodb://localhost/vishwakarma');
 
 // all environments
-app.set('port', 80);
+app.set('port', 1234);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(express.favicon());
