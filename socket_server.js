@@ -1,4 +1,5 @@
-io = require('socket.io').listen(8888);
+http = require('http');
+io = require('socket.io')(http);
 spawn = require('child_process').spawn;
 Project = require('./models/projects.js');
 fs = require('fs');
