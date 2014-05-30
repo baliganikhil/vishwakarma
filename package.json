@@ -14,6 +14,6 @@
     "tree-kill": "*",
     "mongodb": "*",
     "bcrypt": "*",
-    "socket.io":"*"
+    "socket.io":"0.9"
   }
 }
