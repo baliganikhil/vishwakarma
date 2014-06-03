@@ -856,6 +856,34 @@ VishwakarmaModule.controller( 'VKController', function ( $scope, $timeout, Vishw
         $scope.show_error = true;
     };
 
+    $scope.handleKeyBoardEvent = function ( event ) {
+        if ( event.ctrlKey || event.metaKey ) {
+            // console.log( String.fromCharCode( event.which ).toLowerCase( ) )
+            switch ( String.fromCharCode( event.which )
+                .toLowerCase( ) ) {
+            case 's':
+                // console.log($scope.SCREENS.active_screen)
+                if ( $scope.SCREENS.active_screen == 'edit_project' ) {
+                    $scope.save_project( );
+                    event.preventDefault( );
+                }
+                break;
+            case 'p':
+                event.preventDefault( );
+                $scope.init_new_project( );
+                break;
+            case 'h':
+                event.preventDefault( );
+                $scope.SCREENS.active_screen = 'view_projects'
+                break;
+            case '¿':
+                event.preventDefault( );
+                window.location = '/docs.html';
+                break;
+            }
+        }
+    }
+
 } );
 
 

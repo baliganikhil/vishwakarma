@@ -7,7 +7,7 @@
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.1/css/font-awesome.css" rel="stylesheet">
     <title>Vishwakarma Build System</title>
 </head>
-<body ng-controller="VKController" class="container">
+<body ng-controller="VKController" class="container" ng-keydown="handleKeyBoardEvent($event)">
 
 <header class="navbar navbar-static-top bs-docs-nav row" id="top" role="banner" ng-hide="SCREENS.active_screen == 'login_register'">
   <div class="container">
