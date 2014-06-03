@@ -859,8 +859,8 @@ VishwakarmaModule.controller( 'VKController', function ( $scope, $timeout, Vishw
     $scope.handleKeyBoardEvent = function ( event ) {
         if ( event.ctrlKey || event.metaKey ) {
             // console.log( String.fromCharCode( event.which ).toLowerCase( ) )
-            switch ( String.fromCharCode( event.which )
-                .toLowerCase( ) ) {
+            k = String.fromCharCode( event.which ).toLowerCase( )
+            switch ( k ) {
             case 's':
                 // console.log($scope.SCREENS.active_screen)
                 if ( $scope.SCREENS.active_screen == 'edit_project' ) {
