@@ -53,7 +53,7 @@ function get_projects_for_group(groups, res) {
                     doc = JSON.parse(JSON.stringify(doc));
 
                     if (proj_permission_line.project == doc._id) {
-                        doc.get = doc.get || proj_permission_line.get;
+                        doc.read = doc.read || proj_permission_line.read;
                         doc.edit = doc.edit || proj_permission_line.edit;
                         doc.run = doc.run || proj_permission_line.run;
                         doc.abort = doc.abort || proj_permission_line.abort;
@@ -73,7 +73,7 @@ function get_projects_for_group(groups, res) {
                     return true;
                 }
 
-                map[line._id].get = line.get;
+                map[line._id].read = line.read;
                 map[line._id].edit = line.edit;
                 map[line._id].run = line.run;
                 map[line._id].abort = line.abort;
