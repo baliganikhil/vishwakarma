@@ -17,13 +17,13 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a href="javascript:void(0);" class="navbar-brand">Vishwakarma Build System</a>
+      <a href="/" class="navbar-brand">Vishwakarma Build System</a>
     </div>
     <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
       <ul class="nav navbar-nav pull-right">
-        <li onclick="window.location = '/vishwakarma.html'"><a href="javascript:void(0);">Home</a></li>
+        <li><a href="/">Home</a></li>
         <li class="active"><a href="javascript:void(0);">Docs</a></li>
-        <li><a href="javascript:void(0);">About</a></li>
+        <li><a href="/about.html">About</a></li>
       </ul>
     </nav>
   </div>
@@ -78,10 +78,36 @@
             </p>
 
             <hr>
+            <h4>Configuration</h4>
+            <p>
+                Vishwakarma comes with a <code>config.default</code> file which can be used to set configurations. You can alternately use your own <code>config.local</code> file to override default configurations. Configuration files allow you to set various server URLs and ports, etc.
+            </p>
+
+            <p>
+                Here is a sample configuration file. It shows that the <code>server</code> is running on port 8080, MongoDB is running on <code>localhost</code> on port <code>27017</code>. If you are running Vishwakarma behind another server, say Nginx (via proxy_pass), you can change the local server to whatever is appropriate. Make sure your Nginx socket configuration is appropriate
+
+                <pre>
+{
+    "server": {
+        "port": 8080
+    },
+    "mongo": {
+        "server": "localhost",
+        "port": 27017
+    },
+    "local": {
+        "server": "http://localhost:8080"
+    }
+}
+
+                </pre>
+            </p>
+
+            <hr>
 
             <h4>Non-Administrator Accounts</h4>
             <p>
-            It is possible to create Non-Administrator accounts from the <a href="/bootstrap.html" target="_blank">Login & Registration</a> page. However, these accounts will not have ANY privileges in the beginning. They also do not belong to any groups. The administrator can assign users to groups and give privileges to groups
+            It is possible to create Non-Administrator accounts from the <a href="/" target="_blank">Home</a> page. However, these accounts will not have ANY privileges in the beginning. They also do not belong to any groups. The administrator can assign users to groups and give privileges to groups
             </p>
 
         </div>
