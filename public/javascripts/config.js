@@ -1,1 +1,1 @@
-var CONFIG = {"server":"http://localhost"}
+var CONFIG = {"server":"http://localhost:8080"}
