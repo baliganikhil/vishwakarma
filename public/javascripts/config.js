@@ -1,3 +1,1 @@
-var CONFIG = {
-   server: 'http://build.zovi.in'
-};
+var CONFIG = {"server":"http://localhost"}

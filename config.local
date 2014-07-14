@@ -1,0 +1,12 @@
+{
+	"server": {
+		"port": 80
+	},
+	"mongo": {
+		"server": "localhost",
+		"port": 27017
+	},
+	"local": {
+		"server": "http://localhost"
+	}
+}

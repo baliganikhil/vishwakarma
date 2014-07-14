@@ -6,6 +6,33 @@ var express = require( 'express' );
 var routes = require( './routes' );
 var http = require( 'http' );
 var path = require( 'path' );
+var fs = require('fs');
+
+/*********************************************************************************************************/
+// Load Config and do some things
+/*********************************************************************************************************/
+var config_default = JSON.parse(fs.readFileSync('config.default').toString());
+var config_local = {};
+try {
+    config_local = JSON.parse(fs.readFileSync('config.local').toString())
+} catch(e) {
+    console.log('Failed trying to load Local config data - using default instead');
+}
+
+// Need to use prototype and fix this ugly mess eventually
+var mongo_server =  noe(coalesce(coalesce(config_local, 'mongo', {}), 'server', '')) ? config_default.mongo.server : config_local.mongo.server;
+var mongo_port =  noe(coalesce(coalesce(config_local, 'mongo', {}), 'port', '')) ? config_default.mongo.port : config_local.mongo.port;
+var server_port =  noe(coalesce(coalesce(config_local, 'server', {}), 'port', '')) ? config_default.server.port : config_local.server.port;
+var local_server =  noe(coalesce(coalesce(config_local, 'local', {}), 'server', '')) ? config_default.local.server : config_local.local.server;
+var local_port =  noe(coalesce(coalesce(config_local, 'local', {}), 'port', '')) ? config_default.local.port : config_local.local.port;
+
+fs.writeFileSync('./public/javascripts/config.js', 'var CONFIG = ' + JSON.stringify({server: local_server}));
+
+/*********************************************************************************************************/
+
+
+
+
 
 var mongoose = require( 'mongoose' );
 var accountAPI = require( './routes/account' );
@@ -19,10 +46,10 @@ var MongoClient = require( 'mongodb' ).MongoClient;
 var bcrypt = require( 'bcrypt' );
 
 var app = express( );
-mongoose.connect( 'mongodb://localhost/vishwakarma' );
+mongoose.connect( 'mongodb://' + mongo_server + '/vishwakarma' );
 
 // all environments
-app.set( 'port', process.env.NODE_PORT || 80);
+app.set( 'port', process.env.NODE_PORT || config_default.server.port || 80);
 app.set( 'views', path.join( __dirname, 'views' ) );
 app.set( 'view engine', 'jade' );
 app.use( express.favicon( ) );
@@ -339,7 +366,7 @@ function authenticate( username, hash, callback ) {
 /*******************/
 
 function mongo_connect( callback ) {
-    MongoClient.connect( 'mongodb://127.0.0.1:27017/vishwakarma', function ( err, db ) {
+    MongoClient.connect( 'mongodb://' + mongo_server + ':' + mongo_port + '/vishwakarma', function ( err, db ) {
         callback( err, db );
     } );
 }
@@ -355,22 +382,28 @@ function get_collection( collection, callback ) {
     } );
 }
 
-
-
-
-
-
-
-
-
 var server = http.createServer( app );
 
-var socketServer = require( './socket_server.js' )( server );
+var socketServer = require( './socket_server.js' )(server);
 
-////////////////////////////////////////////////////////
-///////////////  HTTP SERVER   /////////////////////////
-////////////////////////////////////////////////////////
+/*************/
+/*HTTP SERVER*/
+/*************/
 
-server.listen( app.get( 'port' ), function ( ) {
+server.listen( server_port, function ( ) {
     console.log( 'Express server listening on port ' + app.get( 'port' ) );
 } );
+
+
+// helper functions
+function coalesce(obj, key, default_value) {
+    if (obj.hasOwnProperty(key)) {
+        return obj[key];
+    } else {
+        return default_value;
+    }
+}
+
+function noe(i) {
+    return [undefined, null, ''].indexOf(i) > -1;
+}
