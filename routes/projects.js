@@ -40,7 +40,7 @@ function get_projects_for_group(groups, res) {
             }
         });
 
-        Project.find({_id: {'$in': project_ids}}, {code: 0}, function(err, docs) {
+        Project.find({_id: {'$in': project_ids}}, {code: 0, __v: 0}, function(err, docs) {
             if (err) {
                 res.send({status: 'error'});
             }
@@ -94,7 +94,7 @@ function get_projects_for_group(groups, res) {
 exports.get_project = function(req, res) {
     var id = req.params.id;
 
-    Project.findOne({_id: id}, function(err, docs) {
+    Project.findOne({_id: id}, {__v: 0}, function(err, docs) {
         if (err) {
             res.send({status: 'error'});
         }
