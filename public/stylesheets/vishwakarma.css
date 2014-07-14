@@ -561,12 +561,12 @@ input.project_name {
 .user_menu {
     list-style-type: none;
     padding: 10px;
-    border: solid 1px #428bca;
+    border: solid 1px #ccc;
     position: absolute;
     top: 35px;
     left: 15px;
-    border-radius: 5px;
-    width: 150px;
+    border-radius: 3px;
+    width: 180px;
     display: none;
     background: #fff;
     z-index: 100;
@@ -579,5 +579,4 @@ input.project_name {
 .username:hover .user_menu {
     display: block;
     font-weight: 400;
-    box-shadow: 0 0 2px #428bca;
 }

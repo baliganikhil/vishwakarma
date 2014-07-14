@@ -469,8 +469,8 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
             $scope.SCREENS.login_mode = 'login';
 
         }).error(function (data) {
-            alert('An error occurred while trying to register');
-            console.error(data);
+            $scope.SIGNIN.signup_error = data.data;
+            $scope.SCREENS.signing_in = false;
         });
     };
 
@@ -494,8 +494,8 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
             on_sign_in();
 
         }).error(function (data) {
-            alert('An error occurred while trying to sign in');
-            console.error(data);
+            $scope.SIGNIN.signin_error = data.data;
+            $scope.SCREENS.signing_in = false;
         });
     };
 
