@@ -49,7 +49,7 @@ var app = express( );
 mongoose.connect( 'mongodb://' + mongo_server + '/vishwakarma' );
 
 // all environments
-app.set( 'port', process.env.NODE_PORT || config_default.server.port || 80);
+app.set( 'port', process.env.NODE_PORT || server_port || 80);
 app.set( 'views', path.join( __dirname, 'views' ) );
 app.set( 'view engine', 'jade' );
 app.use( express.favicon( ) );
@@ -390,7 +390,7 @@ var socketServer = require( './socket_server.js' )(server);
 /*HTTP SERVER*/
 /*************/
 
-server.listen( server_port, function ( ) {
+server.listen( app.get( 'port' ), function ( ) {
     console.log( 'Express server listening on port ' + app.get( 'port' ) );
 } );
 
