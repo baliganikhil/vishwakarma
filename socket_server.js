@@ -110,7 +110,11 @@ module.exports = function ( server ) {
 
                 prog.on( 'close', function ( code ) {
                     var stdout = '';
-                    if ( running_processes[ doc._id ].status != STATUS.aborted ) {
+
+                    if (code !== 0) {
+                        running_processes[ doc._id ].status = STATUS.error;
+                        stdout = '=== ERROR ===';
+                    } else if ( running_processes[ doc._id ].status != STATUS.aborted ) {
                         running_processes[ doc._id ].status = STATUS.completed;
                         stdout = '=== COMPLETED ===';
                     }

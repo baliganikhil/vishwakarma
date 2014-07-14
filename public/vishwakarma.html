@@ -66,7 +66,7 @@
                 <li ng-repeat="(proj_id, active_proj) in running_projects" ng-hide="nullOrEmpty(proj_perm_map[proj_id])">
                     <img src="/images/loader_circle.gif" ng-show="active_proj.status == STATUS.running">
                     <i class="fa fa-check" ng-show="active_proj.status == STATUS.completed"></i>
-                    <i class="fa fa-exclamation-triangle" ng-show="active_proj.status == STATUS.aborted"></i>
+                    <i class="fa fa-exclamation-triangle" ng-show="active_proj.status == STATUS.aborted || active_proj.status == STATUS.error"></i>
 
                     <span class="project_name" ng-click="show_stdout(active_proj)">{{active_proj.name}}</span>
 
