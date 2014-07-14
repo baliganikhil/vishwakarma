@@ -1,6 +1,9 @@
 var VishwakarmaModule = angular.module( 'VishwakarmaModule', [ ] );
 
-var base_url = CONFIG.server + ':' + CONFIG.port;
+var base_url = CONFIG.server;
+if ( CONFIG.port !== undefined ) {
+  base_url += ":" + CONFIG.port;
+}
 
 VishwakarmaModule.factory( 'VishwakarmaServices', function ( $http ) {
 

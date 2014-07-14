@@ -1,4 +1,3 @@
 var CONFIG = {
-	server: 'http://localhost',
-	port: 80
+   server: 'http://build.zovi.in'
 };
