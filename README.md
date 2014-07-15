@@ -31,7 +31,7 @@ The home page (http://localhost:8080 by default) has a registration and sign in 
 
 Docs
 -----
-Vishwakarma comes with documentation to help you manage everything from here on.
+Vishwakarma comes with documentation to help you manage everything from here on. (http://localhost:8080/docs.html)
 
 Version
 ----

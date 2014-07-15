@@ -30,17 +30,11 @@ fs.writeFileSync('./public/javascripts/config.js', 'var CONFIG = ' + JSON.string
 
 /*********************************************************************************************************/
 
-
-
-
-
 var mongoose = require('mongoose');
 var accountAPI = require('./routes/account');
 var projects = require('./routes/projects');
 var project_log = require('./routes/project_log');
 var groups = require('./routes/group');
-
-// var flash = require('connect-flash');
 
 var app = express();
 mongoose.connect('mongodb://' + mongo_server + '/vishwakarma');
@@ -58,7 +52,7 @@ app.use(express.cookieParser('your secret here'));
 app.use(express.session({
     secret: 'keyboard cat'
 }));
-// app.use(flash());
+
 app.use(express.bodyParser());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
@@ -98,25 +92,15 @@ app.post('/groups/users/add', groups.add_users_to_group);
 /*******************/
 
 var server = http.createServer(app);
-
 var socketServer = require('./socket_server.js')(server);
-
-/*************/
-/*HTTP SERVER*/
-/*************/
 
 server.listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));
 });
 
-
 // helper functions
 function coalesce(obj, key, default_value) {
-    if (obj.hasOwnProperty(key)) {
-        return obj[key];
-    } else {
-        return default_value;
-    }
+    return obj.hasOwnProperty(key)) ? obj[key] : default_value;
 }
 
 function noe(i) {
