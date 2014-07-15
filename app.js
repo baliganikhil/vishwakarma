@@ -100,7 +100,7 @@ server.listen(app.get('port'), function () {
 
 // helper functions
 function coalesce(obj, key, default_value) {
-    return obj.hasOwnProperty(key)) ? obj[key] : default_value;
+    return obj.hasOwnProperty(key) ? obj[key] : default_value;
 }
 
 function noe(i) {
