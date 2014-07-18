@@ -1,12 +1,12 @@
 {
 	"server": {
-		"port": 8080
+		"port": 5000
 	},
 	"mongo": {
 		"server": "localhost",
 		"port": 27017
 	},
 	"local": {
-		"server": "http://localhost:8080"
+		"server": "http://localhost:5000"
 	}
 }
