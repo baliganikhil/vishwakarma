@@ -1,13 +1,14 @@
 var ProjectLog = require('../models/project_log.js');
 
 exports.get = function(req, res) {
-    ProjectLog.find({}, {stdout: 0}, function(err, docs) {
+    var query = ProjectLog.find({}, {stdout: 0}).sort({created_at: -1});
+
+    query.exec(function(err, docs) {
         if (err) {
             res.send({status: 'error'});
         }
 
         res.send({status: 'success', data: docs});
-
     });
 };
 
