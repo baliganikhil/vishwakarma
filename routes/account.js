@@ -117,7 +117,7 @@ exports.register = function(req, res) {
         }
 
         if (is_bootstrap) {
-            var group = require('./routes/group');
+            var group = require('./group');
             group.create_admin_group(username, function () {});
         }
 
