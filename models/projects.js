@@ -5,7 +5,7 @@ var Project = new mongoose.Schema({
     desc: String,
     code: String,
     next: String,
-    status: String,
+    status: {type: String, default: 'active'},
     is_scheduled: Boolean,
     cron: String,
     created_by: String,
