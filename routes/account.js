@@ -188,24 +188,22 @@ function create_auth_token(username, password, callback) {
 
 function register(username, password, callback) {
     create_auth_token(username, password, function (hash) {
-        get_collection(COLL_USERS, function (err, coll) {
+
+        var doc = {
+            username: username,
+            hash: hash,
+            confirmed: false
+        };
+
+        (new Account(doc)).save(function(err, doc) {
             if (err) {
                 callback(err);
                 return;
             }
 
-            var doc = {
-                username: username,
-                hash: hash,
-                confirmed: false
-            };
-
-            coll.save(doc, function (err, doc) {
-                callback(false, {
-                    success: true
-                });
-            });
+            callback(false, {success: true});
         });
+
     });
 }
 
