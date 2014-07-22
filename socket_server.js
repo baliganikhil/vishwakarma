@@ -29,7 +29,8 @@ module.exports = function (server, config) {
             var _id = data._id;
 
             Project.findOne({
-                _id: _id
+                _id: _id,
+                status: 'active'
             }, function (err, doc) {
                 if (err) {
                     console.error('ERROR', err);

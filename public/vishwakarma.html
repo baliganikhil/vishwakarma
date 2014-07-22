@@ -105,7 +105,8 @@
                     </td>
                     <td>{{project.desc}}</td>
                     <td>
-                        <button ng-click="run_cmd(project._id)" class="btn btn-default pull-right" ng-hide="!project.run || get_proj_status(project._id) == 'running'">Run</button>
+                        <button ng-click="run_cmd(project._id)" class="btn btn-default pull-right" ng-hide="!project.run || get_proj_status(project._id) == 'running' || project.status == 'inactive'">Run</button>
+                        <span ng-show="project.status == 'inactive'" class="pull-right">Disabled</span>
                     </td>
                 </tr>
             </table>
@@ -126,6 +127,12 @@
 
             <div class="pull-right">
                 <span class="save_success" ng-show="PROJECTS.save_success"><i class="fa fa-check"></i> Saved Successfully</span>
+
+                <select ng-model="cur_project.status" style="font-size: 14px; background: #fff; padding: 5px; color: #333; margin-right: 50px;">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+
                 <button class="btn btn-default" ng-click="SCREENS.active_screen = 'view_projects'">Close</button>
                 <button class="btn btn-primary" ng-click="save_project()" ng-disabled="PROJECTS.saving" ng-show="is_admin || proj_perm_map[cur_project._id].edit">
                     <img src="/images/loader_circle.gif" ng-show="PROJECTS.saving"></span>
