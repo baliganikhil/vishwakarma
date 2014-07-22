@@ -8,5 +8,9 @@
 	},
 	"local": {
 		"server": "http://localhost:5000"
+	},
+	"logs": {
+		"save": true,
+		"path": "/tmp"
 	}
 }

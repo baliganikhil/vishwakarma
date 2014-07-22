@@ -1,4 +1,4 @@
-module.exports = function (server) {
+module.exports = function (server, config) {
     var io = require('socket.io')(server);
     var spawn = require('child_process').spawn;
     var Project = require('./models/projects.js');
@@ -236,7 +236,32 @@ module.exports = function (server) {
         }
 
         function write_proj_to_log(_id) {
-            var ProjectLog = require('./models/project_log')
+
+            if (!config.logs_save) {
+                return false;
+            }
+
+            var path = require('path');
+            var date = new Date();
+
+            var dir = path.join(config.logs_path, [date.getDate(), date.getMonth(), date.getFullYear()].join('_'));
+
+            try{
+                fs.mkdirSync(dir);
+            } catch(e) {
+                console.log('Folder', dir, 'already exists');
+            }
+
+            var log_file_name = path.join(dir, [running_processes[_id].name, date.getTime()].join('_'));
+            fs.writeFile(log_file_name, JSON.stringify(running_processes[_id]), function(err) {
+
+            });
+
+            running_processes[_id].log_file = log_file_name;
+
+            delete running_processes[_id].stdout;
+
+            var ProjectLog = require('./models/project_log');
 
             var project_log = new ProjectLog(running_processes[_id]);
             project_log.save(function (err) {

@@ -25,6 +25,8 @@ var mongo_port =  noe(coalesce(coalesce(config_local, 'mongo', {}), 'port', ''))
 var server_port =  noe(coalesce(coalesce(config_local, 'server', {}), 'port', '')) ? config_default.server.port : config_local.server.port;
 var local_server =  noe(coalesce(coalesce(config_local, 'local', {}), 'server', '')) ? config_default.local.server : config_local.local.server;
 var local_port =  noe(coalesce(coalesce(config_local, 'local', {}), 'port', '')) ? config_default.local.port : config_local.local.port;
+var logs_save =  noe(coalesce(coalesce(config_local, 'logs', {}), 'save', '')) ? config_default.logs.save : config_local.logs.save;
+var logs_path =  noe(coalesce(coalesce(config_local, 'logs', {}), 'path', '')) ? config_default.logs.path : config_local.logs.path;
 
 fs.writeFileSync('./public/javascripts/config.js', 'var CONFIG = ' + JSON.stringify({server: local_server}));
 
@@ -91,8 +93,13 @@ app.post('/groups/users/add', groups.add_users_to_group);
 
 /*******************/
 
+var socket_config = {
+	logs_save: logs_save,
+	logs_path: logs_path
+};
+
 var server = http.createServer(app);
-var socketServer = require('./socket_server.js')(server);
+var socketServer = require('./socket_server.js')(server, socket_config);
 
 server.listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));
