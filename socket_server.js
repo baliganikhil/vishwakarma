@@ -4,6 +4,7 @@ module.exports = function (server, config) {
     var Project = require('./models/projects.js');
     var fs = require('fs');
     var kill = require('tree-kill');
+    var cronJob = require('cron').CronJob;
 
     var running_processes = {};
     var scheduled_processes = {};
@@ -19,13 +20,138 @@ module.exports = function (server, config) {
         return [undefined, null, ''].indexOf(input) > -1;
     }
 
+    function run_scheduled_projects() {
+        Project.find({status: 'active', is_scheduled: true}, function(err, docs) {
+            if (err) {
+                console.error(err);
+                return;
+            } else if (docs.length === 0) {
+                return;
+            }
+
+            docs.forEach(function(doc) {
+                _id = doc._id;
+
+                scheduled_processes[_id] = new cronJob(doc.cron, function () {
+                    var extra_data = {
+                        _id: _id,
+                        created_by: 'cron'
+                    };
+                    execute_project(doc, extra_data);
+                }, null, true);
+            });
+
+            console.log('Scheduled', docs.length, 'jobs');
+
+        });
+    }
+
+    run_scheduled_projects();
+
+    function execute_project(project, extra_data) {
+        var code = project.code;
+        var temp_file_name = Math.random().toString().slice(4) + '.sh';
+
+        fs.writeFile(temp_file_name, code, function (err) {
+            execute(temp_file_name, project, extra_data);
+        });
+
+        function execute(filename, doc, extra_data) {
+            var prog = spawn('bash', [filename]);
+
+            running_processes[doc._id] = {
+                project_id: doc._id,
+                prog: prog,
+                name: doc.name,
+                filename: filename,
+                status: STATUS.running,
+                stdout: [],
+                created_at: new Date(),
+                created_by: extra_data.created_by
+            };
+
+            io.emit('proj_start', {
+                name: doc.name,
+                filename: filename,
+                status: STATUS.running,
+                _id: doc._id
+            });
+
+            prog.stdout.setEncoding('utf8');
+            prog.stdout.on('data', function (data) {
+
+                running_processes[doc._id].stdout.push(data);
+
+                var payload = {
+                    name: doc.name,
+                    filename: filename,
+                    stdout: data,
+                    status: STATUS.running,
+                    _id: doc._id
+                };
+
+                io.emit('stdout', payload);
+            });
+
+            prog.stderr.setEncoding('utf8');
+            prog.stderr.on('data', function (data) {
+                var payload = {
+                    name: doc.name,
+                    filename: filename,
+                    stdout: data,
+                    _id: doc._id
+                };
+
+                io.emit('stdout', payload);
+
+                running_processes[doc._id].stdout.push(data);
+            });
+
+            prog.on('close', function (code) {
+                var stdout = '';
+
+                if (code !== 0) {
+                    running_processes[doc._id].status = STATUS.error;
+                    stdout = '=== ERROR ===';
+                } else if (running_processes[doc._id].status != STATUS.aborted) {
+                    running_processes[doc._id].status = STATUS.completed;
+                    stdout = '=== COMPLETED ===';
+                }
+
+                var payload = {
+                    name: doc.name,
+                    filename: filename,
+                    status: running_processes[doc._id].status,
+                    _id: doc._id,
+                    stdout: stdout
+                };
+
+                io.emit('proj_done', payload);
+
+                fs.unlink(filename, function (err) {
+                    if (err) {
+                        return false;
+                    }
+                });
+
+                write_proj_to_log(doc._id);
+
+                if (!nullOrEmpty(doc.next) && running_processes[doc._id].status == STATUS.completed) {
+
+                    Project.findOne({_id: doc.next}, function(err, chained_project) {
+                        execute_project(chained_project, {
+                            created_by: running_processes[doc._id]
+                        });
+                    });
+
+                }
+            });
+        }
+    }
+
     io.sockets.on('connection', function (socket) {
 
         socket.on('exec', function (data) {
-            execute_project(data);
-        });
-
-        function execute_project(data) {
             var _id = data._id;
 
             Project.findOne({
@@ -41,104 +167,9 @@ module.exports = function (server, config) {
                     return;
                 }
 
-                var code = doc.code;
-                var temp_file_name = Math.random().toString().slice(4) + '.sh';
-
-                fs.writeFile(temp_file_name, code, function (err) {
-                    execute(temp_file_name, doc, data);
-                });
-
+                execute_project(doc, {});
             });
-
-            function execute(filename, doc, extra_data) {
-                var prog = spawn('bash', [filename]);
-
-                running_processes[doc._id] = {
-                    project_id: doc._id,
-                    prog: prog,
-                    name: doc.name,
-                    filename: filename,
-                    status: STATUS.running,
-                    stdout: [],
-                    created_at: new Date(),
-                    created_by: extra_data.created_by
-                };
-
-                io.emit('proj_start', {
-                    name: doc.name,
-                    filename: filename,
-                    status: STATUS.running,
-                    _id: doc._id
-                });
-
-                prog.stdout.setEncoding('utf8');
-                prog.stdout.on('data', function (data) {
-
-                    running_processes[doc._id].stdout.push(data);
-
-                    var payload = {
-                        name: doc.name,
-                        filename: filename,
-                        stdout: data,
-                        status: STATUS.running,
-                        _id: doc._id
-                    };
-
-                    io.emit('stdout', payload);
-                });
-
-                prog.stderr.setEncoding('utf8');
-                prog.stderr.on('data', function (data) {
-                    var payload = {
-                        name: doc.name,
-                        filename: filename,
-                        stdout: data,
-                        _id: doc._id
-                    };
-
-                    io.emit('stdout', payload);
-
-                    running_processes[doc._id].stdout.push(data);
-                });
-
-                prog.on('close', function (code) {
-                    var stdout = '';
-
-                    if (code !== 0) {
-                        running_processes[doc._id].status = STATUS.error;
-                        stdout = '=== ERROR ===';
-                    } else if (running_processes[doc._id].status != STATUS.aborted) {
-                        running_processes[doc._id].status = STATUS.completed;
-                        stdout = '=== COMPLETED ===';
-                    }
-
-                    var payload = {
-                        name: doc.name,
-                        filename: filename,
-                        status: running_processes[doc._id].status,
-                        _id: doc._id,
-                        stdout: stdout
-                    };
-
-                    io.emit('proj_done', payload);
-
-                    fs.unlink(filename, function (err) {
-                        if (err) {
-                            return false;
-                        }
-                    });
-
-                    write_proj_to_log(doc._id);
-
-                    if (!nullOrEmpty(doc.next) && running_processes[doc._id].status == STATUS.completed) {
-                        execute_project({
-                            _id: doc.next,
-                            created_by: running_processes[doc._id]
-                        });
-                    }
-                });
-            }
-        }
+        });
 
         socket.on('kill', function (data) {
             var _id = data._id;
@@ -205,15 +236,28 @@ module.exports = function (server, config) {
                     }
 
                     return false;
+                } else {
+                    // Stop scheduled job because we are rescheduling
+                    scheduled_processes[_id].stop();
                 }
 
-                var cronJob = require('cron').CronJob;
                 scheduled_processes[_id] = new cronJob(doc.cron, function () {
                     var extra_data = {
-                        _id: _id,
                         created_by: 'cron'
                     };
-                    execute_project(extra_data);
+
+                    Project.findOne({_id: _id}, function(err, doc) {
+                        if (err) {
+                            console.error(err);
+                            return;
+                        } else if (nullOrEmpty(doc)) {
+                            return;
+                        }
+
+                        execute_project(doc, extra_data);
+
+                    });
+
                 }, null, true);
 
             });
@@ -236,42 +280,42 @@ module.exports = function (server, config) {
             io.emit('get_running_projects', running_processes_copy);
         }
 
-        function write_proj_to_log(_id) {
+    });
 
-            if (!config.logs_save) {
-                return false;
-            }
+    function write_proj_to_log(_id) {
 
-            var path = require('path');
-            var date = new Date();
-
-            var dir = path.join(config.logs_path, [date.getDate(), date.getMonth(), date.getFullYear()].join('_'));
-
-            try{
-                fs.mkdirSync(dir);
-            } catch(e) {
-                console.log('Folder', dir, 'already exists');
-            }
-
-            var log_file_name = path.join(dir, [running_processes[_id].name, date.getTime()].join('_'));
-            fs.writeFile(log_file_name, JSON.stringify(running_processes[_id]), function(err) {
-
-            });
-
-            running_processes[_id].log_file = log_file_name;
-
-            delete running_processes[_id].stdout;
-
-            var ProjectLog = require('./models/project_log');
-
-            var project_log = new ProjectLog(running_processes[_id]);
-            project_log.save(function (err) {
-                if (err) {
-                    console.error('Cannot save project log', err);
-                }
-            });
+        if (!config.logs_save) {
+            return false;
         }
 
-    });
+        var path = require('path');
+        var date = new Date();
+
+        var dir = path.join(config.logs_path, [date.getDate(), date.getMonth(), date.getFullYear()].join('_'));
+
+        try{
+            fs.mkdirSync(dir);
+        } catch(e) {
+            console.log('Folder', dir, 'already exists');
+        }
+
+        var log_file_name = path.join(dir, [running_processes[_id].name, date.getTime()].join('_'));
+        fs.writeFile(log_file_name, JSON.stringify(running_processes[_id]), function(err) {
+
+        });
+
+        running_processes[_id].log_file = log_file_name;
+
+        delete running_processes[_id].stdout;
+
+        var ProjectLog = require('./models/project_log');
+
+        var project_log = new ProjectLog(running_processes[_id]);
+        project_log.save(function (err) {
+            if (err) {
+                console.error('Cannot save project log', err);
+            }
+        });
+    }
 
 }

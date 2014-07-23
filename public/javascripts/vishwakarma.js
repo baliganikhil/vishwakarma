@@ -324,7 +324,6 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
     }
 
     $scope.show_stdout = function (active_proj) {
-        console.log(active_proj)
         if (!$scope.is_admin && !$scope.proj_perm_map[ active_proj.project_id ].logs) {
             return;
         }
@@ -946,8 +945,6 @@ VishwakarmaModule.filter('no_self_ref', function() {
         if (arr == undefined || ref == undefined) {
             return;
         }
-
-        console.log(arr);
 
         arr.forEach(function(proj, key) {
             if (proj._id == ref._id) {
