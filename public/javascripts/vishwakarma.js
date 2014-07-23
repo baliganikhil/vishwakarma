@@ -405,7 +405,7 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
             return false;
         }
 
-        var joined_cron = [ ];
+        var joined_cron = [0];
 
         joined_cron.push(nullOrEmpty($scope.split_cron.minute) ? '*' : $scope.split_cron.minute);
         joined_cron.push(nullOrEmpty($scope.split_cron.hour) ? '*' : $scope.split_cron.hour);
