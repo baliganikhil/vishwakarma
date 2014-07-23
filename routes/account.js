@@ -108,6 +108,16 @@ exports.register = function(req, res) {
     var password = req.body.password;
     var is_bootstrap = req.body.is_bootstrap;
 
+    var account_create = req.app.get('account_create');
+
+console.log(account_create);
+
+    if (!account_create || account_create == 'false') {
+        res.status(401);
+        res.send({err: true, data: 'Registration of accounts has been disabled'});
+        return false;
+    }
+
     register(username, password, function (err, response) {
         if (err) {
             res.send({

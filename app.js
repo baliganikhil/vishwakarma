@@ -27,8 +27,9 @@ var local_server =  noe(coalesce(coalesce(config_local, 'local', {}), 'server', 
 var local_port =  noe(coalesce(coalesce(config_local, 'local', {}), 'port', '')) ? config_default.local.port : config_local.local.port;
 var logs_save =  noe(coalesce(coalesce(config_local, 'logs', {}), 'save', '')) ? config_default.logs.save : config_local.logs.save;
 var logs_path =  noe(coalesce(coalesce(config_local, 'logs', {}), 'path', '')) ? config_default.logs.path : config_local.logs.path;
+var account_create =  noe(coalesce(coalesce(config_local, 'account', {}), 'create', '')) ? config_default.account.create : config_local.account.create;
 
-fs.writeFileSync('./public/javascripts/config.js', 'var CONFIG = ' + JSON.stringify({server: local_server}));
+fs.writeFileSync('./public/javascripts/config.js', 'var CONFIG = ' + JSON.stringify({server: local_server, account_create: account_create}));
 
 /*********************************************************************************************************/
 
@@ -67,6 +68,8 @@ if ('development' == app.get('env')) {
 app.get('/', function (req, resp) {
     resp.sendfile(__dirname + '/public/vishwakarma.html')
 });
+
+app.set('account_create', account_create);
 
 app.post('/login', accountAPI.login);
 app.get('/authenticated', accountAPI.authenticated);

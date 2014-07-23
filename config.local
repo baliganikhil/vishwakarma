@@ -12,5 +12,8 @@
 	"logs": {
 		"save": true,
 		"path": "/tmp"
+	},
+	"account": {
+		"create": "false"
 	}
 }

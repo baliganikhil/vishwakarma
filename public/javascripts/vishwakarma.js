@@ -150,6 +150,8 @@ VishwakarmaModule.factory('VishwakarmaServices', function ($http) {
 });
 
 VishwakarmaModule.controller('VKController', function ($scope, $timeout, VishwakarmaServices) {
+    $scope.CONFIG = CONFIG;
+
     VishwakarmaServices.is_authenticated().success(function (data) {
 
         if (data.status == 'success') {
