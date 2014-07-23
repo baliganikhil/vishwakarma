@@ -235,7 +235,7 @@ module.exports = function (server, config) {
                     }
                 }
 
-                if (!doc.is_scheduled) {
+                if (!doc.is_scheduled || doc.status != 'active') {
                     // Unschedule if scheduled
                     stop_schedule(_id);
                     return false;
