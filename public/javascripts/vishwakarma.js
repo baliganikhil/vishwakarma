@@ -381,11 +381,11 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
             if (!nullOrEmpty($scope.cur_project.cron)) {
                 var split_cron = $scope.cur_project.cron.split(' ');
                 $scope.split_cron = {
-                    minute: split_cron[ 0 ],
-                    hour: split_cron[ 1 ],
-                    day: split_cron[ 2 ],
-                    month: split_cron[ 3 ],
-                    DOW: split_cron[ 4 ],
+                    minute: split_cron[1],
+                    hour: split_cron[2],
+                    day: split_cron[3],
+                    month: split_cron[4],
+                    DOW: split_cron[5],
                 };
             } else {
                 $scope.split_cron = {};
