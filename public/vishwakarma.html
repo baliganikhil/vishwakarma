@@ -151,7 +151,7 @@
                     <div class="header row">Chain projects</div>
                     <div>
                         <div style="font-size: 12px;">On success, execute this project</div>
-                        <div><select ng-options="project._id as project.name for (key, project) in projects_to_chain" ng-model="cur_project.next" class="chain_dropdown"></select></div>
+                        <div><select ng-options="project._id as project.name for (key, project) in projects_to_chain | no_self_ref:cur_project" ng-model="cur_project.next" class="chain_dropdown"></select></div>
                     </div>
 
                     <div class="header row">

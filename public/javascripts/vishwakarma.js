@@ -939,3 +939,22 @@ VishwakarmaModule.filter('date_cleaner', function () {
         return [ months[ date_split[ 1 ].toString() ], date_split[ 2 ], date_split[ 0 ], time ].join(' ');
     };
 });
+
+VishwakarmaModule.filter('no_self_ref', function() {
+    return function(arr, ref) {
+
+        if (arr == undefined || ref == undefined) {
+            return;
+        }
+
+        console.log(arr);
+
+        arr.forEach(function(proj, key) {
+            if (proj._id == ref._id) {
+                arr.splice(key, 1);
+            }
+        });
+
+        return arr;
+    };
+});
