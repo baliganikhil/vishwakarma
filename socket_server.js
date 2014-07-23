@@ -228,17 +228,20 @@ module.exports = function (server, config) {
                     return;
                 }
 
+                function stop_schedule(sid) {
+                    if (scheduled_processes.hasOwnProperty(sid)) {
+                        scheduled_processes[sid].stop();
+                        delete scheduled_processes[sid];
+                    }
+                }
+
                 if (!doc.is_scheduled) {
                     // Unschedule if scheduled
-                    if (scheduled_processes.hasOwnProperty(_id)) {
-                        scheduled_processes[_id].stop();
-                        delete scheduled_processes[_id];
-                    }
-
+                    stop_schedule(_id);
                     return false;
                 } else {
                     // Stop scheduled job because we are rescheduling
-                    scheduled_processes[_id].stop();
+                    stop_schedule(_id);
                 }
 
                 scheduled_processes[_id] = new cronJob(doc.cron, function () {

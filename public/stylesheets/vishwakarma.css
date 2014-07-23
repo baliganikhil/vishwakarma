@@ -67,6 +67,10 @@ body {
     background: #fff;
 }
 
+.proj_container {
+    overflow: auto;
+}
+
 .proj_container .body .no_projects {
     text-align: center;
     font-size: 13px;

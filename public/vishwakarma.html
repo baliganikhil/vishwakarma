@@ -99,6 +99,9 @@
 
             <table class="projects table">
                 <tr ng-repeat="(key, project) in projects">
+                    <td>
+                        <i class="fa fa-clock-o" ng-show="project.is_scheduled"></i>
+                    </td>
                     <td class="project_name">
                         <a href="javascript: void(0);" ng-click="get_project(project._id)" ng-show="project.edit">{{project.name}}</a>
                         <span ng-show="project.read && !project.edit">{{project.name}}</span>
