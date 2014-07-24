@@ -29,7 +29,7 @@ exports.get_log = function(req, res) {
             var log_file = JSON.parse(fs.readFileSync(log_file));
             doc.stdout = log_file.stdout;
         } catch(e) {
-            doc.stdout = 'Log file could not be read - Deleted?';
+            doc.stdout = ['Log file could not be read - Deleted?'];
         }
 
         res.send({status: 'success', data: doc});

@@ -10,7 +10,7 @@
 		"server": "http://localhost:8080"
 	},
 	"logs": {
-		"save": false,
+		"save": true,
 		"path": "/tmp/",
 		"retain": 10
 	},

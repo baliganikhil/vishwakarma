@@ -305,7 +305,9 @@ module.exports = function (server, config) {
 
         var log_file_name = path.join(dir, [running_processes[_id].name, date.getTime()].join('_'));
         fs.writeFile(log_file_name, JSON.stringify(running_processes[_id]), function(err) {
-
+            if (err) {
+                console.error('Cannot save project log', err);
+            }
         });
 
         running_processes[_id].log_file = log_file_name;
@@ -330,7 +332,7 @@ module.exports = function (server, config) {
         var log_retain = project.log_retain;
 
         var ProjectLog = require('./models/project_log');
-        var query = ProjectLog.find({project_id: project._id}, {created_at: 1}).skip(log_retain).limit(1);
+        var query = ProjectLog.find({project_id: project._id}, {created_at: 1}).sort({created_at: -1}).skip(log_retain).limit(1);
 
         query.exec(function(err, docs) {
             if (err) {
@@ -341,8 +343,9 @@ module.exports = function (server, config) {
             }
 
             var doc = docs[0];
+            var remove_condition = {created_at: {'$gt': doc.created_at}};
 
-            ProjectLog.find({created_at: {'$gte': doc.created_at}}, {log_file: 1}, function(err, docs) {
+            ProjectLog.find(remove_condition, {log_file: 1}, function(err, docs) {
                 if (err) {
                     console.error(err);
                     return;
@@ -363,7 +366,7 @@ module.exports = function (server, config) {
 
             });
 
-            ProjectLog.remove({created_at: {'$gte': doc.created_at}}, function(err) {
+            ProjectLog.remove(remove_condition, function(err) {
                 if (err) {
                     console.error(err);
                     return;
