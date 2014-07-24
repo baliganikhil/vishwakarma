@@ -157,6 +157,14 @@
                         <div><select ng-options="project._id as project.name for (key, project) in projects_to_chain | no_self_ref:cur_project" ng-model="cur_project.next" class="chain_dropdown"></select></div>
                     </div>
 
+                    <div class="header row">Logs</div>
+                    <div>
+                        <div style="font-size: 12px;">How many logs to retain? (-1 for all)</div>
+                        <div>
+                            <input type="number" ng-model="cur_project.log_retain">
+                        </div>
+                    </div>
+
                     <div class="header row">
                         Schedule <i class="fa fa-pencil edit_title hide" ng-click="SCREENS.active_screen = 'edit_schedule'"></i>
 
@@ -164,6 +172,7 @@
                             <input type="checkbox" ng-model="cur_project.is_scheduled"> <span>Enable Scheduling</span>
                         </label>
                     </div>
+
                     <div class="row" style="padding-left: 10px;">
                         <table style="width: 100%;">
                             <tr>

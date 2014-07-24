@@ -8,6 +8,7 @@ var Project = new mongoose.Schema({
     status: {type: String, default: 'active'},
     is_scheduled: Boolean,
     cron: String,
+    log_retain: {type: Number, default: -1},
     created_by: String,
     updated_by: String,
     created_at: {type: Date, default: Date.now},

@@ -11,7 +11,8 @@
 	},
 	"logs": {
 		"save": false,
-		"path": "/tmp/"
+		"path": "/tmp/",
+		"retain": 10
 	},
 	"account": {
 		"create": "true"

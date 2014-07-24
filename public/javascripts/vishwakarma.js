@@ -340,7 +340,8 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
         $scope.cur_project = {
             name: 'New Project',
             desc: '',
-            code: ''
+            code: '',
+            log_retain: CONFIG.log_retain
         };
 
         $scope.SCREENS.active_screen = 'edit_project';
@@ -639,7 +640,14 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
                 return;
             }
 
-            $scope.USERS.groups = data.data;
+            var groups = [];
+            data.data.forEach(function(group) {
+                if (group.group != 'admin') {
+                    groups.push(group);
+                }
+            });
+
+            $scope.USERS.groups = groups;
 
         }).error(function (data) {
             alert('An error occurred while trying to get groups');
@@ -756,6 +764,10 @@ VishwakarmaModule.controller('VKController', function ($scope, $timeout, Vishwak
         $scope.GRPPRJ.grpprjmap.forEach(function (row) {
             if (group_names.indexOf(row.group) != -1) {
                 alert('The group ' + row.group + ' is present on multiple lines');
+                is_valid = false;
+                return false;
+            } else if (nullOrEmpty(row.group)) {
+                alert('The group is missing');
                 is_valid = false;
                 return false;
             }

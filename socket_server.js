@@ -135,6 +135,7 @@ module.exports = function (server, config) {
                 });
 
                 write_proj_to_log(doc._id);
+                delete_old_logs(doc);
 
                 if (!nullOrEmpty(doc.next) && running_processes[doc._id].status == STATUS.completed) {
 
@@ -318,6 +319,58 @@ module.exports = function (server, config) {
             if (err) {
                 console.error('Cannot save project log', err);
             }
+        });
+    }
+
+    function delete_old_logs(project) {
+        if (nullOrEmpty(project.log_retain) || project.log_retain === -1) {
+            return;
+        }
+
+        var log_retain = project.log_retain;
+
+        var ProjectLog = require('./models/project_log');
+        var query = ProjectLog.find({project_id: project._id}, {created_at: 1}).skip(log_retain).limit(1);
+
+        query.exec(function(err, docs) {
+            if (err) {
+                console.error(err);
+                return;
+            } else if (docs.length === 0) {
+                return;
+            }
+
+            var doc = docs[0];
+
+            ProjectLog.find({created_at: {'$gte': doc.created_at}}, {log_file: 1}, function(err, docs) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+
+                docs.forEach(function(doc) {
+                    var filename = doc.log_file;
+
+                    fs.exists(filename, function(exists) {
+                        fs.unlink(filename, function (err) {
+                            if (err) {
+                                console.error(err);
+                                return;
+                            }
+                        });
+                    });
+                });
+
+            });
+
+            ProjectLog.remove({created_at: {'$gte': doc.created_at}}, function(err) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+            });
+
+
         });
     }
 

@@ -20,16 +20,24 @@ try {
 }
 
 // Need to use prototype and fix this ugly mess eventually
-var mongo_server =  noe(coalesce(coalesce(config_local, 'mongo', {}), 'server', '')) ? config_default.mongo.server : config_local.mongo.server;
-var mongo_port =  noe(coalesce(coalesce(config_local, 'mongo', {}), 'port', '')) ? config_default.mongo.port : config_local.mongo.port;
-var server_port =  noe(coalesce(coalesce(config_local, 'server', {}), 'port', '')) ? config_default.server.port : config_local.server.port;
-var local_server =  noe(coalesce(coalesce(config_local, 'local', {}), 'server', '')) ? config_default.local.server : config_local.local.server;
-var local_port =  noe(coalesce(coalesce(config_local, 'local', {}), 'port', '')) ? config_default.local.port : config_local.local.port;
-var logs_save =  noe(coalesce(coalesce(config_local, 'logs', {}), 'save', '')) ? config_default.logs.save : config_local.logs.save;
-var logs_path =  noe(coalesce(coalesce(config_local, 'logs', {}), 'path', '')) ? config_default.logs.path : config_local.logs.path;
-var account_create =  noe(coalesce(coalesce(config_local, 'account', {}), 'create', '')) ? config_default.account.create : config_local.account.create;
+var CONFIG = {};
+CONFIG.mongo_server =  noe(coalesce(coalesce(config_local, 'mongo', {}), 'server', '')) ? config_default.mongo.server : config_local.mongo.server;
+CONFIG.mongo_port =  noe(coalesce(coalesce(config_local, 'mongo', {}), 'port', '')) ? config_default.mongo.port : config_local.mongo.port;
+CONFIG.server_port =  noe(coalesce(coalesce(config_local, 'server', {}), 'port', '')) ? config_default.server.port : config_local.server.port;
+CONFIG.local_server =  noe(coalesce(coalesce(config_local, 'local', {}), 'server', '')) ? config_default.local.server : config_local.local.server;
+CONFIG.local_port =  noe(coalesce(coalesce(config_local, 'local', {}), 'port', '')) ? config_default.local.port : config_local.local.port;
+CONFIG.logs_save =  noe(coalesce(coalesce(config_local, 'logs', {}), 'save', '')) ? config_default.logs.save : config_local.logs.save;
+CONFIG.logs_path =  noe(coalesce(coalesce(config_local, 'logs', {}), 'path', '')) ? config_default.logs.path : config_local.logs.path;
+CONFIG.log_retain =  noe(coalesce(coalesce(config_local, 'logs', {}), 'retain', '')) ? config_default.logs.retain : config_local.logs.retain;
+CONFIG.account_create =  noe(coalesce(coalesce(config_local, 'account', {}), 'create', '')) ? config_default.account.create : config_local.account.create;
 
-fs.writeFileSync('./public/javascripts/config.js', 'var CONFIG = ' + JSON.stringify({server: local_server, account_create: account_create}));
+fs.writeFileSync('./public/javascripts/config.js',
+                'var CONFIG = ' + JSON.stringify({
+                                                    server: CONFIG.local_server,
+                                                    account_create: CONFIG.account_create,
+                                                    log_retain: CONFIG.log_retain
+                                                }
+    ));
 
 /*********************************************************************************************************/
 
@@ -40,10 +48,10 @@ var project_log = require('./routes/project_log');
 var groups = require('./routes/group');
 
 var app = express();
-mongoose.connect('mongodb://' + mongo_server + '/vishwakarma');
+mongoose.connect('mongodb://' + CONFIG.mongo_server + '/vishwakarma');
 
 // all environments
-app.set('port', process.env.NODE_PORT || server_port || 80);
+app.set('port', process.env.NODE_PORT || CONFIG.server_port || 80);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(express.favicon());
@@ -69,7 +77,7 @@ app.get('/', function (req, resp) {
     resp.sendfile(__dirname + '/public/vishwakarma.html')
 });
 
-app.set('account_create', account_create);
+app.set('account_create', CONFIG.account_create);
 
 app.post('/login', accountAPI.login);
 app.get('/authenticated', accountAPI.authenticated);
@@ -97,8 +105,8 @@ app.post('/groups/users/add', groups.add_users_to_group);
 /*******************/
 
 var socket_config = {
-	logs_save: logs_save,
-	logs_path: logs_path
+	logs_save: CONFIG.logs_save,
+	logs_path: CONFIG.logs_path
 };
 
 var server = http.createServer(app);

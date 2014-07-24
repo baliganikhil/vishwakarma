@@ -1,1 +1,1 @@
-var CONFIG = {"server":"http://localhost:5000","account_create":"false"}
+var CONFIG = {"server":"http://localhost:5000","account_create":"false","log_retain":10}
