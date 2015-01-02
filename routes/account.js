@@ -48,7 +48,7 @@ exports.login = function(req, res) {
 			Group.v_get_users_for_group('admin', function (data) {
 	            var is_admin = data.users.indexOf(username) > -1;
 
-	            res.cookie('__auth', doc.hash);
+	            res.cookie('__auth_vk', doc.hash);
 	            res.cookie('username', username);
 
 	            res.send({
@@ -66,16 +66,16 @@ exports.login = function(req, res) {
 
 exports.authenticated = function(req, res) {
     var username = req.cookies.username;
-    var __auth = req.cookies.__auth;
+    var __auth_vk = req.cookies.__auth_vk;
 
-    authenticate(username, __auth, function (err, response) {
+    authenticate(username, __auth_vk, function (err, response) {
         if (err) {
             res.send({err: true});
             return;
         }
 
         if (!response.authenticated) {
-            res.cookie('__auth', '');
+            res.cookie('__auth_vk', '');
             res.cookie('username', '');
 
             res.send({status: 'error'});
@@ -96,7 +96,7 @@ exports.authenticated = function(req, res) {
 };
 
 exports.logout = function(req, res) {
-	res.cookie('__auth', '');
+	res.cookie('__auth_vk', '');
     res.cookie('username', '');
     res.send({
         status: 'success'
@@ -138,12 +138,12 @@ console.log(account_create);
 exports.reset_password = function (req, res) {
     // Reset Password
     var username = req.cookies.username;
-    var __auth = req.cookies.__auth;
+    var __auth_vk = req.cookies.__auth_vk;
 
     var password = req.body.password;
     var new_password = req.body.new_password;
 
-    authenticate(username, __auth, function (err, response) {
+    authenticate(username, __auth_vk, function (err, response) {
         if (err) {
             res.send({
                 err: true
@@ -152,7 +152,7 @@ exports.reset_password = function (req, res) {
         }
 
         if (!response.authenticated) {
-            res.cookie('__auth', '');
+            res.cookie('__auth_vk', '');
             res.cookie('username', '');
 
             res.status(401);
@@ -160,9 +160,9 @@ exports.reset_password = function (req, res) {
             return;
         }
 
-        bcrypt.compare(password, __auth, function (err, result) {
+        bcrypt.compare(password, __auth_vk, function (err, result) {
             if (!result) {
-                res.cookie('__auth', '');
+                res.cookie('__auth_vk', '');
                 res.cookie('username', '');
 
                 res.status(401);
